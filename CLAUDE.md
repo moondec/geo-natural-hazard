@@ -26,6 +26,18 @@ Rozmawiaj z użytkownikiem po polsku; treść kursu jest po angielsku.
 - Hasło admina zna tylko użytkownik; w przeglądarce loguje się sam. Web services są wyłączone.
   Zmian konfiguracji Moodle (motyw, ustawienia serwisu) nie rób bez zgody użytkownika. Usuwanie kursów — użytkownik.
 
+## Repozytorium i wykłady online (od 21.10.2026)
+
+- Repo publiczne `moondec/geo-natural-hazard` (konto gh `moondec`, e-mail commitów `15210450+moondec@users.noreply.github.com`,
+  LF przez `.gitattributes`, `core.autocrlf false`). Nie commituj `presentation/export/`, `presentation/src/`, `course/*/files/` (.gitignore).
+- Wykłady (reveal.js) hostuje GitHub Pages z `docs/` na `main`: https://moondec.github.io/geo-natural-hazard/ ;
+  `python -I -X utf8 build_docs.py` buduje `docs/` z eksportów Advanced Slides (`presentation/export/*.zip`), wspólny runtime w `docs/lib/`.
+  W Moodle wykłady to moduły URL (cm 413–421), nie pliki.
+- Treść kursu: `course/mcontent/` (pola tekstowe Moodle, styl IoT z niebieską paletą `course/geo.scss`, CSS wstawia `course/inline-iot-css.py geo.scss mcontent`);
+  `course/build_summaries.py` generuje podsumowania sekcji, intro URL-i i `ops.tsv`; reguły edycji `course/RULES-geo.md`.
+  Push do Moodle: skopiuj `course/mcontent/` do WSL `/home/marek/.hermes/build/mcontent-geo-work/` i uruchom `gpush.sh` (dry) / `gpush.sh --apply`;
+  pull: `gpull.sh` (→ `mcontent-geo/`). Baner kursu (overviewfiles) zostaje bez zmian.
+
 ## Sposób pracy (przejęty z projektu IoT, `~/Documents/iot_lectures`)
 
 - Edycja treści skryptami PHP: `docker exec -i moodle-lab-web-1 php < skrypt.php`
