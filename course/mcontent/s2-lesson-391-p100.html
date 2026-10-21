@@ -28,7 +28,7 @@ Map.centerObject(roi, 16);
 </code></pre>
 
 <h3 class="iot-material-divider">3. Filtering image collections</h3>
-<pre><code class="language-javascript">var S2a = S2har.filterDate('2019-05-01', '2019-09-30')      // filter by date (end date is exclusive)
+<pre><code class="language-javascript">var S2a = S2har.filterDate('2025-05-01', '2025-09-30')      // filter by date: the 2025 growing season (end date is exclusive)
                // pre-filter to get less cloudy granules (Sentinel-2)
                .filter(ee.Filter.lt('CLOUDY_PIXEL_PERCENTAGE', 35))
                .filter(ee.Filter.bounds(roi));

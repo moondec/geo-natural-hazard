@@ -39,7 +39,7 @@ except ModuleNotFoundError:
 <pre class="iot-material-code"><code class="language-python">javascript_code = """
 var geometry = ee.Geometry.Point([107.61303468448624, 12.130969369851766]);
 Map.centerObject(geometry, 12)
-var s2 = ee.ImageCollection('COPERNICUS/S2_HARMONIZED')
+var s2 = ee.ImageCollection('COPERNICUS/S2_SR_HARMONIZED')
 var rgbVis = {
   min: 0.0,
   max: 3000,
@@ -66,7 +66,7 @@ var filtered = s2
 
 // Write a function that computes NDVI for an image and adds it as a band
 function addNDVI(image) {
-  var ndvi = image.normalizedDifference(['B5', 'B4']).rename('ndvi');
+  var ndvi = image.normalizedDifference(['B8', 'B4']).rename('ndvi');
   return image.addBands(ndvi);
 }
 
@@ -90,7 +90,7 @@ for line in lines:
     print(line.rstrip())
 </code></pre></li>
 <li><strong>Copy the printed Python</strong> into a new cell and run it. Fix what the translator missed: quoted dictionary keys, <code>.And()</code>, <code>getInfo()</code> on anything you print. The <code>geemap.Map</code> should appear below the cell.</li>
-<li><strong>Check the content</strong>, not only the syntax: the example computes "NDVI" from <code>B5</code> (red edge) – change it to <code>B8</code>, and prefer the L2A collection <code>COPERNICUS/S2_SR_HARMONIZED</code> as in labs 2–6.</li>
+<li><strong>Check the content</strong>, not only the syntax: NDVI from <code>B8</code> and <code>B4</code>, the L2A collection <code>COPERNICUS/S2_SR_HARMONIZED</code> as in labs 2–6, and the date and point of your own area.</li>
 <li><strong>Repeat with your lab 2 script</strong> (NDVI, classes, areas). Add text cells explaining each step – this is the format of your capstone notebook.</li>
 </ol>
 

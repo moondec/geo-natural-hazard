@@ -5,8 +5,8 @@
 <h3 class="iot-material-divider">Before you start</h3>
 <ul class="iot-material-list">
 <li>The method is described in <a href="https://nhess.copernicus.org/articles/22/753/2022/" target="_blank" rel="noopener">Handwerger et al. (2022), NHESS 22, 753–773</a>. It uses Sentinel-1 Synthetic Aperture Radar (SAR) amplitude: a stack of images <strong>before</strong> and <strong>after</strong> the event, same orbit; the pixel-wise log-ratio of the mean backscatter; a slope / water / built-up mask; aggregation to a coarse grid as a <strong>density heatmap</strong>. No training data are needed.</li>
-<li>The script: <a href="https://code.earthengine.google.com/341d37e9277edce71a3e720bc6e3bf07" target="_blank" rel="noopener">code.earthengine.google.com/341d37e9277edce71a3e720bc6e3bf07</a> (open it in the GEE Code Editor with your registered Cloud project).</li>
-<li>The authors' full set of scripts: <a href="https://github.com/alhandwerger/GEE_scripts_for_Handwerger_et_al_2022_NHESS" target="_blank" rel="noopener">GitHub repository</a>.</li>
+<li>The script: <a href="https://code.earthengine.google.com/341d37e9277edce71a3e720bc6e3bf07" target="_blank" rel="noopener">code.earthengine.google.com/341d37e9277edce71a3e720bc6e3bf07</a>. The link opens only when you are signed in to an Earth Engine account with a registered Cloud project (lab 1).</li>
+<li>Public alternative: the authors' scripts in the <a href="https://github.com/alhandwerger/GEE_scripts_for_Handwerger_et_al_2022_NHESS" target="_blank" rel="noopener">GitHub repository for Handwerger et al. (2022)</a> (listed in the article's "Code and data availability" section) – copy the landslide detection script into a new Code Editor file.</li>
 <li>Formula you will inspect: <code>I_ratio = 10 · log10( mean σ_after / mean σ_before )</code> – vegetation removed makes VH drop; a bare, rough deposit may rise, so the script uses the absolute change.</li>
 </ul>
 

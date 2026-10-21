@@ -6,13 +6,13 @@ sectionname	4	04 · Flood mapping
 sectionname	5	05 · Landslide mapping
 sectionname	6	06 · Wildfire mapping
 sectionname	7	07 · Python and R APIs for GEE · wrap-up
-sequence	1	414,413,390
-sequence	2	415,391,394,395,392,393
-sequence	3	416,396,397,398
-sequence	4	417,401,399,400
-sequence	5	418,402
-sequence	6	419,403
-sequence	7	420,404,421
+sequence	1	423,422,390
+sequence	2	424,391,394,395,392,393
+sequence	3	425,396,397,398
+sequence	4	426,401,399,400
+sequence	5	427,402
+sequence	6	428,403
+sequence	7	429,404,430
 rename	390	Homework after lecture 1: accounts and webinars
 rename	391	Lesson 2: Google Earth Engine step by step
 rename	392	Homework M2: index areas (script link)
@@ -25,42 +25,3 @@ rename	401	Lesson 4: flood mapping – bands, water indices, SAR
 rename	402	Lesson 5: landslides and the SAR heatmap script
 rename	403	Lesson 6: fire detection and burn severity
 rename	404	Lesson 7: APIs for GEE – Python, Colab, rgee
-pagetitle	93	1. Sign-up check
-pagetitle	99	2. Add the End-to-End repository
-pagetitle	94	3. Load a Sentinel-2 collection
-pagetitle	100	4. JavaScript basics: filters
-pagetitle	101	5. NDVI classes and area
-pagetitle	104	End of lesson
-pagetitle	113	Other water indices
-pagetitle	118	Lab 5: landslide heatmap script
-pagetitle	122	Lab 6: burn severity script
-pagetitle	126	Capstone notebook
-answertext	360	Supervised Classification
-answertext	361	Unsupervised Classification
-answertext	322	Level-1C
-answertext	323	Level-2A
-answertext	324	Level-1B
-answertext	325	Level-0
-answertext	326	NIR and RED
-answertext	327	NIR and GREEN
-answertext	328	NIR and SWIR
-answertext	329	BLUE and SWIR
-answertext	330	Google Earth
-answertext	331	Google Earth Engine
-answertext	332	Google Earth Timelapse
-answertext	333	Public Data Catalog
-answertext	334	Co-located Data Storage and Computation
-answertext	335	Javascript and Python API
-answertext	336	Browser-based Code Editor
-answertext	337	All of them
-answertext	338	Data is downloaded, pre-processed and co-located with computational resources
-answertext	339	It supports only low-resolution datasets
-answertext	340	The API takes advantage of parallel processing
-answertext	341	Google Earth Engine is integrated with Google's AI Platform
-answertext	342	Google Earth Engine User Guide
-answertext	343	GIS Stack Exchange
-answertext	344	Earth Engine Developer Forum
-answertext	403	Python
-answertext	404	R
-answertext	405	Javascript
-answertext	406	Julia
