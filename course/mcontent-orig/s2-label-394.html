@@ -1,0 +1,14 @@
+<h4 style="color:white; background-color:#f04960; padding:30px;border-radius:20px;text-align:center">Administrative borders you can download from&nbsp;<a href="https://gadm.org/data.html" target="_blank">GADM</a>&nbsp;or <a href="https://simplemaps.com/gis/country/pl" target="_blank">simplemaps.com</a> website. <br></h4>
+<p><br>And here is a piece of code for GEE (<strong style="background-color:#eeeeee;padding:5px">ee.FeatureCollection()</strong>)</p>
+<p></p>
+<pre><code class="lang-javascript"><br> var extent_pl = ee.FeatureCollection("FAO/GAUL/2015/level0")<br>                   .filter(ee.Filter.eq("ADM0_NAME", "Poland")); //filter for entry that equals the UN country name "Poland"<br></code></pre>
+<br>
+<p>or an example from <a href="https://courses.spatialthoughts.com/end-to-end-gee.html#introduction" target="_blank">End-to-End</a> course:</p>
+<p>```<br>
+    var admin2 = ee.FeatureCollection("FAO/GAUL_SIMPLIFIED_500m/2015/level2");<br>&nbsp;&nbsp;&nbsp;&nbsp;var karnataka = admin2.filter(ee.Filter.eq("ADM1_NAME", "Karnataka"));<br>&nbsp;&nbsp;&nbsp;&nbsp;var visParams = {"color": "red"};
+    <br><br>Map.addLayer(karnataka, visParams, "Karnataka Districts");<br>```
+</p>
+
+<h4>Note</h4>
+
+<p>Number <strong>0</strong> and <strong>1</strong> in variables: <strong>ADM0_NAME</strong> or <strong>ADM1_NAME</strong>, refers to level of the administrative delimitation.</p>

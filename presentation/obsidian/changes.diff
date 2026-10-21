@@ -1,0 +1,157 @@
+--- ApplicationHazards_GEO.orig.md	2026-10-21 18:14:38.261265100 +0100
++++ ApplicationHazards_GEO.md	2026-10-21 18:17:35.785243900 +0100
+@@ -102,10 +102,10 @@
+ 
+ ![[Kursy/prezentacje/ApplicationHazards_GEO/pliki/S2L2A-1015625487634027-timelapse.gif]]<!-- element  drag="60 100" drop="40 0" class="fragment fade-in-then-out" data-fragment-index="2"-->
+ 
+-### For other advices visit e.g.<!-- element style="color:red" class="fragment fade-up" data-fragment-index="6"--> [https://un-spider.org](https://un-spider.org/advisory-support/recommended-practices)<!-- element class="fragment fade-up" data-fragment-index="6"-->
++### For other advice visit e.g.<!-- element style="color:red" class="fragment fade-up" data-fragment-index="6"--> [https://un-spider.org](https://un-spider.org/advisory-support/recommended-practices)<!-- element class="fragment fade-up" data-fragment-index="6"-->
+ 
+ <grid drag= "100 60" drop= "0 0" style="font-size: 20px" align="justify">
+-[^1]: For this purpose we can use [Copernicus Browser](https://dataspace.copernicus.eu/) **We will back later**<!-- element class="fragment fade-up" data-fragment-index="4"-->
++[^1]: For this purpose we can use [Copernicus Browser](https://browser.dataspace.copernicus.eu/) **We will come back to it later**<!-- element class="fragment fade-up" data-fragment-index="4"-->
+ </grid>
+ 
+ ::: source
+@@ -217,7 +217,7 @@
+ ---
+ <!-- slide template="[[tpl-con-default-slide]]" -->
+ ::: title 
+-## Idea of tele-detection :smile: HOW EO SATELLITES WORK
++## Idea of remote sensing :smile: HOW EO SATELLITES WORK
+ :::
+ 
+ ::: block <!-- element style="font-size: 50px;" -->
+@@ -231,7 +231,7 @@
+ ![[ezmaker.png]]
+ :::
+ ::: source
+-source: http://satellites4everyone.co.uk/?page_id=4402
++source: satellites4everyone.co.uk (site offline – [archived copy](https://web.archive.org/web/2023/http://satellites4everyone.co.uk/?page_id=4402))
+ :::
+ 
+ note:
+@@ -267,6 +267,10 @@
+ 
+ ![[Kursy/prezentacje/ApplicationHazards_GEO/pliki/Pasted image 20230106213729.png]]
+ 
++::: block <!-- element style="font-size: 36px;" class="fragment fade-up" -->
++Landsat 8 and **Landsat 9** (2021) carry the same bands (OLI-2 / TIRS-2); Landsat 7 was decommissioned in June 2025. Sentinel-2 now flies as a triplet: **2A, 2B and 2C** (2C operational since January 2025). Next generation: Landsat Next (26 bands, launch planned for the early 2030s).
++:::
++
+ 
+ 
+ ---
+@@ -279,12 +283,13 @@
+ ## Google Earth Engine
+ :::
+ 
+-::: block <!-- element style="font-size: 60px;"  -->
++::: block <!-- element style="font-size: 50px;"  -->
+ - [Online](https://developers.google.com/earth-engine) catalogue of satellite imagery and geospatial imagery
+ + [Analysis capabilities through scripting](https://code.earthengine.google.com/) (javascript, python)
+-+ Available for scientist, researchers and developers
+++ Free for [noncommercial use](https://earthengine.google.com/noncommercial/) (research, education) – you need a Google account and a registered **Google Cloud project** ([how to get access](https://developers.google.com/earth-engine/guides/access)) – do it **before** the class!
+ + Uses the compute power of Google servers and conduct elaborate RS analysis faster
+ + [End-to-End](https://courses.spatialthoughts.com/end-to-end-gee.html) course
+++ Python: `ee` API + [geemap](https://geemap.org/) in Jupyter; R: rgee (next slide)
+ :::
+ ![[Kursy/prezentacje/ApplicationHazards_GEO/pliki/Pasted image 20230106205837.png|220]]<!-- element drag="25 25" drop="bottomleft"-->
+ 
+@@ -294,18 +299,17 @@
+ <grid drag="13 26" drop="80 53" bg="#ffB73F" rotate="-15"/>
+ <grid drag="13 26" drop="87 75" bg="#00ced1"/>
+ <grid drag="13 26" drop="77 90" bg="#F06400" />
+-![[Pasted image 20230108222731.png]] <!-- element drag="25 13" drop="bottomleft"-->
+-![[Pasted image 20230109202504.png]]<!-- element drag="25 13" drop="bottom"-->
+ ![[Pasted image 20251102204319.png]]
+ ::: title 
+-## SentinelHUB
++## Copernicus Browser
+ :::
+ 
+-::: block <!-- element style="font-size: 60px;"  -->
+-- Developed and maintained by [Sinergise Laboratory](https://www.sinergise.com)
+-+ [EO Browser](https://www.sentinel-hub.com/explore/eobrowser/) to browse and compare full resolution images (Sentinel, Landsat, MODIS, etc.)
+-+ Additional tools for analysis (import KML, export geotiff, indices e.g. [NDVI](https://custom-scripts.sentinel-hub.com/sentinel-2/ndvi/), [SAVI](https://custom-scripts.sentinel-hub.com/sentinel-2/savi/))
+-+ Import Imagery into Your GIS Application (e.g. QGIS, ArcGIS)
++::: block <!-- element style="font-size: 50px;"  -->
++- Part of the [Copernicus Data Space Ecosystem](https://dataspace.copernicus.eu/) (EU / ESA); a free account is required
+++ [Copernicus Browser](https://browser.dataspace.copernicus.eu/) to browse and compare full resolution images (Sentinel-1, Sentinel-2 + mosaics, Sentinel-3, Sentinel-5P, DEM)
+++ Tools for analysis (compare, timelapse, time series and histograms, import AOI as KML/GeoJSON, export GeoTIFF, 3D view, custom scripts e.g. [NDVI](https://custom-scripts.sentinel-hub.com/sentinel-2/ndvi/), [SAVI](https://custom-scripts.sentinel-hub.com/sentinel-2/savi/))
+++ Import imagery into your GIS application (e.g. QGIS, ArcGIS) via WMS/WMTS
+++ Successor of **EO Browser** (Sentinel Hub / Sinergise, retired in March 2026); commercial alternative: [Planet Insights Platform](https://www.planet.com/products/planet-insights-platform/)
+ :::
+ 
+ ---
+@@ -315,7 +319,7 @@
+ <grid drag="9 20" drop="87 18" bg="#F06400" />
+ 
+ ::: title 
+-# RGEE - Google [Earth Engine with R](https://r-earthengine.com/rgeebook/index.html)
++# RGEE - Google [Earth Engine with R](https://r-spatial.github.io/rgee/)
+ :::
+ 
+ ![[Kursy/prezentacje/ApplicationHazards_GEO/pliki/Pasted image 20230109204730.png|600]]
+@@ -335,13 +339,13 @@
+ <grid drag="13 26" drop="77 90" bg="#F06400" />
+ 
+ ::: block <!-- element style="font-size: 60px; " class="fragment fade-out" data-fragment-index="1"-->
+--   **Supervised Classification:** One ML technique for classifying land is to use ground truth examples to teach a model to differentiate between classes. Earth Engine's built-in [supervised classifiers](https://developers.google.com/earth-engine/guides/earth-engine/guides/classification) support this process.
++-   **Supervised Classification:** One ML technique for classifying land is to use ground truth examples to teach a model to differentiate between classes. Earth Engine's built-in [supervised classifiers](https://developers.google.com/earth-engine/guides/classification) support this process.
+ :::
+ ::: block <!-- element style="font-size: 60px;" drag="100" drop="top"  class="fragment fade-in-then-out" data-fragment-index="1"-->
+--   **Unsupervised Classification:** In unsupervised classification, no ground truth examples are provided to the training algorithm. Instead, the algorithm divides the available data into clusters based on inherent differences. Earth Engine's [unsupervised classifiers](https://developers.google.com/earth-engine/guides/earth-engine/guides/clustering) are particularly useful when no ground truth data exists, when you do not know the final number of classes or when you want to do quick experimentation.
++-   **Unsupervised Classification:** In unsupervised classification, no ground truth examples are provided to the training algorithm. Instead, the algorithm divides the available data into clusters based on inherent differences. Earth Engine's [unsupervised classifiers](https://developers.google.com/earth-engine/guides/clustering) are particularly useful when no ground truth data exists, when you do not know the final number of classes or when you want to do quick experimentation.
+ :::
+ ::: block <!-- element style="font-size: 60px; "  drag="100" drop="top"  class="fragment fade-in-then-out" data-fragment-index="2"-->
+--   **Regression:** Whereas a classification model attempts to bucket each input into a discrete class, a regression model attempts to predict a continuous variable for each input. For example, a regression model could predict water quality, percent forest cover, percent cloud cover or crop yield. For more information, please refer to the [Linear Regression section of ee.Reducers](https://developers.google.com/earth-engine/guides/earth-engine/guides/reducers_regression).
++-   **Regression:** Whereas a classification model attempts to bucket each input into a discrete class, a regression model attempts to predict a continuous variable for each input. For example, a regression model could predict water quality, percent forest cover, percent cloud cover or crop yield. For more information, please refer to the [Linear Regression section of ee.Reducers](https://developers.google.com/earth-engine/guides/reducers_regression).
+ :::
+ 
+ ::: source
+@@ -399,7 +403,7 @@
+ 1. We need so called _**training set**_, and we pick random K points
+ 2) Build the decision tree associated to K data points
+ 3) Choose the number Ntree of trees we want to build and repeat STEP 1 & 2
+-4) For a new data point, make each one of Ntrees predict the category to which the data points belongs, and assign the new data point to the category that wins the major vote.
++4) For a new data point, make each one of Ntrees predict the category to which the data points belong, and assign the new data point to the category that wins the major vote.
+ :::
+ 
+ ---
+@@ -429,13 +433,14 @@
+ ## Home work:
+ :::
+ 
+-### Watch follows webinars:
++### Watch the following webinars:
+ ::: block<!-- element style="font-size: 50px;color:blue"  -->
+-- https://www.youtube.com/watch?v=eK0OMn5H-kY
++- https://www.youtube.com/watch?v=F0lIn5r6ZWk (A short guide to Copernicus Browser)
++- https://www.youtube.com/watch?v=GecNCdilbig (Introduction to the CDSE website and Copernicus Browser, facultative)
+ - https://youtu.be/wn6p9KcOIOI
+ - https://www.youtube.com/watch?v=Pz-96PMm5x8 (facultative)
+ - https://www.geo.fu-berlin.de/en/v/geo-it/webinar/Online-Seminar-7/index.html
+-- Browse [Sentinel Hub Webinars](https://www.sentinel-hub.com/explore/education/webinars/)
++- Browse [Copernicus Data Space Ecosystem videos](https://www.youtube.com/@copernicusdataspaceecosystem) and [Sentinel Hub Webinars](https://www.sentinel-hub.com/explore/education/webinars/)
+ - Browse [Earth Engine resources for workshops](https://developers.google.com/earth-engine/tutorials/ttt)
+ :::
+ ---
+@@ -460,12 +465,12 @@
+ :::
+ 3. Online books - R for Geoinformation:<!-- element style="font-size: 60px;color:blue"  -->
+ 
+-- **“[Advanced R](https://adv-r.hadley.nz/)”** by Hadley Wickham, provides a profound description of R syntax. **This book uses its template.**
+-- **“[Geocomputation with R](https://geocompr.robinlovelace.net/)”** by Robin Lovelace, Jakub Nowosad, and Jannes Muenchow, introduces R for manipulating and visualizing geographic data.
+-- **“[Spatial Data Science](https://keen-swartz-3146c4.netlify.app/)”** by Edzer Pebesma and Roger Bivand, is another excellent great resource for geographic data but focused on analysis.
+-- **“[R for Data Science](http://r4ds.had.co.nz/)”** by Hadley Wickham and Garrett Grolemund, introduces you to R as a data science tool, with a particular emphasis on the tidyverse package.
++- **“[Advanced R](https://adv-r.hadley.nz/)”** by Hadley Wickham, provides a profound description of R syntax.
++- **“[Geocomputation with R](https://r.geocompx.org/)”** by Robin Lovelace, Jakub Nowosad, and Jannes Muenchow, introduces R for manipulating and visualizing geographic data.
++- **“[Spatial Data Science](https://r-spatial.org/book/)”** by Edzer Pebesma and Roger Bivand, is another excellent great resource for geographic data but focused on analysis.
++- **“[R for Data Science](https://r4ds.hadley.nz/)”** by Hadley Wickham and Garrett Grolemund, introduces you to R as a data science tool, with a particular emphasis on the tidyverse package.
+ 
+-- **"[Earth Engine with R](https://r-earthengine.com/rgeebook/index.html)"** by [Junior Calvo](https://github.com/junior0428), [Fernando Herrera](https://github.com/ferherreraq), [Karen Gonzales](https://github.com/andrea29-star), [Joselyn Inga](https://github.com/joandrea) and [Cesar Aybar](https://github.com/csaybar).
++- **"[rgee – Google Earth Engine for R](https://r-spatial.github.io/rgee/)"** (package documentation and tutorials) by [Cesar Aybar](https://github.com/csaybar) et al. – the former "Earth Engine with R" book site is offline.
+ - **"[Geographic Data Science with R: Visualizing and Analyzing Environmental Change](https://bookdown.org/mcwimberly/gdswr-book/)"** by Michael C. Wimberly
+ - **"[Landscape Genetic Data Analysis with R](https://bookdown.org/hhwagner1/LandGenCourse_book/)"** _Editor: Helene Wagner (University of Toronto)_
+ - Hengl, T., MacMillan, R.A., (2019). [Predictive Soil Mapping with R](https://soilmapper.org/). OpenGeoHub foundation, Wageningen, the Netherlands, 370 pages, www.soilmapper.org, ISBN: 978-0-359-30635-0.

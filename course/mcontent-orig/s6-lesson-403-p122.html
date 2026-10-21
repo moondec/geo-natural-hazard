@@ -1,0 +1,16 @@
+<p>Go to GEE and try&nbsp;<a href="https://code.earthengine.google.com/13813e68fd5bb31c21ccdfa515f6165e" target="_blank">https://code.earthengine.google.com/13813e68fd5bb31c21ccdfa515f6165e</a></p>
+<p>You can apply the script for another "area of interest" - comment line 19 and assign new geometry.&nbsp;</p>
+<p style="border-width:3px; border-style:solid; border-color:coral; padding: 1em;"><i class="fa fa-info-circle fa-3x fa-pull-left aria-hidden" style="color:coral"></i>&gt;Use the editor <img src="@@PLUGINFILE@@/editor.png" alt="editor" width="200" height="54" class="img-responsive atto_image_button_text-bottom">or
+    upload "feature collection" (defined borders, shp, etc.)</p>And do not forget change dates<br>```<br>
+<p>//*******************************************************************************************<br>
+// &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; SET TIME FRAME<br>
+// Set start and end dates of a period BEFORE the fire. Make sure it is long enough for&nbsp;<br>
+// Sentinel-2 to acquire an image (repitition rate = 5 days). Adjust these parameters, if<br>
+// your ImageCollections (see Console) do not contain any elements.</p>
+<p>var prefire_start = '2016-12-20'; &nbsp;&nbsp;<br>
+var prefire_end = '2017-01-18';</p>
+<p>// Now set the same parameters for AFTER the fire.<br>
+var postfire_start = '2017-02-20';<br>
+var postfire_end = '2017-03-28';</p>
+<p>//*******************************************************************************************<br>
+<br>```</p>

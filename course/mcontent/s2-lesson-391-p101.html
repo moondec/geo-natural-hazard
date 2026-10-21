@@ -1,0 +1,124 @@
+<style data-iot-style="v1">:root{--iot-canvas: #eef3f8; --iot-surface: #f8fafd; --iot-white: #fff; --iot-ink: #15202b; --iot-muted: #5a6a7a; --iot-line: #c9d6e3; --iot-accent: #0b4f8a; --iot-accent-soft: #dbe9f7; --iot-night: #10213a; --iot-night-2: #182c48; --iot-radius: 16px; --iot-shadow: 0 18px 45px rgba(16, 40, 70, .12);}body.limitedwidth #page.drawers .main-inner,body.pagelayout-course #page.drawers .main-inner{width: 100%; max-width: none;}.iot-material{--m-ink: var(--iot-ink, #15202b); --m-soft: var(--iot-ink-soft, #46586b); --m-line: var(--iot-line, #c9d6e3); --m-line-strong: var(--iot-line-strong, #afc2d6); --m-accent: var(--iot-accent, #0b4f8a); --m-surface: var(--iot-surface, #f8fafd); --m-white: var(--iot-white, #fff); --m-chip: var(--iot-chip, #eef3f8); --m-radius: var(--iot-radius, 16px); --m-info-bg: var(--iot-info-bg, #edf3fa); --m-check-bg: var(--iot-check-bg, #e9f3fb); --m-warn-bg: var(--iot-warn-bg, #fdf6e7); --m-warn-ink: var(--iot-warn-ink, #7a4d00); --m-danger-bg: #fdeeee; --m-danger-ink: #8a1c1c; --m-gap: 16px; max-width: none; color: var(--m-ink); line-height: 1.55;}.iot-material > *{margin-top: var(--m-gap);}.iot-material > :first-child{margin-top: 0;}.iot-material p{max-width: none; margin-bottom: 0; color: var(--m-ink);}.iot-material h2,.iot-material h3,.iot-material h4,.iot-material h5{max-width: none; margin-bottom: 0; color: var(--m-accent); font-weight: 800; letter-spacing: -.015em; line-height: 1.2;}.iot-material h2{margin-top: 30px; font-size: 1.42rem;}.iot-material h3{margin-top: 26px; font-size: 1.16rem;}.iot-material h4{margin-top: 22px; font-size: 1.02rem;}.iot-material h5{margin-top: 20px; font-size: .95rem; color: var(--m-soft);}.iot-material > h2:first-child,.iot-material > h3:first-child,.iot-material > h4:first-child{margin-top: 0;}.iot-material-divider{margin: 0; padding: 12px 0 12px 16px; border-left: 5px solid var(--m-accent); background: var(--m-surface); color: var(--m-accent); font-size: 1.06rem; font-weight: 800; letter-spacing: -.01em;}.iot-material-divider a{color: inherit;}.iot-material-lead{margin: 0; padding: 18px 20px; border-left: 5px solid var(--m-accent); border-radius: 0 var(--m-radius) var(--m-radius) 0; background: var(--m-info-bg); color: var(--m-ink); font-size: 1.02rem;}.iot-material-lead > p{margin-top: 10px;}.iot-material-lead > :first-child{margin-top: 0;}.iot-material-callout{margin: 0; padding: 16px 18px; border-left: 5px solid var(--m-accent); border-radius: 0 var(--m-radius) var(--m-radius) 0; background: var(--m-info-bg); color: var(--m-ink);}.iot-material-callout > *{margin-top: 10px;}.iot-material-callout > :first-child{margin-top: 0;}.iot-material-callout-title{margin: 0; color: var(--m-accent); font-size: .95rem; font-weight: 800;}.iot-material-callout--check{background: var(--m-check-bg);}.iot-material-callout--task{border-left-color: var(--m-accent); background: var(--m-check-bg);}.iot-material-callout--warn{border-left-color: var(--m-warn-ink); background: var(--m-warn-bg);}.iot-material-callout--warn .iot-material-callout-title{color: var(--m-warn-ink);}.iot-material-list{max-width: none; margin: 0; padding-left: 1.3rem;}.iot-material-list li{margin-top: 6px;}.iot-material-list li:first-child{margin-top: 0;}.iot-material-list ul,.iot-material-list ol{margin-top: 6px; padding-left: 1.2rem;}.iot-material code{padding: .08em .35em; border: 1px solid var(--m-line); border-radius: 5px; background: var(--m-chip); color: var(--m-ink); font-size: .88em; overflow-wrap: break-word;}.iot-material a{color: var(--m-accent); text-decoration: underline;}.iot-material a:hover{color: var(--m-accent); text-decoration-thickness: 2px;}.iot-material a:focus-visible{outline: 3px solid var(--m-accent); outline-offset: 2px;}@media (max-width: 520px){.iot-material-lead,.iot-material-callout{padding: 14px 16px;}}@media (prefers-contrast: more){.iot-material-divider{border-left-color: var(--m-ink);}}</style>
+<div class="iot-material iot-material--page" data-iot-material="v1">
+<p class="iot-material-lead">Step 5: compute the area inside <code>roi</code> covered by live, green vegetation. You add an NDVI band to every image, take the median, cut the median into classes and sum the pixel area of each class. At the end the Console prints the area per class – the template for your homework.</p>
+
+<h3 class="iot-material-divider">Before you start</h3>
+<p>Continue in the script from the previous page: the collection <code>S2a</code> and the geometry <code>roi</code> must already exist. Use a buffer of a few kilometres (e.g. <code>poi.buffer(5000)</code>) so that the classes are visible.</p>
+
+<h3 class="iot-material-divider">1. Add NDVI and take the median</h3>
+<pre><code class="language-javascript">// Function to calculate and add an NDVI band
+var addNDVI = function(image) {
+  return image.addBands(image.normalizedDifference(['B8', 'B4']).rename('NDVI'));
+};
+
+// Add NDVI band to every image in the collection
+var S2a = S2a.map(addNDVI);
+
+var NDVI = S2a.select(['NDVI']);
+var NDVImed = NDVI.median();
+</code></pre>
+
+<h3 class="iot-material-divider">2. Manual classification</h3>
+<p>We create a separate layer for each class, and then a specific value is assigned to each class:</p>
+<ul class="iot-material-list">
+<li>"water" = -1</li>
+<li>"rocks" = 2</li>
+<li>"shrub" = 3</li>
+<li>"vegetation" = 4</li>
+</ul>
+<div class="iot-material-callout iot-material-callout--warn">
+<p class="iot-material-callout-title">For the exercise only</p>
+<p>This solution is not efficient – it is here to show how comparisons work. Do not use it in real calculations; use the threshold version in part 4.</p>
+</div>
+<pre><code class="language-javascript">// Manual classification combining bands and defining values in GEE
+var water = NDVImed.lte(-0.1).rename('Water').multiply(-1); // water is '-1'
+// print(water)
+var rock = NDVImed.gt(-0.1).and(NDVImed.lte(0.3)).rename('Rock').multiply(2); // rocks is '2'
+// print(rock)
+var shrub = NDVImed.gt(0.3).and(NDVImed.lte(0.4)).rename('Shrub').multiply(3);
+// print(shrub)
+var vegetation = NDVImed.gt(0.4).rename('Green').multiply(4);
+// print(vegetation)
+</code></pre>
+<p>Now we can add the new bands to the image:</p>
+<pre><code class="language-javascript">var classimage = NDVImed.addBands(water);
+var classimage = classimage.addBands(rock);
+var classimage = classimage.addBands(shrub);
+var classimage = classimage.addBands(vegetation);
+</code></pre>
+
+<h3 class="iot-material-divider">3. Compute the area</h3>
+<p>Finally compute the area (try changing "Green" to "Rock" or "Shrub"):</p>
+<pre><code class="language-javascript">// Let's compute the Green area
+var classareas = ee.Image.pixelArea().addBands(classimage.select('Green'))
+  .reduceRegion({
+    reducer: ee.Reducer.sum().group({
+      groupField: 1,
+      groupName: 'code',
+    }),
+    geometry: roi,
+    scale: 10,  // Sentinel-2 native resolution, in metres
+    maxPixels: 1e10
+  }).get('groups');
+
+// Print the list of dictionaries.
+print(classareas);
+</code></pre>
+
+<div class="iot-material-callout iot-material-callout--warn">
+<p class="iot-material-callout-title">scale: 10, not scale: 1</p>
+<p>Older versions of this script used <code>scale: 1</code> ("sample the geometry at 1 m intervals"). Sentinel-2 pixels are 10 m; <code>scale: 1</code> forces a hundred times more samples, ends with the error <em>Too many pixels in the region</em> or gives an over-smoothed answer. The <code>scale</code> must match the data: 10 for Sentinel-2, 30 for Landsat (see Lecture 2, "From classes to hectares").</p>
+</div>
+
+<h3 class="iot-material-divider">4. Let's make it better – thresholds</h3>
+<p>We can visualize the classified mosaic first. One line counts how many thresholds each pixel exceeds:</p>
+<pre><code class="language-javascript">var thresholds = ee.Image([0, 0.1, 0.2, 0.3, 0.4, 0.5, 1]); // define the thresholds
+var classified = NDVImed.gt(thresholds).reduce('sum').toInt(); // create the classified image
+print(classified, 'Classified');
+
+// Define new visualization parameters
+// for the classification: the values now range from 0 to 7, one for each class
+var classifiedParams = {min: 0, max: 7, palette: ['blue', 'white', 'brown', 'burlywood', 'LimeGreen', 'ForestGreen', 'DarkGreen']};
+Map.addLayer(classified.clip(roi), classifiedParams, 'Classified');
+</code></pre>
+<pre><code class="language-javascript">var class_areas2 = ee.Image.pixelArea().addBands(classified)
+  .reduceRegion({
+    reducer: ee.Reducer.sum().group({
+      groupField: 1,
+      groupName: 'code',
+    }),
+    geometry: roi,
+    scale: 10,  // Sentinel-2 native resolution, in metres
+    maxPixels: 1e10
+  }).get('groups');
+
+// Print the list of dictionaries.
+print('areas of classes:');
+print(class_areas2);
+</code></pre>
+<p>The result is a list of dictionaries in m². To read it as a table in hectares, convert it as in the lecture:</p>
+<pre><code class="language-javascript">var list = ee.List(class_areas2);
+var table = ee.FeatureCollection(list.map(function(d) {
+  d = ee.Dictionary(d);
+  return ee.Feature(null, {code: d.get('code'),
+                           ha: ee.Number(d.get('sum')).divide(1e4).round()});
+}));
+print('area per class [ha]:', table);
+</code></pre>
+<p>Here is an example GEE script: <a href="https://code.earthengine.google.com/64e5f1a2e4b02c77668146e463db6c72" target="_blank" rel="noopener">https://code.earthengine.google.com/64e5f1a2e4b02c77668146e463db6c72</a></p>
+
+<div class="iot-material-callout iot-material-callout--task">
+<p class="iot-material-callout-title">Deliverable (Milestone M2, 23.11)</p>
+<p>Click <strong>Save</strong>, then <strong>Get Link</strong>, and paste the link of your working script in the quiz pages that follow and in the assignment <em>Homework – index areas</em>. For the homework repeat the workflow with a different index and your own region of interest; justify your thresholds in a short note with the area table.</p>
+</div>
+
+<div class="iot-material-callout iot-material-callout--check">
+<p class="iot-material-callout-title">You are done when</p>
+<p>The Console shows one sum per class and the map shows the classified layer. Click with the <em>Inspector</em> on water, a field and a forest and write down their NDVI values – they must fall into the classes you see. The sum of all classes must equal the area of <code>roi</code>; this is your first sanity test.</p>
+</div>
+
+<div class="iot-material-callout iot-material-callout--warn">
+<p class="iot-material-callout-title">Common problems</p>
+<p><em>Image.select: Pattern 'NDVI' did not match</em> – you selected the band before adding it (order of <code>map</code> and <code>select</code>). <em>Too many pixels in the region</em> – <code>scale</code> too small or <code>roi</code> too large. A grey map – wrong <code>min</code>/<code>max</code> in the visualization parameters.</p>
+</div>
+</div>

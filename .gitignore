@@ -1,0 +1,19 @@
+# large derived artefacts (rebuild from the Obsidian vault / Moodle)
+presentation/export/
+presentation/src/
+presentation/shots/
+presentation/index.html
+presentation/links.txt
+course/preview/*.jpg
+course/preview/*.html
+course/mcontent-orig/files/
+course/mcontent/files/
+.playwright-mcp/
+.scratch_mbz_meta/
+course-content-dump.txt
+*.zip
+*.mbz
+__pycache__/
+*.pyc
+.DS_Store
+Thumbs.db

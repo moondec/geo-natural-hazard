@@ -1,0 +1,1259 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+
+    <title></title>
+    <link rel="stylesheet" href="../lib/dist/reveal.css" />
+    <link rel="stylesheet" href="../lib/dist/theme/beige.css" id="theme" />
+    <link rel="stylesheet" href="../lib/plugin/highlight/zenburn.css" />
+	<link rel="stylesheet" href="../lib/css/layout.css" />
+	<link rel="stylesheet" href="../lib/plugin/customcontrols/style.css">
+	<link rel="stylesheet" href="../lib/plugin/chalkboard/style.css">
+
+	<link rel="stylesheet" href="../lib/plugin/reveal-pointer/pointer.css" />
+
+
+    <script defer src="../lib/dist/fontawesome/all.min.js"></script>
+
+	<script type="text/javascript">
+		var forgetPop = true;
+		function onPopState(event) {
+			if(forgetPop){
+				forgetPop = false;
+			} else {
+				parent.postMessage(event.target.location.href, "app://obsidian.md");
+			}
+        }
+		window.onpopstate = onPopState;
+		window.onmessage = event => {
+			if(event.data == "reload"){
+				window.document.location.reload();
+			}
+			forgetPop = true;
+		}
+
+		function fitElements(){
+			const itemsToFit = document.getElementsByClassName('fitText');
+			for (const item in itemsToFit) {
+				if (Object.hasOwnProperty.call(itemsToFit, item)) {
+					var element = itemsToFit[item];
+					fitElement(element,1, 1000);
+					element.classList.remove('fitText');
+				}
+			}
+		}
+
+		function fitElement(element, start, end){
+
+			let size = (end + start) / 2;
+			element.style.fontSize = `${size}px`;
+
+			if(Math.abs(start - end) < 1){
+				while(element.scrollHeight > element.offsetHeight){
+					size--;
+					element.style.fontSize = `${size}px`;
+				}
+				return;
+			}
+
+			if(element.scrollHeight > element.offsetHeight){
+				fitElement(element, start, size);
+			} else {
+				fitElement(element, size, end);
+			}		
+		}
+
+
+		document.onreadystatechange = () => {
+			fitElements();
+			if (document.readyState === 'complete') {
+				if (window.location.href.indexOf("?export") != -1){
+					parent.postMessage(event.target.location.href, "app://obsidian.md");
+				}
+				if (window.location.href.indexOf("print-pdf") != -1){
+					let stateCheck = setInterval(() => {
+						clearInterval(stateCheck);
+						window.print();
+					}, 250);
+				}
+			}
+	};
+
+
+        </script>
+  </head>
+  <body>
+    <div class="reveal">
+      <div class="slides"><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1920px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+<img src="../assets/Kursy/prezentacje/IOK/pliki/sateliteGEEbanner.png" alt="" style="width: 1920px; object-fit: fill">
+
+<div class="has-light-background" style="background-color: #EEB73F; padding: 250px 0  250px 300px; box-sizing: border-box; position: absolute; left: 0%; top: 33%; height: 34%; width: 60%; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" align="left">
+
+
+### Lecture 1<!-- .element: style="letter-spacing: 1.5rem" -->
+## Natural hazards and Earth observation
+#### course kick-off
+
+#### Marek Urbaniak
+
+</div>
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1920px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+<div class="has-light-background" style="background-color: white; padding: 0 20px; box-sizing: border-box; position: absolute; left: 0%; top: 0%; height: 10%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" align="left">
+
+ <div class="block">
+
+## Today (45 min) and the road ahead
+</div>
+
+
+</div>
+
+<div class="" style="position: absolute; left: 5%; top: 17%; height: 66%; width: 90%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-start" align="left">
+
+
+
+
+<div class="has-light-background" style="background-color: #ffB73F; position: absolute; left: 92%; top: 55%; height: 26%; width: 13%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+</div>
+<div class="has-light-background" style="background-color: #00ced1; position: absolute; left: 87%; top: 75%; height: 26%; width: 13%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+</div>
+<div class="has-dark-background" style="background-color: #F06400; position: absolute; left: 92%; top: 95%; height: 26%; width: 13%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+</div>
+
+<div class="block">
+
+<!-- .element: style="font-size: 44px; position: absolute; left: 0%; top: 15%; height: 80%; width: 80%; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" align="left" -->
+1. Which natural hazards and why satellites?
+2. One method for all of them: **before / after**
+3. How EO satellites see the ground (passive, active, resolution, bands)
+4. Where to get data in 2026 (and what disappeared)
+5. **In the lab next week**: Copernicus Browser + your Google Earth Engine account
+</div>
+
+
+
+<div class="block">
+
+<!-- .element: style="font-size: 36px; background-color: #fff3cd; padding: 10px 20px; box-sizing: border-box; position: absolute; left: 0%; top: 85%; height: 20%; width: 80%; display: flex; flex-direction: column; align-items: center; justify-content: center" class="has-light-background" -->
+Lecture plan: L1 kick-off → L2 GEE Code Editor → L3 machine learning → L4 floods → L5 landslides → L6 wildfires → L7 Python/R APIs → L8 wrap-up. Each lecture prepares the following lab.
+</div>
+
+
+
+<style>.reveal table{max-width:100%;border-collapse:collapse}.reveal table th,.reveal table td{padding:3px 8px;line-height:1.25}</style>
+
+
+</div>
+
+<style>
+.horizontal_dotted_line{
+  border-bottom: 2px dotted gray;
+} 
+</style>
+
+<div class="horizontal_dotted_line" style="position: absolute; left: 3%; top: 94%; height: 0%; width: 94%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+</div>
+
+<div class="" style="padding: 0 30px; box-sizing: border-box; position: absolute; left: 0%; top: 64%; height: 30%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-end" align="left">
+
+
+</div>
+
+<div class="" style="padding: 0 30px; box-sizing: border-box; position: absolute; left: 0%; top: 58%; height: 30%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-end" align="left">
+
+
+</div>
+
+<div class="" style="position: absolute; left: 0%; top: 94%; height: 6%; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+© 2026 Pracownia Meteorologii<!-- .element: style="font-weight: 300" -->
+</div>
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1920px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+<div class="has-light-background" style="background-color: white; padding: 0 20px; box-sizing: border-box; position: absolute; left: 0%; top: 0%; height: 10%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" align="left">
+
+ <div class="block">
+
+# Natural Hazards following UN
+</div>
+
+
+</div>
+
+<div class="" style="position: absolute; left: 5%; top: 17%; height: 66%; width: 90%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-start" align="left">
+
+
+
+
+<div class="has-light-background" style="background-color: #ffB73F; position: absolute; left: 92%; top: 55%; height: 26%; width: 13%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+</div>
+<div class="has-light-background" style="background-color: #00ced1; position: absolute; left: 87%; top: 75%; height: 26%; width: 13%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+</div>
+<div class="has-dark-background" style="background-color: #F06400; position: absolute; left: 92%; top: 95%; height: 26%; width: 13%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+</div>
+<div class="block">
+
+<!-- .element: style="position: absolute; left: 0%; top: 0%; height: 100%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" class="fragment fade-out" data-fragment-index="1" align="left" -->
+### Biological
+<img src="../assets/Kursy/prezentacje/ApplicationHazards_GEO/pliki/Pasted image 20230109111013.png" alt="" style="object-fit: scale-down">
+
+</div>
+
+
+<div class="block">
+
+<!-- .element: style="position: absolute; left: 0%; top: 0%; height: 100%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" class="fragment fade-in-then-out" data-fragment-index="1" align="left" -->
+### Climatological
+<img src="../assets/Kursy/prezentacje/ApplicationHazards_GEO/pliki/Pasted image 20230109111126.png" alt="" style="object-fit: scale-down">
+
+</div>
+
+
+<div class="block">
+
+<!-- .element: style="position: absolute; left: 0%; top: 0%; height: 100%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" class="fragment fade-in-then-out" data-fragment-index="2" align="left" -->
+### Extraterrestrial
+<img src="../assets/Kursy/prezentacje/ApplicationHazards_GEO/pliki/Pasted image 20230109111154.png" alt="" style="object-fit: scale-down">
+
+</div>
+
+
+<div class="block">
+
+<!-- .element: style="position: absolute; left: 0%; top: 0%; height: 100%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" class="fragment fade-in-then-out" data-fragment-index="3" align="left" -->
+### Geophysical
+<img src="../assets/Kursy/prezentacje/ApplicationHazards_GEO/pliki/Pasted image 20230109111224.png" alt="" style="object-fit: scale-down">
+
+</div>
+
+
+<div class="block">
+
+<!-- .element: style="position: absolute; left: 0%; top: 0%; height: 100%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" class="fragment fade-in-then-out" data-fragment-index="4" align="left" -->
+### Hydrological
+<img src="../assets/Kursy/prezentacje/ApplicationHazards_GEO/pliki/Pasted image 20230109111301.png" alt="" style="object-fit: scale-down">
+
+</div>
+
+
+<div class="block">
+
+<!-- .element: style="position: absolute; left: 0%; top: 0%; height: 100%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" class="fragment fade-in-then-out" data-fragment-index="5" align="left" -->
+### Meteorological
+<img src="../assets/Kursy/prezentacje/ApplicationHazards_GEO/pliki/Pasted image 20230109111336.png" alt="" style="object-fit: scale-down">
+
+</div>
+
+
+
+
+
+</div>
+
+<style>
+.horizontal_dotted_line{
+  border-bottom: 2px dotted gray;
+} 
+</style>
+
+<div class="horizontal_dotted_line" style="position: absolute; left: 3%; top: 94%; height: 0%; width: 94%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+</div>
+
+<div class="" style="padding: 0 30px; box-sizing: border-box; position: absolute; left: 0%; top: 64%; height: 30%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-end" align="left">
+
+<div class="block">
+
+source: [https://www.un-spider.org](https://www.un-spider.org/risks-and-disasters/natural-hazards#no-back)
+</div>
+
+
+
+</div>
+
+<div class="" style="padding: 0 30px; box-sizing: border-box; position: absolute; left: 0%; top: 58%; height: 30%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-end" align="left">
+
+
+</div>
+
+<div class="" style="position: absolute; left: 0%; top: 94%; height: 6%; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+© 2026 Pracownia Meteorologii<!-- .element: style="font-weight: 300" -->
+</div>
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1920px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+<div class="has-light-background" style="background-color: white; padding: 0 20px; box-sizing: border-box; position: absolute; left: 0%; top: 0%; height: 10%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" align="left">
+
+ <div class="block">
+
+## We will focus on three of them
+</div>
+
+
+</div>
+
+<div class="" style="position: absolute; left: 5%; top: 17%; height: 66%; width: 90%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-start" align="left">
+
+
+
+
+<div class="has-light-background" style="background-color: #ffB73F; position: absolute; left: 80%; top: 53%; height: 26%; width: 13%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+</div>
+<div class="has-light-background" style="background-color: #00ced1; position: absolute; left: 87%; top: 75%; height: 26%; width: 13%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+</div>
+<div class="has-dark-background" style="background-color: #F06400; position: absolute; left: 77%; top: 90%; height: 26%; width: 13%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+</div>
+
+<div class="block">
+
+<!-- .element: style="font-size: 46px; position: absolute; left: 0%; top: 15%; height: 60%; width: 60%; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" align="left" -->
+- **Floods** (hydrological) – lecture 4, lab 4
+- &shy;<!-- .element: class="fragment" data-fragment-index="1" -->**Landslides** / mass movement (geophysical, hydrological trigger) – lecture 5, lab 5
+- &shy;<!-- .element: class="fragment" data-fragment-index="2" -->**Wildfires** (climatological) – lecture 6, lab 6
+- &shy;<!-- .element: class="fragment" data-fragment-index="3" -->and tools that work for all of them: Copernicus Browser, Google Earth Engine, machine learning, Python and R
+</div>
+
+
+
+<div class="block">
+
+<!-- .element: style="font-size: 40px; background-color: #e8f4f8; padding: 15px; box-sizing: border-box; position: absolute; left: 63%; top: 15%; height: 60%; width: 35%; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" class="has-light-background" align="left" -->
+**Why satellites?**
+- the event area is large or inaccessible
+- we need the state **before** the event, and nobody measured it on the ground
+- repeat observations every few days, for free
+- consistent method for the whole region
+</div>
+
+
+
+
+
+
+</div>
+
+<style>
+.horizontal_dotted_line{
+  border-bottom: 2px dotted gray;
+} 
+</style>
+
+<div class="horizontal_dotted_line" style="position: absolute; left: 3%; top: 94%; height: 0%; width: 94%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+</div>
+
+<div class="" style="padding: 0 30px; box-sizing: border-box; position: absolute; left: 0%; top: 64%; height: 30%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-end" align="left">
+
+<div class="block">
+
+source: [UN-SPIDER recommended practices](https://un-spider.org/advisory-support/recommended-practices)
+</div>
+
+
+
+</div>
+
+<div class="" style="padding: 0 30px; box-sizing: border-box; position: absolute; left: 0%; top: 58%; height: 30%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-end" align="left">
+
+
+</div>
+
+<div class="" style="position: absolute; left: 0%; top: 94%; height: 6%; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+© 2026 Pracownia Meteorologii<!-- .element: style="font-weight: 300" -->
+</div>
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1920px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+<div class="has-light-background" style="background-color: white; padding: 0 20px; box-sizing: border-box; position: absolute; left: 0%; top: 0%; height: 10%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" align="left">
+
+ <div class="block">
+
+## One method for all hazards: before / after
+</div>
+
+
+</div>
+
+<div class="" style="position: absolute; left: 5%; top: 17%; height: 66%; width: 90%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-start" align="left">
+
+
+
+
+
+<div class="block">
+
+<!-- .element: style="font-size: 44px; position: absolute; left: 0%; top: 15%; height: 70%; width: 45%; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" align="left" -->
+- &shy;<!-- .element: class="fragment" data-fragment-index="1" -->Step 1 – select satellite images for the period **before** the event
+- &shy;<!-- .element: class="fragment" data-fragment-index="2" -->Step 2 – select images for the period **after** the event
+- &shy;<!-- .element: class="fragment" data-fragment-index="3" -->Step 3 – compute the same quantity for both (an index, backscatter, a class)
+- &shy;<!-- .element: class="fragment" data-fragment-index="4" -->Step 4 – **difference** = change caused by the event
+- &shy;<!-- .element: class="fragment" data-fragment-index="5" -->Step 5 – threshold / classify the difference, compute the area, make a map
+</div>
+
+
+
+<img src="../assets/Kursy/prezentacje/ApplicationHazards_GEO/pliki/S2L2A-1348973218860829-timelapse.gif" alt="" style="position: absolute; left: 50%; top: 10%; height: 80%; width: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; object-fit: fill" class="fragment fade-out" data-fragment-index="1">
+
+<img src="../assets/Kursy/prezentacje/ApplicationHazards_GEO/pliki/S2L2A-1015625487634027-timelapse.gif" alt="" style="position: absolute; left: 50%; top: 10%; height: 80%; width: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; object-fit: fill" class="fragment fade-in-then-out" data-fragment-index="1">
+
+
+<div class="block">
+
+<!-- .element: style="font-size: 36px; background-color: #fff3cd; padding: 10px 20px; box-sizing: border-box; position: absolute; left: 0%; top: 88%; height: 12%; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center" class="has-light-background" -->
+Labs 4, 5 and 6 are three variants of exactly this recipe. Learn it once.
+</div>
+
+
+
+
+</div>
+
+<style>
+.horizontal_dotted_line{
+  border-bottom: 2px dotted gray;
+} 
+</style>
+
+<div class="horizontal_dotted_line" style="position: absolute; left: 3%; top: 94%; height: 0%; width: 94%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+</div>
+
+<div class="" style="padding: 0 30px; box-sizing: border-box; position: absolute; left: 0%; top: 64%; height: 30%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-end" align="left">
+
+
+</div>
+
+<div class="" style="padding: 0 30px; box-sizing: border-box; position: absolute; left: 0%; top: 58%; height: 30%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-end" align="left">
+
+
+</div>
+
+<div class="" style="position: absolute; left: 0%; top: 94%; height: 6%; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+© 2026 Pracownia Meteorologii<!-- .element: style="font-weight: 300" -->
+</div>
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1920px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+<div class="has-light-background" style="background-color: white; padding: 0 20px; box-sizing: border-box; position: absolute; left: 0%; top: 0%; height: 10%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" align="left">
+
+ <div class="block">
+
+## Example: burn severity from pre- and post-fire images
+</div>
+
+
+</div>
+
+<div class="" style="position: absolute; left: 5%; top: 17%; height: 66%; width: 90%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-start" align="left">
+
+
+
+
+
+### An example - Indicating burn severity
+<img src="../assets/Kursy/prezentacje/ApplicationHazards_GEO/pliki/Pasted image 20230106230924.png" alt="" style="width: 900px; object-fit: fill" class="fragment fade-in-then-out" data-fragment-index="2">
+
+
+<div class="block">
+
+<!-- .element: style="background-color: coral; padding: 10px; box-sizing: border-box; position: absolute; left: 45%; top: 0%; height: 25%; width: 55%; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" class="fragment fade-in-then-out has-light-background" data-fragment-index="3" align="left" -->
+Bands and satellite products for indicating burned area:
+`$ NBR = \frac{NIR - SWIR}{NIR + SWIR} $`
+</div>
+
+
+
+<img src="../assets/Kursy/prezentacje/ApplicationHazards_GEO/pliki/Pasted image 20230106232307.png" alt="" style="position: absolute; left: 0%; top: 10%; height: 100%; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; object-fit: fill" class="fragment fade-in-then-out" data-fragment-index="4">
+
+
+
+
+</div>
+
+<style>
+.horizontal_dotted_line{
+  border-bottom: 2px dotted gray;
+} 
+</style>
+
+<div class="horizontal_dotted_line" style="position: absolute; left: 3%; top: 94%; height: 0%; width: 94%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+</div>
+
+<div class="" style="padding: 0 30px; box-sizing: border-box; position: absolute; left: 0%; top: 64%; height: 30%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-end" align="left">
+
+<div class="block">
+
+source: Dimitris Karakostis, [Remote Sensing in support of impact evaluation by wildfires](https://www.geo.fu-berlin.de/en/v/geo-it/webinar/webinar-1)
+</div>
+
+
+
+</div>
+
+<div class="" style="padding: 0 30px; box-sizing: border-box; position: absolute; left: 0%; top: 58%; height: 30%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-end" align="left">
+
+
+</div>
+
+<div class="" style="position: absolute; left: 0%; top: 94%; height: 6%; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+© 2026 Pracownia Meteorologii<!-- .element: style="font-weight: 300" -->
+</div>
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1920px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+<div class="has-light-background" style="background-color: white; padding: 0 20px; box-sizing: border-box; position: absolute; left: 0%; top: 0%; height: 10%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" align="left">
+
+ <div class="block">
+
+## How EO satellites work: passive and active
+</div>
+
+
+</div>
+
+<div class="" style="position: absolute; left: 5%; top: 17%; height: 66%; width: 90%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-start" align="left">
+
+
+
+
+
+<div class="block">
+
+<!-- .element: style="font-size: 44px" -->
+EO satellites can be divided into two types based on how they capture imagery: **passive** and **active**.
+</div>
+
+
+
+<div class="has-light-background" style="background-color: #ffB73F; position: absolute; left: 80%; top: 53%; height: 26%; width: 13%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+</div>
+<div class="has-light-background" style="background-color: #00ced1; position: absolute; left: 87%; top: 75%; height: 26%; width: 13%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+</div>
+<div class="has-dark-background" style="background-color: #F06400; transform: rotate(35deg); position: absolute; left: 77%; top: 90%; height: 26%; width: 13%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+</div>
+<div class="block">
+
+<!-- .element: style="background-color: #bc8f8f; padding: 3px 20px 3px 20px; box-sizing: border-box" class="has-light-background" -->
+<img src="../assets/Kursy/prezentacje/ApplicationHazards_GEO/pliki/ezmaker.png" alt="" style="object-fit: scale-down">
+
+</div>
+
+
+
+
+
+
+</div>
+
+<style>
+.horizontal_dotted_line{
+  border-bottom: 2px dotted gray;
+} 
+</style>
+
+<div class="horizontal_dotted_line" style="position: absolute; left: 3%; top: 94%; height: 0%; width: 94%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+</div>
+
+<div class="" style="padding: 0 30px; box-sizing: border-box; position: absolute; left: 0%; top: 64%; height: 30%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-end" align="left">
+
+<div class="block">
+
+source: satellites4everyone.co.uk (site offline – [archived copy](https://web.archive.org/web/2023/http://satellites4everyone.co.uk/?page_id=4402))
+</div>
+
+
+
+</div>
+
+<div class="" style="padding: 0 30px; box-sizing: border-box; position: absolute; left: 0%; top: 58%; height: 30%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-end" align="left">
+
+
+</div>
+
+<div class="" style="position: absolute; left: 0%; top: 94%; height: 6%; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+© 2026 Pracownia Meteorologii<!-- .element: style="font-weight: 300" -->
+</div>
+</div>
+
+<aside class="notes"><p>PASSIVE: detect sunlight reflected (visible, NIR, SWIR) or heat emitted (TIR) by the surface. Cannot see through clouds. Examples: Sentinel-2, Landsat 8/9, MODIS, VIIRS.
+ACTIVE: transmit microwaves and measure the echo (SAR). Work day and night and through clouds. Examples: Sentinel-1, ICEYE, TerraSAR-X.
+Floods and landslides happen in bad weather – that is why lab 4 and 5 use SAR.</p>
+</aside></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1920px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+<div class="has-light-background" style="background-color: white; padding: 0 20px; box-sizing: border-box; position: absolute; left: 0%; top: 0%; height: 10%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" align="left">
+
+ <div class="block">
+
+## Four resolutions you must always check
+</div>
+
+
+</div>
+
+<div class="" style="position: absolute; left: 5%; top: 17%; height: 66%; width: 90%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-start" align="left">
+
+
+
+
+<div class="has-light-background" style="background-color: #ffB73F; position: absolute; left: 80%; top: 53%; height: 26%; width: 13%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+</div>
+<div class="has-light-background" style="background-color: #00ced1; transform: rotate(-15deg); position: absolute; left: 87%; top: 75%; height: 26%; width: 13%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+</div>
+
+<div class="block">
+
+<!-- .element: style="font-size: 34px; position: absolute; left: 0%; top: 15%; height: 75%; width: 55%; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" align="left" -->
+| Resolution | Question | Sentinel-2 | Landsat 8/9 | Sentinel-1 | MODIS |
+|---|---|---|---|---|---|
+| **spatial** | how big is a pixel? | 10 / 20 / 60 m | 30 m (15 m pan) | 10 m (GRD) | 250–1000 m |
+| **temporal** | how often does it come back? | 5 days (2A+2B+2C) | 8 days (8+9) | 6–12 days | daily |
+| **spectral** | which bands? | 13 | 11 | C-band radar | 36 |
+| **radiometric** | how fine are the values? | 12 bit | 12 bit | 16 bit | 12 bit |
+</div>
+
+
+
+<div class="block">
+
+<!-- .element: style="font-size: 32px; background-color: #e8f4f8; padding: 15px; box-sizing: border-box; position: absolute; left: 60%; top: 15%; height: 75%; width: 40%; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" class="has-light-background" align="left" -->
+Rule of thumb for hazards:
+- small event (a landslide, 1 ha) → spatial resolution first
+- fast event (a flood peak, 2 days) → temporal resolution first
+- what you want to *see* (water, burned vegetation) → spectral resolution first
+- a cloudy season → radar
+</div>
+
+
+
+<img src="../assets/Kursy/prezentacje/ApplicationHazards_GEO/pliki/Pasted image 20230109220407.png" alt="" style="position: absolute; left: 55%; top: 72%; height: 25%; width: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center; object-fit: fill">
+
+
+
+</div>
+
+<style>
+.horizontal_dotted_line{
+  border-bottom: 2px dotted gray;
+} 
+</style>
+
+<div class="horizontal_dotted_line" style="position: absolute; left: 3%; top: 94%; height: 0%; width: 94%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+</div>
+
+<div class="" style="padding: 0 30px; box-sizing: border-box; position: absolute; left: 0%; top: 64%; height: 30%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-end" align="left">
+
+
+</div>
+
+<div class="" style="padding: 0 30px; box-sizing: border-box; position: absolute; left: 0%; top: 58%; height: 30%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-end" align="left">
+
+
+</div>
+
+<div class="" style="position: absolute; left: 0%; top: 94%; height: 6%; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+© 2026 Pracownia Meteorologii<!-- .element: style="font-weight: 300" -->
+</div>
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1920px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+<div class="has-light-background" style="background-color: white; padding: 0 20px; box-sizing: border-box; position: absolute; left: 0%; top: 0%; height: 10%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" align="left">
+
+ <div class="block">
+
+## Compare Landsat and Sentinel bands
+</div>
+
+
+</div>
+
+<div class="" style="position: absolute; left: 5%; top: 17%; height: 66%; width: 90%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-start" align="left">
+
+
+
+
+
+<img src="../assets/Kursy/prezentacje/ApplicationHazards_GEO/pliki/Pasted image 20230106213729.png" alt="" style="width: 1050px; object-fit: fill">
+
+
+<div class="block">
+
+<!-- .element: style="font-size: 28px" class="fragment fade-up" -->
+Landsat 8 and **Landsat 9** (2021) carry the same bands (OLI-2 / TIRS-2); Landsat 7 was decommissioned in June 2025. Sentinel-2 now flies as a triplet: **2A, 2B and 2C** (2C operational since January 2025). Band names in Earth Engine: Sentinel-2 `B4` = red, `B8` = NIR, `B11/B12` = SWIR; Landsat 8/9 `SR_B4` = red, `SR_B5` = NIR, `SR_B6/SR_B7` = SWIR. Write them down – every index in this course uses them.
+</div>
+
+
+
+
+</div>
+
+<style>
+.horizontal_dotted_line{
+  border-bottom: 2px dotted gray;
+} 
+</style>
+
+<div class="horizontal_dotted_line" style="position: absolute; left: 3%; top: 94%; height: 0%; width: 94%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+</div>
+
+<div class="" style="padding: 0 30px; box-sizing: border-box; position: absolute; left: 0%; top: 64%; height: 30%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-end" align="left">
+
+
+</div>
+
+<div class="" style="padding: 0 30px; box-sizing: border-box; position: absolute; left: 0%; top: 58%; height: 30%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-end" align="left">
+
+
+</div>
+
+<div class="" style="position: absolute; left: 0%; top: 94%; height: 6%; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+© 2026 Pracownia Meteorologii<!-- .element: style="font-weight: 300" -->
+</div>
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1920px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+<div class="has-light-background" style="background-color: white; padding: 0 20px; box-sizing: border-box; position: absolute; left: 0%; top: 0%; height: 10%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" align="left">
+
+ <div class="block">
+
+## Where to get satellite data in 2026?
+</div>
+
+
+</div>
+
+<div class="" style="position: absolute; left: 5%; top: 17%; height: 66%; width: 90%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-start" align="left">
+
+
+
+
+<div class="has-light-background" style="background-color: #00ced1; transform: rotate(-15deg); position: absolute; left: 87%; top: 75%; height: 26%; width: 13%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+</div>
+
+<div class="block">
+
+<!-- .element: style="font-size: 26px; position: absolute; left: 0%; top: 15%; height: 70%; width: 95%; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" align="left" -->
+| Tool | What it is | Cost | Data | Used in this course |
+|---|---|---|---|---|
+| [Copernicus Browser](https://browser.dataspace.copernicus.eu/) | web viewer of the Copernicus Data Space Ecosystem (CDSE) | free account | Sentinel-1/2/3/5P, DEM, mosaics | lab 1 – find the event, pick dates |
+| [CDSE APIs](https://dataspace.copernicus.eu/analyse/apis) | openEO, STAC, Sentinel Hub API, S3 download | free quota | the same | optional |
+| [Google Earth Engine](https://earthengine.google.com/) | cloud computing on a petabyte catalogue | free for [noncommercial use](https://earthengine.google.com/noncommercial/), needs a Google Cloud project | Sentinel, Landsat, MODIS, DEMs, climate… | labs 2–7 |
+| [Planet Insights Platform](https://www.planet.com/products/planet-insights-platform/) | commercial successor of EO Browser / Sentinel Hub | paid (trial) | Sentinel + PlanetScope 3 m | no |
+| [USGS EarthExplorer](https://earthexplorer.usgs.gov/) | Landsat archive download | free account | Landsat 1–9 | no |
+</div>
+
+
+
+<div class="block">
+
+<!-- .element: style="font-size: 23px; background-color: #fff3cd; padding: 10px 20px; box-sizing: border-box; position: absolute; left: 0%; top: 86%; height: 14%; width: 95%; display: flex; flex-direction: column; align-items: center; justify-content: center" class="has-light-background" -->
+**EO Browser** (used in the previous editions of this course) was retired in March 2026. Everything you find in older tutorials about EO Browser works almost identically in Copernicus Browser.
+</div>
+
+
+
+
+</div>
+
+<style>
+.horizontal_dotted_line{
+  border-bottom: 2px dotted gray;
+} 
+</style>
+
+<div class="horizontal_dotted_line" style="position: absolute; left: 3%; top: 94%; height: 0%; width: 94%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+</div>
+
+<div class="" style="padding: 0 30px; box-sizing: border-box; position: absolute; left: 0%; top: 64%; height: 30%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-end" align="left">
+
+
+</div>
+
+<div class="" style="padding: 0 30px; box-sizing: border-box; position: absolute; left: 0%; top: 58%; height: 30%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-end" align="left">
+
+
+</div>
+
+<div class="" style="position: absolute; left: 0%; top: 94%; height: 6%; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+© 2026 Pracownia Meteorologii<!-- .element: style="font-weight: 300" -->
+</div>
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1920px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+<div class="has-light-background" style="background-color: white; padding: 0 20px; box-sizing: border-box; position: absolute; left: 0%; top: 0%; height: 10%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" align="left">
+
+ <div class="block">
+
+## Copernicus Browser
+</div>
+
+
+</div>
+
+<div class="" style="position: absolute; left: 5%; top: 17%; height: 66%; width: 90%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-start" align="left">
+
+
+
+<div class="has-light-background" style="background-color: #ffB73F; transform: rotate(-15deg); position: absolute; left: 80%; top: 53%; height: 26%; width: 13%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+</div>
+<div class="has-light-background" style="background-color: #00ced1; position: absolute; left: 87%; top: 75%; height: 26%; width: 13%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+</div>
+<div class="has-dark-background" style="background-color: #F06400; position: absolute; left: 77%; top: 90%; height: 26%; width: 13%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+</div>
+<img src="../assets/Kursy/prezentacje/ApplicationHazards_GEO/pliki/Pasted image 20251102204319.png" alt="" style="object-fit: scale-down">
+
+
+
+<div class="block">
+
+<!-- .element: style="font-size: 44px" -->
+- Part of the [Copernicus Data Space Ecosystem](https://dataspace.copernicus.eu/) (EU / ESA); a free account is required
+- &shy;<!-- .element: class="fragment" data-fragment-index="1" -->Browse and compare full-resolution images (Sentinel-1, Sentinel-2 + mosaics, Sentinel-3, Sentinel-5P, DEM)
+- &shy;<!-- .element: class="fragment" data-fragment-index="2" -->Tools: compare, timelapse, time series and histograms, import AOI (KML/GeoJSON), export GeoTIFF, 3D view, custom scripts e.g. [NDVI](https://custom-scripts.sentinel-hub.com/sentinel-2/ndvi/), [NBR](https://custom-scripts.sentinel-hub.com/sentinel-2/nbr/)
+- &shy;<!-- .element: class="fragment" data-fragment-index="3" -->**Highlights** – ready-made examples of real events (fires, floods, eruptions) – a good place to find your study case
+- &shy;<!-- .element: class="fragment" data-fragment-index="4" -->Import layers into QGIS / ArcGIS via WMS/WMTS
+</div>
+
+
+
+
+</div>
+
+<style>
+.horizontal_dotted_line{
+  border-bottom: 2px dotted gray;
+} 
+</style>
+
+<div class="horizontal_dotted_line" style="position: absolute; left: 3%; top: 94%; height: 0%; width: 94%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+</div>
+
+<div class="" style="padding: 0 30px; box-sizing: border-box; position: absolute; left: 0%; top: 64%; height: 30%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-end" align="left">
+
+
+</div>
+
+<div class="" style="padding: 0 30px; box-sizing: border-box; position: absolute; left: 0%; top: 58%; height: 30%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-end" align="left">
+
+
+</div>
+
+<div class="" style="position: absolute; left: 0%; top: 94%; height: 6%; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+© 2026 Pracownia Meteorologii<!-- .element: style="font-weight: 300" -->
+</div>
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1920px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+<div class="has-light-background" style="background-color: white; padding: 0 20px; box-sizing: border-box; position: absolute; left: 0%; top: 0%; height: 10%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" align="left">
+
+ <div class="block">
+
+# How to find a study example?
+</div>
+
+
+</div>
+
+<div class="" style="position: absolute; left: 5%; top: 17%; height: 66%; width: 90%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-start" align="left">
+
+
+
+
+<div class="has-light-background" style="background-color: #ffB73F; transform: rotate(-15deg); position: absolute; left: 0%; top: -6%; height: 26%; width: 13%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+</div>
+<div class="has-light-background" style="background-color: #00ced1; position: absolute; left: -5%; top: 9%; height: 36%; width: 10%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+</div>
+<div class="has-dark-background" style="background-color: #F06400; position: absolute; left: 3%; top: 29%; height: 66%; width: 4%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+</div>
+<div class="has-light-background" style="background-color: #0EB73F; position: absolute; left: 70%; top: 15%; height: 70%; width: 30%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+</div>
+
+<img src="../assets/Kursy/prezentacje/ApplicationHazards_GEO/pliki/Pasted image 20251102204241.png" alt="" style="position: absolute; left: 10%; top: 0%; height: 100%; width: 80%; display: flex; flex-direction: column; align-items: center; justify-content: center; object-fit: fill">
+
+
+
+
+</div>
+
+<style>
+.horizontal_dotted_line{
+  border-bottom: 2px dotted gray;
+} 
+</style>
+
+<div class="horizontal_dotted_line" style="position: absolute; left: 3%; top: 94%; height: 0%; width: 94%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+</div>
+
+<div class="" style="padding: 0 30px; box-sizing: border-box; position: absolute; left: 0%; top: 64%; height: 30%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-end" align="left">
+
+
+</div>
+
+<div class="" style="padding: 0 30px; box-sizing: border-box; position: absolute; left: 0%; top: 58%; height: 30%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-end" align="left">
+
+
+</div>
+
+<div class="" style="position: absolute; left: 0%; top: 94%; height: 6%; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+© 2026 Pracownia Meteorologii<!-- .element: style="font-weight: 300" -->
+</div>
+</div>
+
+<aside class="notes"><p>Show live: Copernicus Browser → Highlights → pick a wildfire → note the date and the AOI; then Visualize → compare mode → split before/after.</p>
+</aside></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1920px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+<div class="has-light-background" style="background-color: white; padding: 0 20px; box-sizing: border-box; position: absolute; left: 0%; top: 0%; height: 10%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" align="left">
+
+ <div class="block">
+
+## Custom scripts: indices without programming
+</div>
+
+
+</div>
+
+<div class="" style="position: absolute; left: 5%; top: 17%; height: 66%; width: 90%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-start" align="left">
+
+
+
+
+<div class="" style="padding: 3px; box-sizing: border-box; border: medium dashed red; position: absolute; left: 0%; top: 0%; height: 6%; width: 60%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+</div>
+<div class="has-light-background" style="background-color: #0EB73F; position: absolute; left: 70%; top: 15%; height: 70%; width: 30%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+</div>
+
+<div class="block">
+
+<!-- .element: style="position: absolute; left: 15%; top: 0%; height: 100%; width: 70%; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" align="left" -->
+https://custom-scripts.sentinel-hub.com/
+<img src="../assets/Kursy/prezentacje/ApplicationHazards_GEO/pliki/Pasted image 20230109181444.png" alt="" style="width: 700px; object-fit: fill">
+
+</div>
+
+
+
+
+
+</div>
+
+<style>
+.horizontal_dotted_line{
+  border-bottom: 2px dotted gray;
+} 
+</style>
+
+<div class="horizontal_dotted_line" style="position: absolute; left: 3%; top: 94%; height: 0%; width: 94%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+</div>
+
+<div class="" style="padding: 0 30px; box-sizing: border-box; position: absolute; left: 0%; top: 64%; height: 30%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-end" align="left">
+
+
+</div>
+
+<div class="" style="padding: 0 30px; box-sizing: border-box; position: absolute; left: 0%; top: 58%; height: 30%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-end" align="left">
+
+
+</div>
+
+<div class="" style="position: absolute; left: 0%; top: 94%; height: 6%; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+© 2026 Pracownia Meteorologii<!-- .element: style="font-weight: 300" -->
+</div>
+</div>
+
+<aside class="notes"><p>A custom script is a few lines of JavaScript that tells the browser how to combine bands into colours. The same idea (band maths) returns in Earth Engine next week – there you will write it yourself.</p>
+</aside></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1920px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+<div class="has-light-background" style="background-color: white; padding: 0 20px; box-sizing: border-box; position: absolute; left: 0%; top: 0%; height: 10%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" align="left">
+
+ <div class="block">
+
+## In the lab next week (16.11, 3 h)
+</div>
+
+
+</div>
+
+<div class="" style="position: absolute; left: 5%; top: 17%; height: 66%; width: 90%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-start" align="left">
+
+
+
+
+<div class="has-light-background" style="background-color: #00ced1; transform: rotate(-15deg); position: absolute; left: 87%; top: 75%; height: 26%; width: 13%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+</div>
+
+<div class="block">
+
+<!-- .element: style="font-size: 42px; position: absolute; left: 0%; top: 15%; height: 75%; width: 95%; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" align="left" -->
+1. **Copernicus Browser** – log in, find one wildfire and one flood in Highlights, open compare mode, read the acquisition dates and cloud cover
+2. Apply a custom script (NDVI, NBR, false colour) and export a GeoTIFF of your AOI
+3. Make a timelapse of your event (will be useful for your reports)
+4. **Google Earth Engine** – open the [Code Editor](https://code.earthengine.google.com/), check that your Cloud project is registered, run the first script: load Sentinel-2, centre the map on Poznań
+5. Add the [End-to-End GEE](https://courses.spatialthoughts.com/end-to-end-gee.html) repository to your Scripts panel (we will use it as a cookbook, not as homework)
+</div>
+
+
+
+
+</div>
+
+<style>
+.horizontal_dotted_line{
+  border-bottom: 2px dotted gray;
+} 
+</style>
+
+<div class="horizontal_dotted_line" style="position: absolute; left: 3%; top: 94%; height: 0%; width: 94%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+</div>
+
+<div class="" style="padding: 0 30px; box-sizing: border-box; position: absolute; left: 0%; top: 64%; height: 30%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-end" align="left">
+
+
+</div>
+
+<div class="" style="padding: 0 30px; box-sizing: border-box; position: absolute; left: 0%; top: 58%; height: 30%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-end" align="left">
+
+
+</div>
+
+<div class="" style="position: absolute; left: 0%; top: 94%; height: 6%; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+© 2026 Pracownia Meteorologii<!-- .element: style="font-weight: 300" -->
+</div>
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1920px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+<div class="has-light-background" style="background-color: white; padding: 0 20px; box-sizing: border-box; position: absolute; left: 0%; top: 0%; height: 10%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" align="left">
+
+ <div class="block">
+
+## Before next class – do it now, it takes time
+</div>
+
+
+</div>
+
+<div class="" style="position: absolute; left: 5%; top: 17%; height: 66%; width: 90%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-start" align="left">
+
+
+
+
+<div class="has-light-background" style="background-color: #ffB73F; position: absolute; left: 80%; top: 53%; height: 26%; width: 13%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+</div>
+<div class="has-light-background" style="background-color: #00ced1; position: absolute; left: 87%; top: 75%; height: 26%; width: 13%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+</div>
+
+<div class="block">
+
+<!-- .element: style="font-size: 42px; position: absolute; left: 0%; top: 15%; height: 75%; width: 95%; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" align="left" -->
+- [ ] Create a free account at [dataspace.copernicus.eu](https://dataspace.copernicus.eu/) and log in to [Copernicus Browser](https://browser.dataspace.copernicus.eu/)
+- [ ] Register for Google Earth Engine with your Google account: [how to get access](https://developers.google.com/earth-engine/guides/access) → create a Cloud project → register it for **noncommercial (education)** use. Approval may take a day – **do not leave it for Monday morning**
+- [ ] Watch: [A short guide to Copernicus Browser](https://www.youtube.com/watch?v=F0lIn5r6ZWk) (10 min) and, optionally, [Introduction to CDSE](https://www.youtube.com/watch?v=GecNCdilbig)
+- [ ] Bring to the lab: one hazard event you are curious about (place + approximate date)
+</div>
+
+
+
+<div class="block">
+
+<!-- .element: style="font-size: 34px; background-color: #fff3cd; padding: 10px 20px; box-sizing: border-box; position: absolute; left: 0%; top: 88%; height: 12%; width: 95%; display: flex; flex-direction: column; align-items: center; justify-content: center" class="has-light-background" -->
+Problems with registration? Write on the course forum before Friday – not on Monday.
+</div>
+
+
+
+
+</div>
+
+<style>
+.horizontal_dotted_line{
+  border-bottom: 2px dotted gray;
+} 
+</style>
+
+<div class="horizontal_dotted_line" style="position: absolute; left: 3%; top: 94%; height: 0%; width: 94%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+</div>
+
+<div class="" style="padding: 0 30px; box-sizing: border-box; position: absolute; left: 0%; top: 64%; height: 30%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-end" align="left">
+
+
+</div>
+
+<div class="" style="padding: 0 30px; box-sizing: border-box; position: absolute; left: 0%; top: 58%; height: 30%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-end" align="left">
+
+
+</div>
+
+<div class="" style="position: absolute; left: 0%; top: 94%; height: 6%; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+© 2026 Pracownia Meteorologii<!-- .element: style="font-weight: 300" -->
+</div>
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1920px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+<div class="block">
+
+# Thank you 😄
+</div>
+</div></script></section></div>
+    </div>
+
+    <script src="../lib/dist/reveal.js"></script>
+
+    <script src="../lib/plugin/markdown/markdown.js"></script>
+    <script src="../lib/plugin/highlight/highlight.js"></script>
+    <script src="../lib/plugin/zoom/zoom.js"></script>
+    <script src="../lib/plugin/notes/notes.js"></script>
+    <script src="../lib/plugin/math/math.js"></script>
+	<script src="../lib/plugin/mermaid/mermaid.js"></script>
+	<script src="../lib/plugin/chart/chart.min.js"></script>
+	<script src="../lib/plugin/chart/plugin.js"></script>
+	<script src="../lib/plugin/menu/menu.js"></script>
+	<script src="../lib/plugin/customcontrols/plugin.js"></script>
+	<script src="../lib/plugin/chalkboard/plugin.js"></script>
+	<script src="../lib/plugin/reveal-pointer/pointer.js"></script>
+	<script src="../lib/plugin/elapsed-time-bar/elapsed-time-bar.js"></script>
+
+    <script>
+      function extend() {
+        var target = {};
+        for (var i = 0; i < arguments.length; i++) {
+          var source = arguments[i];
+          for (var key in source) {
+            if (source.hasOwnProperty(key)) {
+              target[key] = source[key];
+            }
+          }
+        }
+        return target;
+      }
+
+	  function isLight(color) {
+		let hex = color.replace('#', '');
+
+		// convert #fff => #ffffff
+		if(hex.length == 3){
+			hex = `${hex[0]}${hex[0]}${hex[1]}${hex[1]}${hex[2]}${hex[2]}`;
+		}
+
+		const c_r = parseInt(hex.substr(0, 2), 16);
+		const c_g = parseInt(hex.substr(2, 2), 16);
+		const c_b = parseInt(hex.substr(4, 2), 16);
+		const brightness = ((c_r * 299) + (c_g * 587) + (c_b * 114)) / 1000;
+		return brightness > 155;
+	}
+
+	var bgColor = getComputedStyle(document.documentElement).getPropertyValue('--r-background-color').trim();
+	var isLight = isLight(bgColor);
+
+	if(isLight){
+		document.body.classList.add('has-light-background');
+	} else {
+		document.body.classList.add('has-dark-background');
+	}
+
+      // default options to init reveal.js
+      var defaultOptions = {
+        controls: true,
+        progress: true,
+        history: true,
+        center: true,
+        transition: 'default', // none/fade/slide/convex/concave/zoom
+        plugins: [
+          RevealMarkdown,
+          RevealHighlight,
+          RevealZoom,
+          RevealNotes,
+          RevealMath.MathJax3,
+		  RevealMermaid,
+		  RevealChart,
+		  RevealCustomControls,
+		  RevealMenu,
+	      RevealPointer,
+		  RevealChalkboard, 
+		  ElapsedTimeBar
+        ],
+
+
+    	allottedTime: 2700 * 1000,
+
+		mathjax3: {
+			mathjax: '../lib/plugin/math/mathjax/tex-mml-chtml.js',
+		},
+		markdown: {
+		  gfm: true,
+		  mangle: true,
+		  pedantic: false,
+		  smartLists: false,
+		  smartypants: false,
+		},
+
+		mermaid: {
+			theme: isLight ? 'default' : 'dark',
+		},
+
+		customcontrols: {
+			controls: [
+				{id: 'toggle-overview',
+				title: 'Toggle overview (O)',
+				icon: '<i class="fa fa-th"></i>',
+				action: 'Reveal.toggleOverview();'
+				},
+				{ icon: '<i class="fa fa-pen-square"></i>',
+				title: 'Toggle chalkboard (B)',
+				action: 'RevealChalkboard.toggleChalkboard();'
+				},
+				{ icon: '<i class="fa fa-pen"></i>',
+				title: 'Toggle notes canvas (C)',
+				action: 'RevealChalkboard.toggleNotesCanvas();'
+				},
+			]
+		},
+		menu: {
+			loadIcons: false
+		}
+      };
+
+      // options from URL query string
+      var queryOptions = Reveal().getQueryHash() || {};
+
+      var options = extend(defaultOptions, {"width":1920,"height":1200,"margin":0,"maxScale":4,"controls":true,"progress":true,"slideNumber":true,"transition":"zoom","transitionSpeed":"slow"}, queryOptions);
+    </script>
+
+    <script>
+      Reveal.initialize(options);
+    </script>
+  </body>
+
+  <!-- created with Advanced Slides -->
+</html>

@@ -1,0 +1,28 @@
+<h4>1. Image Collections<br></h4>
+<p>The collection can be added to working space (indexArea) by the (1) import or as (2) variable:</p>
+<p>(1)<br> ```
+    <br>var S2har = ee.ImageCollection('COPERNICUS/S2_HARMONIZED');<br></p>
+<p>```<br></p>
+<p>(2)<br>``` <br></p>
+<p>// This is comment (description or note)<br> // mark text and hit "<b>ctr+/</b>" or "<b>cmd+/</b>" on Mac<br>/*<br> This is also comment (description or note)<br>*/<br>var S2har = ee.ImageCollection("COPERNICUS/S2_HARMONIZED")</p>
+<p>```</p>
+<h4>2. Specific location and zoom level</h4>
+<p>```</p>
+<p>// poligon<br>var aoi = ee.Geometry.Polygon([16.79,52.98,16.5,52.98,16.5,52.4,16.79,52.4])<br>Map.centerObject(aoi, 9);<br></p>
+<p>```</p>
+<p>```</p>
+<p>// point<br>var poi = ee.Geometry.Point(6.79,52.9)<br>var roi = poi.buffer(100); // 100 m around poi<br>Map.centerObject(roi, 16);<br></p>
+<p>```</p>
+<p></p>
+<h4>3. Filtering Image Collections</h4>
+<p>```<br>
+var S2a = S2har.filterDate('2019-05-01', '2019-09-30')&nbsp;&nbsp;&nbsp; // filter according date<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // Pre-filter to get less cloudy granules.&nbsp;&nbsp;&nbsp; (Sentinel-2)<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    .filter(ee.Filter.lt('CLOUDY_PIXEL_PERCENTAGE', 35))&nbsp;&nbsp; <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; .filter(ee.Filter.bounds(roi));<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // .filterBounds(roi);
+    // or use short-cut for line above<br></p>
+<p>```</p>
+<p><br></p>
+<p>```</p>
+<p>// check number of images after filtration<br>print(S2a.size())<br></p>
+<p>```<br></p><br>
+<p></p>
+<p><br></p>

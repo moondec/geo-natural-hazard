@@ -1,0 +1,56 @@
+<div style="border:red;border-style:solid;padding:5px;border-radius:5px;text-align:justify; ">
+    <p>Most optical satellite imagery products come with one or more QA-bands that allows the user to assess quality of each pixel and extract pixels that meet their requirements. The most common application for QA-bands is to extract information about cloudy
+        pixels and mask them. But the QA bands contain a wealth of other information that can help you remove low quality data from your analysis. Typically the information contained in QA bands is stored as Bitwise Flags. In this post, I will cover basic
+        concepts related to Bitwise operations and how to extract and mask with specific quality indicators using Bitmasks.*</p>
+</div>
+<p>*source: <a href="https://spatialthoughts.com/2021/08/19/qa-bands-bitmasks-gee/" target="_blank">Working with QA Bands and Bitmasks in Google Earth Engine</a></p>
+<p>Example: Sentinel-2 collection Level2A <b style="color:white; background-color:black; padding:3px;border-radius:3px;text-align:center">ee.ImageCollection("COPERNICUS/S2_SR_HARMONIZED")</b></p>
+<p><img src="@@PLUGINFILE@@/s2quality.png" alt="QA60" class="img-responsive atto_image_button_bottom" style="float:bottom" width="800" height="602"></p>
+<div></div>
+<p>bits description:</p>
+<p><br>
+</p>
+<table style="border: 3px solid black;">
+    <caption>bit numbers</caption>
+    <thead>
+        <tr style="border: 3px solid black;">
+            <th scope="col" style="text-align:center;border: 3px solid black;">1</th>
+            <th scope="col" style="text-align:center;border: 3px solid black;">2</th>
+            <th scope="col" style="text-align:center;border: 3px solid black;">3</th>
+            <th scope="col" style="text-align:center;border: 3px solid black;">4</th>
+            <th scope="col" style="text-align:center;border: 3px solid black;">5</th>
+            <th scope="col" style="text-align:center;border: 3px solid black;">6</th>
+            <th scope="col" style="text-align:center;border: 3px solid black;">7</th>
+            <th scope="col" style="text-align:center;border: 3px solid black;">8</th>
+            <th scope="col" style="text-align:center;border: 3px solid black;">9</th>
+            <th scope="col" style="text-align:center;border: 3px solid black;">10</th>
+            <th scope="col" style="text-align:center;border: 3px solid black;">11</th>
+        </tr>
+        <tr style="border: 3px solid black;">
+            <th scope="col" style="text-align:center;border: 3px solid black;">u</th>
+            <th scope="col" style="text-align:center;border: 3px solid black;">u</th>
+            <th scope="col" style="text-align:center;border: 3px solid black;">u</th>
+            <th scope="col" style="text-align:center;border: 3px solid black;">u</th>
+            <th scope="col" style="text-align:center;border: 3px solid black;">u</th>
+            <th scope="col" style="text-align:center;border: 3px solid black;">u</th>
+            <th scope="col" style="text-align:center;border: 3px solid black;">u</th>
+            <th scope="col" style="text-align:center;border: 3px solid black;">u</th>
+            <th scope="col" style="text-align:center;border: 3px solid black;">u</th>
+            <th scope="col" style="text-align:center;border: 3px solid black;">0/1</th>
+            <th scope="col" style="text-align:center;border: 3px solid black;">0/1</th>
+        </tr>
+    </thead>
+    <tbody>
+    </tbody>
+</table><br>commands&nbsp;<strong style="background-color:black;color:white;padding:2px;border-radius:2px;">1 &lt;&lt; 10;</strong> and&nbsp;<strong style="background-color:black;color:white;padding:2px;border-radius:2px;">1 &lt;&lt; 11;</strong>&nbsp;moves bits
+10 and 11 to the first position and then you can calculate their value in decimal, but 1 bit carrying only booleans 0 or 1, <b>true</b> or <b>false,&nbsp;&nbsp;so binary to decimal transformation gives the same values.</b><br>
+<div><br></div>
+<div>javascript<br>```<br> function maskS2clouds(image) {<br>&nbsp; var qa = image.select('QA60')<br>&nbsp; var cloudBitMask = 1 &lt;&lt; 10;<br>&nbsp; var cirrusBitMask = 1 &lt;&lt; 11;<br>&nbsp; var mask = qa.bitwiseAnd(cloudBitMask).eq(0).and(<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    qa.bitwiseAnd(cirrusBitMask).eq(0))
+    <br>&nbsp; return image.updateMask(mask)<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; .select("B.*")<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; .copyProperties(image, ["system:time_start"])<br>}<br>```<br>
+    <p></p>
+    <br>python<br>```<br> def maskS2clouds(image):<br>&nbsp; qa = image.select('QA60')<br>&nbsp; cloudBitMask = 1 &lt;&lt; 10<br>&nbsp; cirrusBitMask = 1 &lt;&lt; 11<br>&nbsp; mask = qa.bitwiseAnd(cloudBitMask).eq(0).And(<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    qa.bitwiseAnd(cirrusBitMask).eq(0))
+    <br>&nbsp; return image.updateMask(mask) \<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; .select("B.*") \<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; .copyProperties(image, ["system:time_start"])<br>```<br>
+    <p></p>
+</div>

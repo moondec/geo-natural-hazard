@@ -1,0 +1,8 @@
+<p></p><ul>
+<li><em>Apply Cloud Masking</em></li>
+<li><em>Add Spectral Indices</em>: We add bands for different spectral indices such as - NDVI, NDBI, MNDWI and BSI.</li>
+<li><em>Add Elevation and Slope</em>: We also add slope and elevation bands from the ALOS DEM.</li>
+<li><em>Normalize the Inputs</em>: Machine learning models work best 
+when all the inputs have the same scale. We will divide each band with 
+the maximum value. This method ensures that all input values are between
+ 0-1. A more <a href="https://courses.spatialthoughts.com/end-to-end-gee.html#image-normalization-and-standardization">complete and robust technique</a> for image normalization is provided in the End-to-End course Supplement.</li></ul><p></p><span style="font-size: 0.9375rem;">Three improved codes:</span><br><p></p><p>1) k-means:&nbsp;<a href="https://code.earthengine.google.com/6d56838d254f2f8dd85a0dea5388267e?noload=true" target="_blank">https://code.earthengine.google.com/6d56838d254f2f8dd85a0dea5388267e?noload=true</a></p><p>2) FR + k-means:&nbsp;<a href="https://code.earthengine.google.com/41e808e3f76b25d532359fbc558eaec7?noload=true" target="_blank">https://code.earthengine.google.com/41e808e3f76b25d532359fbc558eaec7?noload=true</a></p><p>3) FR difference matrix:&nbsp;<a href="https://code.earthengine.google.com/a002f1bfb81d96bfecef2955c95daca3?noload=true" target="_blank">https://code.earthengine.google.com/a002f1bfb81d96bfecef2955c95daca3?noload=true</a></p><br><p></p>

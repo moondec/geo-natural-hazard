@@ -1,0 +1,1406 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+
+    <title></title>
+    <link rel="stylesheet" href="../lib/dist/reveal.css" />
+    <link rel="stylesheet" href="../lib/dist/theme/beige.css" id="theme" />
+    <link rel="stylesheet" href="../lib/plugin/highlight/zenburn.css" />
+	<link rel="stylesheet" href="../lib/css/layout.css" />
+	<link rel="stylesheet" href="../lib/plugin/customcontrols/style.css">
+	<link rel="stylesheet" href="../lib/plugin/chalkboard/style.css">
+
+	<link rel="stylesheet" href="../lib/plugin/reveal-pointer/pointer.css" />
+
+
+    <script defer src="../lib/dist/fontawesome/all.min.js"></script>
+
+	<script type="text/javascript">
+		var forgetPop = true;
+		function onPopState(event) {
+			if(forgetPop){
+				forgetPop = false;
+			} else {
+				parent.postMessage(event.target.location.href, "app://obsidian.md");
+			}
+        }
+		window.onpopstate = onPopState;
+		window.onmessage = event => {
+			if(event.data == "reload"){
+				window.document.location.reload();
+			}
+			forgetPop = true;
+		}
+
+		function fitElements(){
+			const itemsToFit = document.getElementsByClassName('fitText');
+			for (const item in itemsToFit) {
+				if (Object.hasOwnProperty.call(itemsToFit, item)) {
+					var element = itemsToFit[item];
+					fitElement(element,1, 1000);
+					element.classList.remove('fitText');
+				}
+			}
+		}
+
+		function fitElement(element, start, end){
+
+			let size = (end + start) / 2;
+			element.style.fontSize = `${size}px`;
+
+			if(Math.abs(start - end) < 1){
+				while(element.scrollHeight > element.offsetHeight){
+					size--;
+					element.style.fontSize = `${size}px`;
+				}
+				return;
+			}
+
+			if(element.scrollHeight > element.offsetHeight){
+				fitElement(element, start, size);
+			} else {
+				fitElement(element, size, end);
+			}		
+		}
+
+
+		document.onreadystatechange = () => {
+			fitElements();
+			if (document.readyState === 'complete') {
+				if (window.location.href.indexOf("?export") != -1){
+					parent.postMessage(event.target.location.href, "app://obsidian.md");
+				}
+				if (window.location.href.indexOf("print-pdf") != -1){
+					let stateCheck = setInterval(() => {
+						clearInterval(stateCheck);
+						window.print();
+					}, 250);
+				}
+			}
+	};
+
+
+        </script>
+  </head>
+  <body>
+    <div class="reveal">
+      <div class="slides"><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1920px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+<img src="../assets/Kursy/prezentacje/IOK/pliki/sateliteGEEbanner.png" alt="" style="width: 1920px; object-fit: fill">
+
+<div class="has-light-background" style="background-color: #EEB73F; padding: 250px 0  250px 300px; box-sizing: border-box; position: absolute; left: 0%; top: 33%; height: 34%; width: 60%; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" align="left">
+
+
+### Lecture 2<!-- .element: style="letter-spacing: 1.5rem" -->
+## Google Earth Engine: the Code Editor
+#### from a pixel to an area statistic
+
+#### Marek Urbaniak
+
+</div>
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1920px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+<div class="has-light-background" style="background-color: white; padding: 0 20px; box-sizing: border-box; position: absolute; left: 0%; top: 0%; height: 10%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" align="left">
+
+ <div class="block">
+
+## Today (90 min)
+</div>
+
+
+</div>
+
+<div class="" style="position: absolute; left: 5%; top: 17%; height: 66%; width: 90%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-start" align="left">
+
+
+
+
+<div class="has-light-background" style="background-color: #ffB73F; position: absolute; left: 92%; top: 55%; height: 26%; width: 13%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+</div>
+<div class="has-light-background" style="background-color: #00ced1; position: absolute; left: 87%; top: 75%; height: 26%; width: 13%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+</div>
+
+<div class="block">
+
+<!-- .element: style="font-size: 44px; position: absolute; left: 0%; top: 15%; height: 80%; width: 80%; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" align="left" -->
+1. What Earth Engine is and why it is fast (and why `print` is slow)
+2. The Code Editor – panels you will use every week
+3. Data model: `Image`, `ImageCollection`, `Geometry`, `Feature`, `FeatureCollection`
+4. Filter → map → reduce: the three verbs of every script
+5. Spectral indices: NDVI and friends
+6. From classes to hectares: `reduceRegion` with `pixelArea`
+7. **In the lab**: the full script, step by step; homework "index areas"
+</div>
+
+
+
+<style>.reveal table{max-width:100%;border-collapse:collapse}.reveal table th,.reveal table td{padding:3px 8px;line-height:1.25}</style>
+
+
+</div>
+
+<style>
+.horizontal_dotted_line{
+  border-bottom: 2px dotted gray;
+} 
+</style>
+
+<div class="horizontal_dotted_line" style="position: absolute; left: 3%; top: 94%; height: 0%; width: 94%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+</div>
+
+<div class="" style="padding: 0 30px; box-sizing: border-box; position: absolute; left: 0%; top: 64%; height: 30%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-end" align="left">
+
+
+</div>
+
+<div class="" style="padding: 0 30px; box-sizing: border-box; position: absolute; left: 0%; top: 58%; height: 30%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-end" align="left">
+
+
+</div>
+
+<div class="" style="position: absolute; left: 0%; top: 94%; height: 6%; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+© 2026 Pracownia Meteorologii<!-- .element: style="font-weight: 300" -->
+</div>
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1920px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+<div class="has-light-background" style="background-color: white; padding: 0 20px; box-sizing: border-box; position: absolute; left: 0%; top: 0%; height: 10%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" align="left">
+
+ <div class="block">
+
+## Google Earth Engine
+</div>
+
+
+</div>
+
+<div class="" style="position: absolute; left: 5%; top: 17%; height: 66%; width: 90%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-start" align="left">
+
+
+
+<div class="has-light-background" style="background-color: #ffB73F; position: absolute; left: 80%; top: 53%; height: 26%; width: 13%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+</div>
+<div class="has-light-background" style="background-color: #00ced1; transform: rotate(-15deg); position: absolute; left: 87%; top: 75%; height: 26%; width: 13%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+</div>
+<div class="has-dark-background" style="background-color: #F06400; transform: rotate(25deg); position: absolute; left: 77%; top: 90%; height: 26%; width: 13%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+</div>
+
+
+
+<div class="block">
+
+<!-- .element: style="font-size: 46px" -->
+- [Online catalogue](https://developers.google.com/earth-engine/datasets) of satellite imagery and geospatial data (petabytes, updated daily)
+- &shy;<!-- .element: class="fragment" data-fragment-index="1" -->[Analysis through scripting](https://code.earthengine.google.com/) (JavaScript in the browser, Python anywhere)
+- &shy;<!-- .element: class="fragment" data-fragment-index="2" -->Free for [noncommercial use](https://earthengine.google.com/noncommercial/) (research, education) with a registered Google Cloud project
+- &shy;<!-- .element: class="fragment" data-fragment-index="3" -->Your code runs on Google servers next to the data – you never download an image
+- &shy;<!-- .element: class="fragment" data-fragment-index="4" -->[End-to-End GEE](https://courses.spatialthoughts.com/end-to-end-gee.html) by Spatial Thoughts – our cookbook
+</div>
+
+
+<img src="../assets/Kursy/prezentacje/ApplicationHazards_GEO/pliki/Pasted image 20230106205837.png" alt="" style="position: absolute; left: 0%; top: 75%; height: 25%; width: 220px; display: flex; flex-direction: column; align-items: center; justify-content: center; object-fit: fill">
+
+
+
+</div>
+
+<style>
+.horizontal_dotted_line{
+  border-bottom: 2px dotted gray;
+} 
+</style>
+
+<div class="horizontal_dotted_line" style="position: absolute; left: 3%; top: 94%; height: 0%; width: 94%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+</div>
+
+<div class="" style="padding: 0 30px; box-sizing: border-box; position: absolute; left: 0%; top: 64%; height: 30%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-end" align="left">
+
+
+</div>
+
+<div class="" style="padding: 0 30px; box-sizing: border-box; position: absolute; left: 0%; top: 58%; height: 30%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-end" align="left">
+
+
+</div>
+
+<div class="" style="position: absolute; left: 0%; top: 94%; height: 6%; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+© 2026 Pracownia Meteorologii<!-- .element: style="font-weight: 300" -->
+</div>
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1920px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+<div class="has-light-background" style="background-color: white; padding: 0 20px; box-sizing: border-box; position: absolute; left: 0%; top: 0%; height: 10%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" align="left">
+
+ <div class="block">
+
+## Client and server: why Earth Engine is fast
+</div>
+
+
+</div>
+
+<div class="" style="position: absolute; left: 5%; top: 17%; height: 66%; width: 90%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-start" align="left">
+
+
+
+
+<div class="has-light-background" style="background-color: #00ced1; transform: rotate(-15deg); position: absolute; left: 87%; top: 75%; height: 26%; width: 13%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+</div>
+
+<div class="block">
+
+<!-- .element: style="font-size: 40px; position: absolute; left: 0%; top: 15%; height: 75%; width: 50%; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" align="left" -->
+<img src="../assets/Kursy/prezentacje/ApplicationHazards_GEO/pliki/diagram_L02_client_server.svg" alt="" style="object-fit: scale-down">
+
+</div>
+
+
+
+<div class="block">
+
+<!-- .element: style="font-size: 32px; background-color: #e8f4f8; padding: 12px; box-sizing: border-box; position: absolute; left: 52%; top: 15%; height: 78%; width: 47%; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" class="has-light-background" align="left" -->
+- `ee.Image(...)`, `.filter(...)`, `.map(...)` only **describe** a computation. Nothing runs yet (lazy evaluation).
+- Computation starts when you ask for a result: `Map.addLayer`, `print`, `Export`, `.getInfo()`.
+- `Map.addLayer` computes only the pixels visible at the current zoom → fast.
+- `print(collection)` serialises thousands of metadata records → slow. Use `print(collection.size())`.
+- Loops `for` over pixels do not exist. You express the operation on the **whole collection** (`map`) and let the server parallelise it.
+</div>
+
+
+
+
+
+
+</div>
+
+<style>
+.horizontal_dotted_line{
+  border-bottom: 2px dotted gray;
+} 
+</style>
+
+<div class="horizontal_dotted_line" style="position: absolute; left: 3%; top: 94%; height: 0%; width: 94%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+</div>
+
+<div class="" style="padding: 0 30px; box-sizing: border-box; position: absolute; left: 0%; top: 64%; height: 30%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-end" align="left">
+
+<div class="block">
+
+source: [Earth Engine guides – client vs. server](https://developers.google.com/earth-engine/guides/client_server)
+</div>
+
+
+
+</div>
+
+<div class="" style="padding: 0 30px; box-sizing: border-box; position: absolute; left: 0%; top: 58%; height: 30%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-end" align="left">
+
+
+</div>
+
+<div class="" style="position: absolute; left: 0%; top: 94%; height: 6%; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+© 2026 Pracownia Meteorologii<!-- .element: style="font-weight: 300" -->
+</div>
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1920px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+<div class="has-light-background" style="background-color: white; padding: 0 20px; box-sizing: border-box; position: absolute; left: 0%; top: 0%; height: 10%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" align="left">
+
+ <div class="block">
+
+## The Code Editor
+</div>
+
+
+</div>
+
+<div class="" style="position: absolute; left: 5%; top: 17%; height: 66%; width: 90%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-start" align="left">
+
+
+
+
+
+<!-- TODO image: screenshot of code.earthengine.google.com with panels labelled (Scripts / Docs / Assets, editor, Console / Inspector / Tasks, map, geometry tools). Source: your own screenshot. -->
+
+<div class="block">
+
+<!-- .element: style="font-size: 30px; position: absolute; left: 0%; top: 15%; height: 75%; width: 95%; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" align="left" -->
+| Panel | What for | You will use it in lab… |
+|---|---|---|
+| **Scripts** | your scripts + shared repositories (End-to-End in *Reader*) | 2 – add the repository |
+| **Docs** | every function with its arguments – read it before you google | every week |
+| **Assets** | your own uploads: shapefiles, CSV, GeoTIFF | 3 – training points, 6 – fire perimeter |
+| **Editor** | JavaScript; `Ctrl+/` comments a line; `Run`; `Get Link` | always |
+| **Console** | output of `print()` | always |
+| **Inspector** | click the map → pixel values of every layer | 2, 4, 6 – check thresholds |
+| **Tasks** | exports to Drive / Assets | 3, 6 – export the map |
+| **Geometry tools** | draw points / polygons → `geometry` import; *Import as FeatureCollection* for training data | 2, 3 |
+</div>
+
+
+
+
+</div>
+
+<style>
+.horizontal_dotted_line{
+  border-bottom: 2px dotted gray;
+} 
+</style>
+
+<div class="horizontal_dotted_line" style="position: absolute; left: 3%; top: 94%; height: 0%; width: 94%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+</div>
+
+<div class="" style="padding: 0 30px; box-sizing: border-box; position: absolute; left: 0%; top: 64%; height: 30%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-end" align="left">
+
+
+</div>
+
+<div class="" style="padding: 0 30px; box-sizing: border-box; position: absolute; left: 0%; top: 58%; height: 30%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-end" align="left">
+
+
+</div>
+
+<div class="" style="position: absolute; left: 0%; top: 94%; height: 6%; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+© 2026 Pracownia Meteorologii<!-- .element: style="font-weight: 300" -->
+</div>
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1920px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+<div class="has-light-background" style="background-color: white; padding: 0 20px; box-sizing: border-box; position: absolute; left: 0%; top: 0%; height: 10%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" align="left">
+
+ <div class="block">
+
+## Data model: five objects you need
+</div>
+
+
+</div>
+
+<div class="" style="position: absolute; left: 5%; top: 17%; height: 66%; width: 90%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-start" align="left">
+
+
+
+
+<div class="has-light-background" style="background-color: #ffB73F; position: absolute; left: 80%; top: 53%; height: 26%; width: 13%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+</div>
+
+<div class="block">
+
+<!-- .element: style="font-size: 26px; position: absolute; left: 0%; top: 15%; height: 78%; width: 95%; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" align="left" -->
+| Object | Meaning | Example |
+|---|---|---|
+| `ee.Image` | one raster with many **bands** | one Sentinel-2 scene: `B2 … B12, QA60` |
+| `ee.ImageCollection` | a stack of images (time series) | `ee.ImageCollection('COPERNICUS/S2_SR_HARMONIZED')` |
+| `ee.Geometry` | point, line, polygon | `ee.Geometry.Point(16.93, 52.41)` – Poznań |
+| `ee.Feature` | geometry + properties (attributes) | a district with `name`, `population` |
+| `ee.FeatureCollection` | a table of features (vector layer) | `ee.FeatureCollection('FAO/GAUL/2015/level2')` – admin borders |
+</div>
+
+
+
+<div class="block">
+
+<!-- .element: style="font-size: 23px; background-color: #fff3cd; padding: 10px 20px; box-sizing: border-box; position: absolute; left: 0%; top: 88%; height: 12%; width: 95%; display: flex; flex-direction: column; align-items: center; justify-content: center" class="has-light-background" -->
+Catalogue IDs you will use: `COPERNICUS/S2_SR_HARMONIZED` (surface reflectance, L2A), `COPERNICUS/S2_HARMONIZED` (top of atmosphere, L1C), `LANDSAT/LC09/C02/T1_L2`, `COPERNICUS/S1_GRD`, `NASA/NASADEM_HGT/001`.
+</div>
+
+
+
+
+</div>
+
+<style>
+.horizontal_dotted_line{
+  border-bottom: 2px dotted gray;
+} 
+</style>
+
+<div class="horizontal_dotted_line" style="position: absolute; left: 3%; top: 94%; height: 0%; width: 94%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+</div>
+
+<div class="" style="padding: 0 30px; box-sizing: border-box; position: absolute; left: 0%; top: 64%; height: 30%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-end" align="left">
+
+
+</div>
+
+<div class="" style="padding: 0 30px; box-sizing: border-box; position: absolute; left: 0%; top: 58%; height: 30%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-end" align="left">
+
+
+</div>
+
+<div class="" style="position: absolute; left: 0%; top: 94%; height: 6%; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+© 2026 Pracownia Meteorologii<!-- .element: style="font-weight: 300" -->
+</div>
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1920px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+<div class="has-light-background" style="background-color: white; padding: 0 20px; box-sizing: border-box; position: absolute; left: 0%; top: 0%; height: 10%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" align="left">
+
+ <div class="block">
+
+## Which Sentinel-2 level? L1C vs L2A
+</div>
+
+
+</div>
+
+<div class="" style="position: absolute; left: 5%; top: 17%; height: 66%; width: 90%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-start" align="left">
+
+
+
+
+<div class="has-light-background" style="background-color: #00ced1; transform: rotate(-15deg); position: absolute; left: 87%; top: 75%; height: 26%; width: 13%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+</div>
+
+<div class="block">
+
+<!-- .element: style="font-size: 42px; position: absolute; left: 0%; top: 15%; height: 70%; width: 50%; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" align="left" -->
+**Level-1C** – top-of-atmosphere (TOA) reflectance
+- includes the atmosphere (haze, aerosols)
+- longer archive (2015 →)
+- `COPERNICUS/S2_HARMONIZED`
+
+**Level-2A** – bottom-of-atmosphere (surface) reflectance
+- atmospherically corrected (Sen2Cor), plus a scene classification band `SCL`
+- global archive from 2017 (Europe), 2018–2019 (world)
+- `COPERNICUS/S2_SR_HARMONIZED` ← **use this one** for indices and classification
+</div>
+
+
+
+<div class="block">
+
+<!-- .element: style="font-size: 38px; background-color: #e8f4f8; padding: 15px; box-sizing: border-box; position: absolute; left: 53%; top: 15%; height: 70%; width: 45%; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" class="has-light-background" align="left" -->
+"HARMONIZED" = after 25 Jan 2022 ESA shifted all values by +1000 (processing baseline 04.00); the harmonized collections undo this shift, so old and new scenes have the same scale.
+
+Reflectance is stored as integer × 10 000: a value of 2500 = 0.25. Divide by 10 000 before computing anything that is not a normalized ratio.
+</div>
+
+
+
+
+
+
+</div>
+
+<style>
+.horizontal_dotted_line{
+  border-bottom: 2px dotted gray;
+} 
+</style>
+
+<div class="horizontal_dotted_line" style="position: absolute; left: 3%; top: 94%; height: 0%; width: 94%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+</div>
+
+<div class="" style="padding: 0 30px; box-sizing: border-box; position: absolute; left: 0%; top: 64%; height: 30%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-end" align="left">
+
+<div class="block">
+
+source: [Sentinel-2 in the Earth Engine catalogue](https://developers.google.com/earth-engine/datasets/catalog/COPERNICUS_S2_SR_HARMONIZED)
+</div>
+
+
+
+</div>
+
+<div class="" style="padding: 0 30px; box-sizing: border-box; position: absolute; left: 0%; top: 58%; height: 30%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-end" align="left">
+
+
+</div>
+
+<div class="" style="position: absolute; left: 0%; top: 94%; height: 6%; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+© 2026 Pracownia Meteorologii<!-- .element: style="font-weight: 300" -->
+</div>
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1920px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+<div class="has-light-background" style="background-color: white; padding: 0 20px; box-sizing: border-box; position: absolute; left: 0%; top: 0%; height: 10%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" align="left">
+
+ <div class="block">
+
+## Filter → map → reduce
+</div>
+
+
+</div>
+
+<div class="" style="position: absolute; left: 5%; top: 17%; height: 66%; width: 90%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-start" align="left">
+
+
+
+
+
+<div class="block">
+
+<!-- .element: style="font-size: 40px; position: absolute; left: 0%; top: 15%; height: 78%; width: 95%; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" align="left" -->
+<img src="../assets/Kursy/prezentacje/ApplicationHazards_GEO/pliki/diagram_L02_filter_map_reduce.svg" alt="" style="object-fit: scale-down">
+
+</div>
+
+
+
+<div class="block">
+
+<!-- .element: style="font-size: 36px; background-color: #fff3cd; padding: 10px 20px; box-sizing: border-box; position: absolute; left: 0%; top: 88%; height: 12%; width: 95%; display: flex; flex-direction: column; align-items: center; justify-content: center" class="has-light-background" -->
+Two different reductions: `.median()` reduces **time** (many images → one), `.reduceRegion()` reduces **space** (many pixels → one number). Every lab script in this course has both.
+</div>
+
+
+
+
+</div>
+
+<style>
+.horizontal_dotted_line{
+  border-bottom: 2px dotted gray;
+} 
+</style>
+
+<div class="horizontal_dotted_line" style="position: absolute; left: 3%; top: 94%; height: 0%; width: 94%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+</div>
+
+<div class="" style="padding: 0 30px; box-sizing: border-box; position: absolute; left: 0%; top: 64%; height: 30%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-end" align="left">
+
+
+</div>
+
+<div class="" style="padding: 0 30px; box-sizing: border-box; position: absolute; left: 0%; top: 58%; height: 30%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-end" align="left">
+
+
+</div>
+
+<div class="" style="position: absolute; left: 0%; top: 94%; height: 6%; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+© 2026 Pracownia Meteorologii<!-- .element: style="font-weight: 300" -->
+</div>
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1920px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+<div class="has-light-background" style="background-color: white; padding: 0 20px; box-sizing: border-box; position: absolute; left: 0%; top: 0%; height: 10%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" align="left">
+
+ <div class="block">
+
+## Filtering: the first lines of every script
+</div>
+
+
+</div>
+
+<div class="" style="position: absolute; left: 5%; top: 17%; height: 66%; width: 90%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-start" align="left">
+
+
+
+
+<div class="has-light-background" style="background-color: #ffB73F; position: absolute; left: 80%; top: 53%; height: 26%; width: 13%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+</div>
+
+<div class="block">
+
+<!-- .element: style="font-size: 34px; position: absolute; left: 0%; top: 15%; height: 80%; width: 55%; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" align="left" -->
+```javascript
+// area of interest: a point with a buffer, or a drawn polygon
+var poi = ee.Geometry.Point(16.93, 52.41);
+var roi = poi.buffer(5000);          // 5 km around Poznań centre
+Map.centerObject(roi, 11);
+
+var s2 = ee.ImageCollection('COPERNICUS/S2_SR_HARMONIZED')
+  .filterDate('2025-05-01', '2025-09-30')             // when
+  .filterBounds(roi)                                   // where
+  .filter(ee.Filter.lt('CLOUDY_PIXEL_PERCENTAGE', 30)); // how cloudy
+
+print('scenes:', s2.size());         // a number, not the whole list
+
+var rgb = {bands: ['B4', 'B3', 'B2'], min: 0, max: 3000};
+Map.addLayer(s2.median().clip(roi), rgb, 'S2 median RGB');
+```
+</div>
+
+
+
+<div class="block">
+
+<!-- .element: style="font-size: 36px; background-color: #e8f4f8; padding: 15px; box-sizing: border-box; position: absolute; left: 58%; top: 15%; height: 80%; width: 42%; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" class="has-light-background" align="left" -->
+- `filterDate` end date is **exclusive**
+- `CLOUDY_PIXEL_PERCENTAGE` is a scene-level metadata property – it filters whole scenes, not pixels (pixel masking: lecture 7)
+- `median()` of a stack removes most clouds (bright) and shadows (dark) – the simplest composite
+- `clip` only for display; clipping before computation does not speed it up
+- `min`/`max` 0–3000 because reflectance × 10 000 and land is rarely brighter than 0.3
+</div>
+
+
+
+
+</div>
+
+<style>
+.horizontal_dotted_line{
+  border-bottom: 2px dotted gray;
+} 
+</style>
+
+<div class="horizontal_dotted_line" style="position: absolute; left: 3%; top: 94%; height: 0%; width: 94%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+</div>
+
+<div class="" style="padding: 0 30px; box-sizing: border-box; position: absolute; left: 0%; top: 64%; height: 30%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-end" align="left">
+
+
+</div>
+
+<div class="" style="padding: 0 30px; box-sizing: border-box; position: absolute; left: 0%; top: 58%; height: 30%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-end" align="left">
+
+
+</div>
+
+<div class="" style="position: absolute; left: 0%; top: 94%; height: 6%; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+© 2026 Pracownia Meteorologii<!-- .element: style="font-weight: 300" -->
+</div>
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1920px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+<div class="has-light-background" style="background-color: white; padding: 0 20px; box-sizing: border-box; position: absolute; left: 0%; top: 0%; height: 10%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" align="left">
+
+ <div class="block">
+
+## Spectral indices: why NDVI works
+</div>
+
+
+</div>
+
+<div class="" style="position: absolute; left: 5%; top: 17%; height: 66%; width: 90%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-start" align="left">
+
+
+
+
+<div class="has-light-background" style="background-color: #00ced1; transform: rotate(-15deg); position: absolute; left: 87%; top: 75%; height: 26%; width: 13%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+</div>
+
+<div class="block">
+
+<!-- .element: style="font-size: 40px; position: absolute; left: 0%; top: 15%; height: 78%; width: 48%; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" align="left" -->
+Healthy vegetation absorbs **red** (chlorophyll) and strongly reflects **near infrared** (leaf structure):
+
+`$ NDVI = \frac{NIR - Red}{NIR + Red} = \frac{B8 - B4}{B8 + B4} $`
+
+| Surface | NDVI |
+|---|---|
+| water | < 0 |
+| bare soil, rock, built-up | 0 – 0.2 |
+| sparse vegetation, shrub | 0.2 – 0.4 |
+| dense green vegetation | 0.4 – 0.9 |
+</div>
+
+
+
+<div class="block">
+
+<!-- .element: style="font-size: 30px; background-color: #e8f4f8; padding: 12px; box-sizing: border-box; position: absolute; left: 52%; top: 15%; height: 80%; width: 48%; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" class="has-light-background" align="left" -->
+Normalized difference = the same pattern for every pair of bands:
+- `normalizedDifference(['B8','B4'])` → NDVI (vegetation)
+- `['B3','B8']` → NDWI (water, lecture 4)
+- `['B3','B11']` → MNDWI (water vs. built-up)
+- `['B8','B12']` → NBR (burned area, lecture 6)
+- `['B8','B11']` → NDMI (moisture)
+
+Values in [−1, 1], unitless, comparable between dates and sensors – that is why we use them for *before/after* differences.
+
+Full list: [Awesome spectral indices](https://github.com/awesome-spectral-indices/awesome-spectral-indices), [Sentinel Hub custom scripts](https://custom-scripts.sentinel-hub.com/sentinel-2/indexdb/).
+</div>
+
+
+
+
+</div>
+
+<style>
+.horizontal_dotted_line{
+  border-bottom: 2px dotted gray;
+} 
+</style>
+
+<div class="horizontal_dotted_line" style="position: absolute; left: 3%; top: 94%; height: 0%; width: 94%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+</div>
+
+<div class="" style="padding: 0 30px; box-sizing: border-box; position: absolute; left: 0%; top: 64%; height: 30%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-end" align="left">
+
+
+</div>
+
+<div class="" style="padding: 0 30px; box-sizing: border-box; position: absolute; left: 0%; top: 58%; height: 30%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-end" align="left">
+
+
+</div>
+
+<div class="" style="position: absolute; left: 0%; top: 94%; height: 6%; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+© 2026 Pracownia Meteorologii<!-- .element: style="font-weight: 300" -->
+</div>
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1920px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+<div class="has-light-background" style="background-color: white; padding: 0 20px; box-sizing: border-box; position: absolute; left: 0%; top: 0%; height: 10%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" align="left">
+
+ <div class="block">
+
+## map(): add a band to every image
+</div>
+
+
+</div>
+
+<div class="" style="position: absolute; left: 5%; top: 17%; height: 66%; width: 90%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-start" align="left">
+
+
+
+
+<div class="has-light-background" style="background-color: #ffB73F; position: absolute; left: 80%; top: 53%; height: 26%; width: 13%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+</div>
+
+<div class="block">
+
+<!-- .element: style="font-size: 34px; position: absolute; left: 0%; top: 15%; height: 80%; width: 55%; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" align="left" -->
+```javascript
+// a function that takes an image and returns it with one more band
+var addNDVI = function(image) {
+  var ndvi = image.normalizedDifference(['B8', 'B4']).rename('NDVI');
+  return image.addBands(ndvi);
+};
+
+var s2ndvi = s2.map(addNDVI);            // applied to every scene
+var ndviMed = s2ndvi.select('NDVI').median();  // one band, one image
+
+var ndviVis = {min: -0.2, max: 0.8,
+               palette: ['blue', 'white', 'yellow', 'green', 'darkgreen']};
+Map.addLayer(ndviMed.clip(roi), ndviVis, 'NDVI median');
+```
+</div>
+
+
+
+<div class="block">
+
+<!-- .element: style="font-size: 36px; background-color: #e8f4f8; padding: 15px; box-sizing: border-box; position: absolute; left: 58%; top: 15%; height: 80%; width: 42%; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" class="has-light-background" align="left" -->
+Rules for a function inside `map()`:
+- it must **return** an image (or a feature)
+- no `print`, no `Map.addLayer` inside – it runs on the server for every element
+- no `if` on pixel values – use `.where()`, `.gt()`, `.updateMask()` instead
+
+Use the **Inspector** to click on a field, a lake and a forest and check that the NDVI values match the table from the previous slide. If they do not, your bands or your scale are wrong.
+</div>
+
+
+
+
+</div>
+
+<style>
+.horizontal_dotted_line{
+  border-bottom: 2px dotted gray;
+} 
+</style>
+
+<div class="horizontal_dotted_line" style="position: absolute; left: 3%; top: 94%; height: 0%; width: 94%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+</div>
+
+<div class="" style="padding: 0 30px; box-sizing: border-box; position: absolute; left: 0%; top: 64%; height: 30%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-end" align="left">
+
+
+</div>
+
+<div class="" style="padding: 0 30px; box-sizing: border-box; position: absolute; left: 0%; top: 58%; height: 30%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-end" align="left">
+
+
+</div>
+
+<div class="" style="position: absolute; left: 0%; top: 94%; height: 6%; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+© 2026 Pracownia Meteorologii<!-- .element: style="font-weight: 300" -->
+</div>
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1920px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+<div class="has-light-background" style="background-color: white; padding: 0 20px; box-sizing: border-box; position: absolute; left: 0%; top: 0%; height: 10%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" align="left">
+
+ <div class="block">
+
+## From continuous index to classes: thresholds
+</div>
+
+
+</div>
+
+<div class="" style="position: absolute; left: 5%; top: 17%; height: 66%; width: 90%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-start" align="left">
+
+
+
+
+
+<div class="block">
+
+<!-- .element: style="font-size: 34px; position: absolute; left: 0%; top: 15%; height: 80%; width: 55%; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" align="left" -->
+```javascript
+// 1) one class = one boolean image × its code (the manual way)
+var water = ndviMed.lte(0.0).multiply(1);
+var bare  = ndviMed.gt(0.0).and(ndviMed.lte(0.2)).multiply(2);
+var shrub = ndviMed.gt(0.2).and(ndviMed.lte(0.4)).multiply(3);
+var green = ndviMed.gt(0.4).multiply(4);
+var classes = water.add(bare).add(shrub).add(green).rename('class');
+
+// 2) the same in one line: count how many thresholds the pixel exceeds
+var thresholds = ee.Image([0.0, 0.2, 0.4]);
+var classes2 = ndviMed.gt(thresholds).reduce('sum').add(1).toInt();
+
+Map.addLayer(classes2.clip(roi),
+  {min: 1, max: 4, palette: ['blue', 'burlywood', 'yellowgreen', 'darkgreen']},
+  'NDVI classes');
+```
+</div>
+
+
+
+<div class="block">
+
+<!-- .element: style="font-size: 36px; background-color: #e8f4f8; padding: 15px; box-sizing: border-box; position: absolute; left: 58%; top: 15%; height: 80%; width: 42%; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" class="has-light-background" align="left" -->
+- `.gt()`, `.lte()` return **0/1 images**; multiply by a code and add them → one class image
+- version 2 is what you will use in the homework: change the list of thresholds, nothing else
+- thresholds are **your decision** – justify them with Inspector values and the literature, and write it in the report
+- next lecture: let a machine learning algorithm choose the thresholds in 10 bands at once
+</div>
+
+
+
+
+</div>
+
+<style>
+.horizontal_dotted_line{
+  border-bottom: 2px dotted gray;
+} 
+</style>
+
+<div class="horizontal_dotted_line" style="position: absolute; left: 3%; top: 94%; height: 0%; width: 94%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+</div>
+
+<div class="" style="padding: 0 30px; box-sizing: border-box; position: absolute; left: 0%; top: 64%; height: 30%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-end" align="left">
+
+
+</div>
+
+<div class="" style="padding: 0 30px; box-sizing: border-box; position: absolute; left: 0%; top: 58%; height: 30%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-end" align="left">
+
+
+</div>
+
+<div class="" style="position: absolute; left: 0%; top: 94%; height: 6%; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+© 2026 Pracownia Meteorologii<!-- .element: style="font-weight: 300" -->
+</div>
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1920px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+<div class="has-light-background" style="background-color: white; padding: 0 20px; box-sizing: border-box; position: absolute; left: 0%; top: 0%; height: 10%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" align="left">
+
+ <div class="block">
+
+## From classes to hectares: reduceRegion + pixelArea
+</div>
+
+
+</div>
+
+<div class="" style="position: absolute; left: 5%; top: 17%; height: 66%; width: 90%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-start" align="left">
+
+
+
+
+<div class="has-light-background" style="background-color: #00ced1; transform: rotate(-15deg); position: absolute; left: 87%; top: 75%; height: 26%; width: 13%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+</div>
+
+<div class="block">
+
+<!-- .element: style="font-size: 32px; position: absolute; left: 0%; top: 15%; height: 80%; width: 55%; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" align="left" -->
+```javascript
+var areaImage = ee.Image.pixelArea().addBands(classes2);  // band 0 = m² of each pixel, band 1 = class
+
+var areas = areaImage.reduceRegion({
+  reducer: ee.Reducer.sum().group({groupField: 1, groupName: 'class'}),
+  geometry: roi,
+  scale: 10,          // Sentinel-2 native resolution, in metres
+  maxPixels: 1e10
+});
+
+// convert the list of dictionaries into a readable table in hectares
+var list = ee.List(areas.get('groups'));
+var table = ee.FeatureCollection(list.map(function(d) {
+  d = ee.Dictionary(d);
+  return ee.Feature(null, {class: d.get('class'),
+                           ha: ee.Number(d.get('sum')).divide(1e4).round()});
+}));
+print('area per class [ha]:', table);
+```
+</div>
+
+
+
+<div class="block">
+
+<!-- .element: style="font-size: 36px; background-color: #e8f4f8; padding: 15px; box-sizing: border-box; position: absolute; left: 58%; top: 15%; height: 80%; width: 42%; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" class="has-light-background" align="left" -->
+- `ee.Image.pixelArea()` gives the true area of every pixel in m² (it changes with latitude)
+- `group` splits the sum by the value of band 1 → one sum per class
+- **`scale`** must match the data (10 m). `scale: 1` forces a billion samples and the error *"Too many pixels"* or a wrong, over-smoothed answer
+- the sum of all classes must equal the ROI area – check it, it is your first sanity test
+- a chart instead of a table: `ui.Chart.feature.byFeature(table, 'class', 'ha')`
+</div>
+
+
+
+
+
+
+</div>
+
+<style>
+.horizontal_dotted_line{
+  border-bottom: 2px dotted gray;
+} 
+</style>
+
+<div class="horizontal_dotted_line" style="position: absolute; left: 3%; top: 94%; height: 0%; width: 94%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+</div>
+
+<div class="" style="padding: 0 30px; box-sizing: border-box; position: absolute; left: 0%; top: 64%; height: 30%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-end" align="left">
+
+<div class="block">
+
+source: [End-to-End GEE – computing area](https://courses.spatialthoughts.com/end-to-end-gee.html#calculating-area)
+</div>
+
+
+
+</div>
+
+<div class="" style="padding: 0 30px; box-sizing: border-box; position: absolute; left: 0%; top: 58%; height: 30%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-end" align="left">
+
+
+</div>
+
+<div class="" style="position: absolute; left: 0%; top: 94%; height: 6%; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+© 2026 Pracownia Meteorologii<!-- .element: style="font-weight: 300" -->
+</div>
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1920px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+<div class="has-light-background" style="background-color: white; padding: 0 20px; box-sizing: border-box; position: absolute; left: 0%; top: 0%; height: 10%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" align="left">
+
+ <div class="block">
+
+## Vector data: borders instead of a drawn polygon
+</div>
+
+
+</div>
+
+<div class="" style="position: absolute; left: 5%; top: 17%; height: 66%; width: 90%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-start" align="left">
+
+
+
+
+<div class="has-light-background" style="background-color: #ffB73F; position: absolute; left: 80%; top: 53%; height: 26%; width: 13%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+</div>
+
+<div class="block">
+
+<!-- .element: style="font-size: 34px; position: absolute; left: 0%; top: 15%; height: 75%; width: 55%; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" align="left" -->
+```javascript
+// administrative units from FAO GAUL (level 0 = country, 1 = region, 2 = district)
+var admin2 = ee.FeatureCollection('FAO/GAUL_SIMPLIFIED_500m/2015/level2');
+var poznan = admin2.filter(ee.Filter.eq('ADM2_NAME', 'Poznański'));
+Map.addLayer(poznan, {color: 'red'}, 'Poznań district');
+
+var roi = poznan.geometry();   // use it exactly like the buffer before
+```
+</div>
+
+
+
+<div class="block">
+
+<!-- .element: style="font-size: 36px; background-color: #e8f4f8; padding: 15px; box-sizing: border-box; position: absolute; left: 58%; top: 15%; height: 75%; width: 42%; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" class="has-light-background" align="left" -->
+- GAUL names are in the local language, sometimes without diacritics – filter level 1 by `ADM1_NAME` and print `aggregate_array('ADM2_NAME')` to see which district names exist
+- Your own borders: download from [GADM](https://gadm.org/data.html), upload the shapefile in **Assets** and load it with `ee.FeatureCollection` (the asset path is shown in the Assets panel)
+- A drawn polygon is fine for the homework, but a named unit makes the report reproducible
+</div>
+
+
+
+
+</div>
+
+<style>
+.horizontal_dotted_line{
+  border-bottom: 2px dotted gray;
+} 
+</style>
+
+<div class="horizontal_dotted_line" style="position: absolute; left: 3%; top: 94%; height: 0%; width: 94%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+</div>
+
+<div class="" style="padding: 0 30px; box-sizing: border-box; position: absolute; left: 0%; top: 64%; height: 30%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-end" align="left">
+
+
+</div>
+
+<div class="" style="padding: 0 30px; box-sizing: border-box; position: absolute; left: 0%; top: 58%; height: 30%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-end" align="left">
+
+
+</div>
+
+<div class="" style="position: absolute; left: 0%; top: 94%; height: 6%; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+© 2026 Pracownia Meteorologii<!-- .element: style="font-weight: 300" -->
+</div>
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1920px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+<div class="has-light-background" style="background-color: white; padding: 0 20px; box-sizing: border-box; position: absolute; left: 0%; top: 0%; height: 10%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" align="left">
+
+ <div class="block">
+
+## Typical errors and what they mean
+</div>
+
+
+</div>
+
+<div class="" style="position: absolute; left: 5%; top: 17%; height: 66%; width: 90%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-start" align="left">
+
+
+
+
+
+<div class="block">
+
+<!-- .element: style="font-size: 36px; position: absolute; left: 0%; top: 15%; height: 78%; width: 95%; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" align="left" -->
+| Message / symptom | Cause | Fix |
+|---|---|---|
+| `Collection.first: no element` / empty map | filters too strict (dates, clouds, AOI) | print `size()` after each filter |
+| `Image.select: Pattern 'NDVI' did not match` | you selected a band before adding it | order of `map` and `select` |
+| `Too many pixels in the region` | `scale` too small or AOI too big | `scale: 10` (S2), `30` (Landsat), `maxPixels: 1e10` |
+| `Computation timed out` | `print` of a huge object or `getInfo` | print `size()`, use `Export` |
+| map is grey / black | wrong `min`/`max` or band names | Inspector → read real values |
+| `is not a function` | mixing client JS (`for`, `if`, `Math`) with `ee` objects | use `ee.List.map`, `ee.Algorithms.If`, `ee.Number` |
+</div>
+
+
+
+
+</div>
+
+<style>
+.horizontal_dotted_line{
+  border-bottom: 2px dotted gray;
+} 
+</style>
+
+<div class="horizontal_dotted_line" style="position: absolute; left: 3%; top: 94%; height: 0%; width: 94%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+</div>
+
+<div class="" style="padding: 0 30px; box-sizing: border-box; position: absolute; left: 0%; top: 64%; height: 30%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-end" align="left">
+
+
+</div>
+
+<div class="" style="padding: 0 30px; box-sizing: border-box; position: absolute; left: 0%; top: 58%; height: 30%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-end" align="left">
+
+
+</div>
+
+<div class="" style="position: absolute; left: 0%; top: 94%; height: 6%; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+© 2026 Pracownia Meteorologii<!-- .element: style="font-weight: 300" -->
+</div>
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1920px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+<div class="has-light-background" style="background-color: white; padding: 0 20px; box-sizing: border-box; position: absolute; left: 0%; top: 0%; height: 10%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" align="left">
+
+ <div class="block">
+
+## In the lab (23.11, 3 h)
+</div>
+
+
+</div>
+
+<div class="" style="position: absolute; left: 5%; top: 17%; height: 66%; width: 90%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-start" align="left">
+
+
+
+
+<div class="has-light-background" style="background-color: #00ced1; transform: rotate(-15deg); position: absolute; left: 87%; top: 75%; height: 26%; width: 13%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+</div>
+
+<div class="block">
+
+<!-- .element: style="font-size: 40px; position: absolute; left: 0%; top: 15%; height: 78%; width: 95%; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" align="left" -->
+1. Moodle → *GEE – javascript editor* → lesson: sign-up check, add the End-to-End repository
+2. Build the script from this lecture **line by line** on your own AOI (point + buffer or a GAUL district): filter → median RGB → NDVI → classes → area table
+3. Verify with the Inspector: 3 pixels (water, field, forest), write down their NDVI
+4. Save the script, `Get Link`, paste the link in the quizzes of the lesson
+5. **Homework (assignment in Moodle)**: repeat for a *different* index (EVI, NDWI, SAVI, NDMI…), your own ROI (a city, a district, a national park), your own thresholds with justification. Deliverable: the **script link** + a short note with the area table
+</div>
+
+
+
+
+</div>
+
+<style>
+.horizontal_dotted_line{
+  border-bottom: 2px dotted gray;
+} 
+</style>
+
+<div class="horizontal_dotted_line" style="position: absolute; left: 3%; top: 94%; height: 0%; width: 94%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+</div>
+
+<div class="" style="padding: 0 30px; box-sizing: border-box; position: absolute; left: 0%; top: 64%; height: 30%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-end" align="left">
+
+
+</div>
+
+<div class="" style="padding: 0 30px; box-sizing: border-box; position: absolute; left: 0%; top: 58%; height: 30%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-end" align="left">
+
+
+</div>
+
+<div class="" style="position: absolute; left: 0%; top: 94%; height: 6%; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+© 2026 Pracownia Meteorologii<!-- .element: style="font-weight: 300" -->
+</div>
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1920px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+<div class="has-light-background" style="background-color: white; padding: 0 20px; box-sizing: border-box; position: absolute; left: 0%; top: 0%; height: 10%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" align="left">
+
+ <div class="block">
+
+## Before next class
+</div>
+
+
+</div>
+
+<div class="" style="position: absolute; left: 5%; top: 17%; height: 66%; width: 90%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-start" align="left">
+
+
+
+
+<div class="has-light-background" style="background-color: #ffB73F; position: absolute; left: 80%; top: 53%; height: 26%; width: 13%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+</div>
+
+<div class="block">
+
+<!-- .element: style="font-size: 42px; position: absolute; left: 0%; top: 15%; height: 75%; width: 95%; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" align="left" -->
+- [ ] Finish and submit the "index areas" homework (script link)
+- [ ] Read End-to-End GEE, module 1 ("Earth Engine basics") – sections *Image collections*, *Filtering*, *Computation on image collections* (30 min, skim the code, you have already written it)
+- [ ] Think of an area 60–100 km² with **at least four clearly different surface types** (water, forest, crops, built-up) – you will classify it next week
+- [ ] Optional: [Earth Engine 101](https://www.youtube.com/watch?v=wn6p9KcOIOI) video
+</div>
+
+
+
+
+</div>
+
+<style>
+.horizontal_dotted_line{
+  border-bottom: 2px dotted gray;
+} 
+</style>
+
+<div class="horizontal_dotted_line" style="position: absolute; left: 3%; top: 94%; height: 0%; width: 94%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+</div>
+
+<div class="" style="padding: 0 30px; box-sizing: border-box; position: absolute; left: 0%; top: 64%; height: 30%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-end" align="left">
+
+
+</div>
+
+<div class="" style="padding: 0 30px; box-sizing: border-box; position: absolute; left: 0%; top: 58%; height: 30%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-end" align="left">
+
+
+</div>
+
+<div class="" style="position: absolute; left: 0%; top: 94%; height: 6%; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+© 2026 Pracownia Meteorologii<!-- .element: style="font-weight: 300" -->
+</div>
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1920px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+<div class="block">
+
+# Thank you 😄
+</div>
+</div></script></section></div>
+    </div>
+
+    <script src="../lib/dist/reveal.js"></script>
+
+    <script src="../lib/plugin/markdown/markdown.js"></script>
+    <script src="../lib/plugin/highlight/highlight.js"></script>
+    <script src="../lib/plugin/zoom/zoom.js"></script>
+    <script src="../lib/plugin/notes/notes.js"></script>
+    <script src="../lib/plugin/math/math.js"></script>
+	<script src="../lib/plugin/mermaid/mermaid.js"></script>
+	<script src="../lib/plugin/chart/chart.min.js"></script>
+	<script src="../lib/plugin/chart/plugin.js"></script>
+	<script src="../lib/plugin/menu/menu.js"></script>
+	<script src="../lib/plugin/customcontrols/plugin.js"></script>
+	<script src="../lib/plugin/chalkboard/plugin.js"></script>
+	<script src="../lib/plugin/reveal-pointer/pointer.js"></script>
+	<script src="../lib/plugin/elapsed-time-bar/elapsed-time-bar.js"></script>
+
+    <script>
+      function extend() {
+        var target = {};
+        for (var i = 0; i < arguments.length; i++) {
+          var source = arguments[i];
+          for (var key in source) {
+            if (source.hasOwnProperty(key)) {
+              target[key] = source[key];
+            }
+          }
+        }
+        return target;
+      }
+
+	  function isLight(color) {
+		let hex = color.replace('#', '');
+
+		// convert #fff => #ffffff
+		if(hex.length == 3){
+			hex = `${hex[0]}${hex[0]}${hex[1]}${hex[1]}${hex[2]}${hex[2]}`;
+		}
+
+		const c_r = parseInt(hex.substr(0, 2), 16);
+		const c_g = parseInt(hex.substr(2, 2), 16);
+		const c_b = parseInt(hex.substr(4, 2), 16);
+		const brightness = ((c_r * 299) + (c_g * 587) + (c_b * 114)) / 1000;
+		return brightness > 155;
+	}
+
+	var bgColor = getComputedStyle(document.documentElement).getPropertyValue('--r-background-color').trim();
+	var isLight = isLight(bgColor);
+
+	if(isLight){
+		document.body.classList.add('has-light-background');
+	} else {
+		document.body.classList.add('has-dark-background');
+	}
+
+      // default options to init reveal.js
+      var defaultOptions = {
+        controls: true,
+        progress: true,
+        history: true,
+        center: true,
+        transition: 'default', // none/fade/slide/convex/concave/zoom
+        plugins: [
+          RevealMarkdown,
+          RevealHighlight,
+          RevealZoom,
+          RevealNotes,
+          RevealMath.MathJax3,
+		  RevealMermaid,
+		  RevealChart,
+		  RevealCustomControls,
+		  RevealMenu,
+	      RevealPointer,
+		  RevealChalkboard, 
+		  ElapsedTimeBar
+        ],
+
+
+    	allottedTime: 5400 * 1000,
+
+		mathjax3: {
+			mathjax: '../lib/plugin/math/mathjax/tex-mml-chtml.js',
+		},
+		markdown: {
+		  gfm: true,
+		  mangle: true,
+		  pedantic: false,
+		  smartLists: false,
+		  smartypants: false,
+		},
+
+		mermaid: {
+			theme: isLight ? 'default' : 'dark',
+		},
+
+		customcontrols: {
+			controls: [
+				{id: 'toggle-overview',
+				title: 'Toggle overview (O)',
+				icon: '<i class="fa fa-th"></i>',
+				action: 'Reveal.toggleOverview();'
+				},
+				{ icon: '<i class="fa fa-pen-square"></i>',
+				title: 'Toggle chalkboard (B)',
+				action: 'RevealChalkboard.toggleChalkboard();'
+				},
+				{ icon: '<i class="fa fa-pen"></i>',
+				title: 'Toggle notes canvas (C)',
+				action: 'RevealChalkboard.toggleNotesCanvas();'
+				},
+			]
+		},
+		menu: {
+			loadIcons: false
+		}
+      };
+
+      // options from URL query string
+      var queryOptions = Reveal().getQueryHash() || {};
+
+      var options = extend(defaultOptions, {"width":1920,"height":1200,"margin":0,"maxScale":4,"controls":true,"progress":true,"slideNumber":true,"transition":"zoom","transitionSpeed":"slow"}, queryOptions);
+    </script>
+
+    <script>
+      Reveal.initialize(options);
+    </script>
+  </body>
+
+  <!-- created with Advanced Slides -->
+</html>

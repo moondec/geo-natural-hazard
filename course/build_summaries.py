@@ -1,0 +1,221 @@
+# Generates section summaries (s0..s7), lecture-resource intros and ops.tsv for the AGeoHazard course (id=15).
+# Run from the course/ directory:  python -I -X utf8 build_summaries.py   then  python -I -X utf8 inline-iot-css.py geo.scss mcontent
+import pathlib, html
+OUT = pathlib.Path(__file__).parent / 'mcontent'
+W = 'http://localhost:8088'
+def sec(id_): return f'{W}/course/section.php?id={id_}'
+def mod(kind, cmid): return f'{W}/mod/{kind}/view.php?id={cmid}'
+
+SECTION_IDS = {0: 116, 1: 117, 2: 118, 3: 119, 4: 120, 5: 121, 6: 122, 7: 123}
+
+# ---------------------------------------------------------------- modules
+MODULES = [
+    dict(n=1, short='Kick-off', title='Natural hazards, Earth observation and your accounts',
+         lecture=('9.11', 414), lab='16.11', hours='3 h',
+         lead='Why satellites are the only way to see a flood, a landslide scar or a burned forest in time, and one recipe (before / after) that we will reuse for every hazard. The lab gets your two accounts working and shows you the first real event in Copernicus Browser.',
+         outcome='Due 16.11 – a CDSE account, a registered Google Earth Engine project, one hazard event found in Copernicus Browser (dates, AOI, timelapse) and your first script running in the Code Editor.',
+         route=[('Watch lecture 1', 'Hazards, before/after, sensors, where to get data in 2026', mod('url', 414)),
+                ('Create your accounts', 'CDSE (Copernicus Browser) and a Google Cloud project for Earth Engine – before Monday', mod('page', 390)),
+                ('Lab 1 – Copernicus Browser', 'Find one wildfire and one flood in Highlights, compare, export a GeoTIFF', None),
+                ('Lab 1 – first GEE script', 'Open the Code Editor, load Sentinel-2, add the End-to-End repository', None),
+                ('Homework', 'Webinars on the homework page; bring one event you care about', mod('page', 390))],
+         links=[('Lecture 1 (slides)', mod('url', 414)), ('Intro presentation (course overview)', mod('url', 413)),
+                ('Homework after lecture 1', mod('page', 390)),
+                ('Copernicus Browser', 'https://browser.dataspace.copernicus.eu/'), ('GEE access guide', 'https://developers.google.com/earth-engine/guides/access')],
+         extra='''<h5 class="iot-h">What you need before lab 1</h5>
+      <ul class="iot-list">
+        <li>A free account at <a href="https://dataspace.copernicus.eu/" target="_blank" rel="noopener">dataspace.copernicus.eu</a>; log in once to <a href="https://browser.dataspace.copernicus.eu/" target="_blank" rel="noopener">Copernicus Browser</a>.</li>
+        <li>A Google account with a <strong>registered Earth Engine Cloud project</strong> (noncommercial, education): <a href="https://developers.google.com/earth-engine/guides/access" target="_blank" rel="noopener">how to get access</a>. Approval can take a day – do not leave it for Monday morning.</li>
+        <li>Problems? Ask on the <a href="%s" target="_blank" rel="noopener">forum</a> before Friday.</li>
+      </ul>''' % mod('forum', 388)),
+    dict(n=2, short='Code Editor', title='Google Earth Engine: from a pixel to an area statistic',
+         lecture=('16.11', 415), lab='23.11', hours='3 h',
+         lead='Earth Engine runs your script next to petabytes of imagery. You learn the three verbs of every script – filter, map, reduce – and turn an index (NDVI) into classes and hectares.',
+         outcome='Due 23.11 – a saved Code Editor script (link) that filters Sentinel-2 over your area, computes an index, classifies it with thresholds and prints the area per class in hectares; homework "index areas" submitted.',
+         route=[('Watch lecture 2', 'Client/server, data model, filter → map → reduce, indices, reduceRegion', mod('url', 415)),
+                ('Lesson: GEE step by step', 'Sign-up check, End-to-End repository, collections, NDVI, areas, quizzes', mod('lesson', 391)),
+                ('Lab 2 – build the script', 'Line by line on your own AOI; verify three pixels with the Inspector', mod('lesson', 391)),
+                ('Homework "index areas"', 'A different index, your own ROI and thresholds; submit the script link', mod('assign', 392)),
+                ('Prepare lab 3', 'Pick an area of 60–100 km² with four clearly different surfaces', None)],
+         links=[('Lecture 2 (slides)', mod('url', 415)), ('Lesson: Google Earth Engine', mod('lesson', 391)), ('Homework: index areas', mod('assign', 392)),
+                ('End-to-End GEE course', 'https://courses.spatialthoughts.com/end-to-end-gee.html'), ('Earth Engine data catalogue', 'https://developers.google.com/earth-engine/datasets')],
+         extra=''),
+    dict(n=3, short='Machine learning', title='Machine learning for land cover classification',
+         lecture=('23.11', 416), lab='30.11', hours='3 h',
+         lead='Last week you chose the thresholds; this week a Random Forest finds them in ten bands at once, and k-means finds groups without any labels. The number that lets you compare them is the confusion matrix.',
+         outcome='Due 30.11 – a classification report – supervised (Random Forest) and unsupervised (k-means) maps of the same area, both confusion matrices with overall accuracy and kappa, a justified number of classes and one paragraph on which classifier did the job better. Links to both scripts.',
+         route=[('Watch lecture 3', 'Supervised vs unsupervised, decision tree → Random Forest, k-means, training data, accuracy', mod('url', 416)),
+                ('Lesson: Classifiers', 'ML algorithms, supervised, unsupervised, improving the classification, hazard examples', mod('lesson', 396)),
+                ('Lab 3 – classify your area', 'Training polygons, RF (50 trees), k-means (4), confusion matrices, export', mod('lesson', 396)),
+                ('Homework – the report', 'Maps, matrices, justification, conclusions; .pdf or .docx', mod('assign', 398)),
+                ('Prepare lab 4', 'Read the UN-SPIDER flood practice ("In detail" tab)', None)],
+         links=[('Lecture 3 (slides)', mod('url', 416)), ('Lesson: Classifiers', mod('lesson', 396)), ('Short deck: the two classifiers', mod('resource', 397)), ('Homework: classification report', mod('assign', 398)),
+                ('GEE guide: supervised classification', 'https://developers.google.com/earth-engine/guides/classification')],
+         extra=''),
+    dict(n=4, short='Floods', title='Flood mapping: optical water indices and Sentinel-1 radar',
+         lecture=('30.11', 417), lab='7.12', hours='3 h',
+         lead='Floods happen under clouds. Optical indices (NDWI, MNDWI) work on the first clear day; Sentinel-1 radar sees the peak through the clouds – calm water is dark. You run the UN-SPIDER change-detection script and learn where it fails.',
+         outcome='Due 7.12 – a flood extent map of a real event from Sentinel-1 (before/after, threshold, masks), the flooded area in hectares with a threshold-sensitivity table, and a comparison with the Global Flood Monitoring or an EMS map.',
+         route=[('Watch lecture 4', 'Water indices, SAR in 15 minutes, Sentinel-1, thresholds, operational services', mod('url', 417)),
+                ('Lesson: flood mapping', 'Bands, satellites, water indices, SAR backscatter, InSAR, ICEYE, scripts', mod('lesson', 401)),
+                ('Lab 4 – optical', 'MNDWI before/after on Sentinel-2, histogram, threshold, water area', mod('lesson', 401)),
+                ('Lab 4 – radar', 'UN-SPIDER script: AOI, dates, orbit; vary the threshold; compare with GFM/EMS', mod('lesson', 401)),
+                ('Prepare lab 5', 'Read Handwerger et al. 2022 (sections 1–3.1)', None)],
+         links=[('Lecture 4 (slides)', mod('url', 417)), ('Lesson: flood mapping', mod('lesson', 401)),
+                ('UN-SPIDER: flood mapping with Sentinel-1 in GEE', 'https://www.un-spider.org/advisory-support/recommended-practices/recommended-practice-google-earth-engine-flood-mapping'),
+                ('Global Flood Monitoring', 'https://global-flood.emergency.copernicus.eu/'), ('Quality assessment papers', mod('resource', 399))],
+         extra='''<h5 class="iot-h">Error estimation – reading</h5>
+      <p>Two papers on the quality of satellite products are attached to this module: <a href="%s" target="_blank" rel="noopener">A procedure for high-resolution satellite imagery quality assessment</a> (Sensors 2009) and <a href="%s" target="_blank" rel="noopener">TATSSI – quality data assessment of EO products</a> (IJGI 2021). They are the background for the "uncertainty" part of your reports.</p>''' % (mod('resource', 399), mod('resource', 400))),
+    dict(n=5, short='Landslides', title='Landslide mapping with satellite radar',
+         lecture=('7.12', 418), lab='14.12', hours='3 h',
+         lead='A landslide inventory is the input of every susceptibility model, and after a rain or earthquake event it must be produced in days. You run the Sentinel-1 amplitude-change method of Handwerger et al. (2022) that produces landslide density heatmaps in Earth Engine.',
+         outcome='Due 14.12 – a landslide density heatmap of a documented event (parameters stated), an overlay with a reference inventory or EMS map, and a short note on where the method works and where it fails.',
+         route=[('Watch lecture 5', 'Landslide types, triggers, inventory vs susceptibility, SAR change, InSAR, DEM', mod('url', 418)),
+                ('Lesson: landslides', 'Understanding landslides; the GEE heatmap script', mod('lesson', 402)),
+                ('Lab 5 – run the heatmap', 'Event, AOI, dates, orbit; inspect log-ratio; vary threshold; export', mod('lesson', 402)),
+                ('Note + figure', 'Parameters, agreement with the reference, limitations', None),
+                ('Prepare lab 6', 'Find a fire with cloud-free pre and post Sentinel-2 dates', None)],
+         links=[('Lecture 5 (slides)', mod('url', 418)), ('Lesson: landslides', mod('lesson', 402)),
+                ('Handwerger et al. 2022, NHESS (must read)', 'https://nhess.copernicus.org/articles/22/753/2022/'),
+                ('Copernicus EMS', 'https://emergency.copernicus.eu/'), ('International Charter', 'https://disasterscharter.org/')],
+         extra=''),
+    dict(n=6, short='Wildfires', title='Wildfire detection and burn severity',
+         lecture=('14.12', 419), lab='21.12', hours='3 h',
+         lead='Active fire hotspots tell you when it burned; the Normalized Burn Ratio before and after tells you how badly. You produce a burn severity map with the USGS dNBR classes and check it against EFFIS.',
+         outcome='Due 21.12 – a burn severity map (dNBR, USGS classes) of your fire with the area per class in hectares, a FIRMS timeline, a comparison with the EFFIS perimeter and a short report following the checklist.',
+         route=[('Watch lecture 6', 'Intensity vs severity, active fire, NBR, dNBR classes, choosing dates, validation', mod('url', 419)),
+                ('Lesson: fire mapping', 'Background, spectral response, burn severity mapping, GEE script', mod('lesson', 403)),
+                ('Lab 6 – severity map', 'FIRMS dates, pre/post composites, NBR, dNBR, classes, hectares', mod('lesson', 403)),
+                ('Report', 'Checklist: dates, histogram, unburned class, EFFIS comparison', None),
+                ('Prepare lab 7', 'Nothing to install yet; R users: install rgee at home', None)],
+         links=[('Lecture 6 (slides)', mod('url', 419)), ('Lesson: fire detection and severity', mod('lesson', 403)),
+                ('UN-SPIDER burn severity practice', 'https://un-spider.org/advisory-support/recommended-practices/recommended-practice-burn-severity/burn-severity-earth-engine'),
+                ('NASA FIRMS', 'https://firms.modaps.eosdis.nasa.gov/'), ('EFFIS', 'https://forest-fire.emergency.copernicus.eu/')],
+         extra=''),
+    dict(n=7, short='Python & R', title='GEE beyond the Code Editor – and the wrap-up',
+         lecture=('21.12', 420), lab='11.01', hours='4 h',
+         lead='The same engine from Python (Colab, geemap) and R (rgee): reproducible notebooks, your own data, real statistics. The capstone reproduces one hazard workflow as a notebook. Lecture 8 closes the course with uncertainty, operational services and assessment.',
+         outcome='Due 11.01 – a Colab (or R) notebook that reproduces one of labs 4–6 with text cells, figures, parameters and a limitations section; the QA-bitmask exercise; the API quiz. This is the final deliverable of the course.',
+         route=[('Watch lecture 7', 'Why leave the editor, Colab, JS → Python differences, bitmasks, exports, rgee', mod('url', 420)),
+                ('Lesson: APIs for GEE', 'Python/Colab, Colab exercise, cloud masking, rgee, quiz', mod('lesson', 404)),
+                ('Lab 7 – Colab + geemap', 'Authenticate, translate your lab-2 script, QA60 and SCL masks, export', mod('lesson', 404)),
+                ('Lab 7 – capstone notebook', 'Pick flood, landslide or fire and rerun it as a notebook', mod('lesson', 404)),
+                ('Lecture 8 – wrap-up', 'One workflow, sources of error, uncertainty, what next, assessment', mod('url', 421))],
+         links=[('Lecture 7 (slides)', mod('url', 420)), ('Lecture 8 – wrap-up (slides)', mod('url', 421)), ('Lesson: APIs for GEE', mod('lesson', 404)),
+                ('Earth Engine Python quickstart', 'https://developers.google.com/earth-engine/guides/quickstart_python'), ('geemap', 'https://geemap.org/'), ('rgee', 'https://r-spatial.github.io/rgee/')],
+         extra=''),
+]
+
+def module_html(m):
+    n = m['n']
+    route = ''.join(
+        f'<li><div><strong>{html.escape(t)}</strong><span>{html.escape(d)}</span>' + (f' <a href="{u}">open →</a>' if u else '') + '</div></li>'
+        for t, d, u in m['route'])
+    links = ''.join(f'<li><a href="{u}" target="_blank" rel="noopener">{html.escape(t)}</a></li>' for t, u in m['links'])
+    lec_date, lec_cm = m['lecture']
+    return f'''<div class="iot-module-intro">
+  <p class="iot-module-label">Module 0{n} · lecture {n} on {lec_date} → lab {n} on {m['lab']} ({m['hours']})</p>
+  <div class="iot-module-grid">
+    <div class="iot-module-main">
+      <h4 class="iot-module-title">{html.escape(m['title'])}</h4>
+      <p>{html.escape(m['lead'])}</p>
+      <div class="iot-outcome"><span>M{n}</span><div><strong>Milestone</strong><p>{html.escape(m['outcome'])}</p></div></div>
+      <aside class="iot-route" aria-label="Your path in module 0{n}">
+        <p class="iot-route-title">Your path</p>
+        <ol>{route}</ol>
+      </aside>
+      {m['extra']}
+      <h5 class="iot-h">Materials of this module</h5>
+      <ul class="iot-list">{links}</ul>
+    </div>
+  </div>
+</div>
+'''
+
+# ---------------------------------------------------------------- course intro (section 0)
+roadmap = ''.join(f'<a href="{sec(SECTION_IDS[m["n"]])}"><small>0{m["n"]} · {m["lab"]}</small><strong>{html.escape(m["short"])}</strong></a>' for m in MODULES)
+intro = f'''<div class="iot-course-intro">
+  <div class="iot-hero">
+    <div class="iot-hero-copy">
+      <p class="iot-eyebrow">Geoinformation and Spatial Management · winter 2026/27</p>
+      <h4 class="iot-title">From satellite pixels to hazard maps.</h4>
+      <p class="iot-lead">Seven modules, one recipe: images before and after the event, an index or a radar echo, a threshold, a map with hectares and an honest statement of its uncertainty – for floods, landslides and wildfires, in Google Earth Engine, Copernicus Browser, Python and R.</p>
+      <p class="iot-actions"><a class="iot-button" href="{sec(SECTION_IDS[1])}">Start with module 01</a></p>
+    </div>
+    <figure class="iot-system-map" aria-labelledby="geo-flow-title">
+      <figcaption id="geo-flow-title">The workflow you build in every module</figcaption>
+      <div class="iot-flow">
+        <div class="iot-flow-node"><strong>Before</strong><span>cloud-free composite or radar stack before the event</span></div>
+        <span class="iot-flow-arrow" aria-hidden="true">→</span>
+        <div class="iot-flow-node"><strong>After</strong><span>the first images after the flood, slide or fire</span></div>
+        <div class="iot-flow-node iot-flow-wide"><strong>Difference → threshold → map</strong><span>index or backscatter change, classes, area in hectares, validation against EMS / EFFIS / GFM</span></div>
+      </div>
+      <p class="iot-map-result">Result: a reproducible hazard map with stated dates, thresholds, accuracy and limitations.</p>
+    </figure>
+  </div>
+
+  <nav class="iot-start" aria-label="Start here">
+    <a class="iot-start-primary" href="{mod('page', 390)}"><small>Step 1 · before the first lab</small><strong>Create your two accounts</strong><span>Copernicus Data Space (free) and a registered Google Earth Engine Cloud project. Approval takes up to a day – do it this week.</span></a>
+    <a href="{mod('url', 414)}"><small>Lecture 1 · 9.11</small><strong>Course kick-off</strong><span>Hazards, the before/after recipe, how satellites see, where to get data in 2026.</span></a>
+    <a href="{mod('url', 413)}"><small>Overview</small><strong>Intro presentation</strong><span>The whole course on 25 slides: tools, methods, literature.</span></a>
+  </nav>
+
+  <nav class="iot-roadmap" aria-label="Roadmap of the seven modules">{roadmap}</nav>
+
+  <div class="iot-principles">
+    <div><strong>Lecture, then lab</strong><span>Every Monday lecture (10:45) prepares the lab of the following Monday (8:30). Watch it, then follow the lesson steps.</span></div>
+    <div><strong>One milestone per module</strong><span>M1 accounts and first script · M2 index areas · M3 classification report · M4 flood map · M5 landslide heatmap · M6 burn severity · M7 capstone notebook.</span></div>
+    <div><strong>Numbers, not pictures</strong><span>Every map comes with hectares, a threshold you can defend and a comparison with an independent reference.</span></div>
+  </div>
+
+  <div class="iot-note iot-note--info">
+    <p class="iot-note-title">How to use this page</p>
+    <p>Each module below has the same layout: <strong>Milestone</strong> (what you hand in and when), <strong>Your path</strong> (the order of lecture, lesson, lab and homework) and the materials. Deadlines: the milestone of module N is due at the start of lab N+1; the capstone notebook by the date given in lecture 8. Questions go to the <a href="{mod('forum', 388)}">Announcements forum</a>.</p>
+  </div>
+</div>
+'''
+
+# ---------------------------------------------------------------- write
+(OUT / 's0-summary.html').write_text(intro, encoding='utf-8', newline='\n')
+for m in MODULES:
+    (OUT / f's{m["n"]}-summary.html').write_text(module_html(m), encoding='utf-8', newline='\n')
+
+LECTURE_INTRO = '<div class="iot-material iot-material--label" data-iot-material="v1"><p>Slides of lecture {n} ({d}). Opens in a new window; arrows move between slides, <code>F</code> full screen, <code>?</code> help, <code>S</code> speaker notes.</p></div>\n'
+for m in MODULES:
+    d, cm = m['lecture']
+    (OUT / f's{m["n"]}-url-{cm}.intro.html').write_text(LECTURE_INTRO.format(n=m['n'], d=d), encoding='utf-8', newline='\n')
+(OUT / 's7-url-421.intro.html').write_text(LECTURE_INTRO.format(n=8, d='11.01'), encoding='utf-8', newline='\n')
+(OUT / 's0-forum-388.intro.html').write_text('<div class="iot-material iot-material--label" data-iot-material="v1"><p>Announcements, deadlines and questions about the labs. Enrolment key for this course: <code>GEO</code>.</p></div>\n', encoding='utf-8', newline='\n')
+
+ops = [
+    ('sectionname', 0, 'Start here'),
+    ('sectionname', 1, '01 · Kick-off: natural hazards, Earth observation and your accounts'),
+    ('sectionname', 2, '02 · Google Earth Engine: the Code Editor'),
+    ('sectionname', 3, '03 · Machine learning classifiers'),
+    ('sectionname', 4, '04 · Flood mapping'),
+    ('sectionname', 5, '05 · Landslide mapping'),
+    ('sectionname', 6, '06 · Wildfire mapping'),
+    ('sectionname', 7, '07 · Python and R APIs for GEE · wrap-up'),
+    # lecture first, then lesson/materials, homework last
+    ('sequence', 1, '414,413,390'),
+    ('sequence', 2, '415,391,394,395,392,393'),
+    ('sequence', 3, '416,396,397,398'),
+    ('sequence', 4, '417,401,399,400'),
+    ('sequence', 5, '418,402'),
+    ('sequence', 6, '419,403'),
+    ('sequence', 7, '420,404,421'),
+    ('rename', 390, 'Homework after lecture 1: accounts and webinars'),
+    ('rename', 391, 'Lesson 2: Google Earth Engine step by step'),
+    ('rename', 392, 'Homework M2: index areas (script link)'),
+    ('rename', 394, 'Tip: administrative borders as a FeatureCollection'),
+    ('rename', 395, 'Other data sources (SAR, DEM, rainfall, soil moisture, land cover, landslides)'),
+    ('rename', 396, 'Lesson 3: Classifiers'),
+    ('rename', 397, 'Short deck: Random Forest and k-means'),
+    ('rename', 398, 'Homework M3: classification report'),
+    ('rename', 401, 'Lesson 4: flood mapping – bands, water indices, SAR'),
+    ('rename', 402, 'Lesson 5: landslides and the SAR heatmap script'),
+    ('rename', 403, 'Lesson 6: fire detection and burn severity'),
+    ('rename', 404, 'Lesson 7: APIs for GEE – Python, Colab, rgee'),
+]
+(OUT / 'ops.tsv').write_text(''.join('\t'.join(map(str, o)) + '\n' for o in ops), encoding='utf-8', newline='\n')
+print('written: s0..s7 summaries, lecture intros, forum intro, ops.tsv')

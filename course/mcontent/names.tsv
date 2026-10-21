@@ -1,0 +1,192 @@
+section	116	
+cm	388	Ogłoszenia
+section	117	lecture: Use GEE, EO Browser and JUPYTER
+cm	389	Presentation
+cm	390	HOMEWORK
+cm	405	Lecture 1 – Natural hazards and Earth observation: course kick-off (9.11)
+section	118	GEE - javascript editor
+cm	391	Google Earth Engine - lesson link
+lessonpage	93	1. signUp GEE
+answer	299	1. signUp GEE	[jump 0]
+answer	304	Next	[jump -1]
+answer	319	Previous	[jump -40]
+answer	320	javascript	[jump 100]
+answer	321	Area	[jump 101]
+lessonpage	94	3. Add image collection
+answer	301	3. Add image collection	[jump 0]
+answer	305	Next	[jump -1]
+answer	306	Previous	[jump -40]
+answer	313	Area	[jump 101]
+answer	314	Quiz	[jump 95]
+lessonpage	95	image collections S2 levels
+answer	322	<p><span dir="auto">Level-1C</span><br></p>	[jump 0]
+answer	323	<p><span dir="auto">Level-2A</span><br></p>	[jump -1]
+answer	324	<p><span dir="auto">Level-1B</span><br></p>	[jump 0]
+answer	325	<p><span dir="auto">Level-0</span><br></p>	[jump 0]
+lessonpage	96	NDVI
+answer	326	<p><span jsslot="" role="presentation" jsname="bN97Pc"><span dir="auto">NIR and RED</span></span><br></p>	[jump -1]
+answer	327	<p><span jsslot="" role="presentation" jsname="bN97Pc"><span dir="auto">NIR and GREEN</span></span><br></p>	[jump 0]
+answer	328	<p><span jsslot="" role="presentation" jsname="bN97Pc"><span dir="auto">NIR and SWIR</span></span><br></p>	[jump 0]
+answer	329	<p><span jsslot="" role="presentation" jsname="bN97Pc"><span dir="auto">BLUE and SWIR</span></span><br></p>	[jump 0]
+lessonpage	97	GEE-quiz1
+answer	330	<p><span jsslot="" role="presentation" jsname="bN97Pc"><span dir="auto">Google Earth</span></span><br></p>	[jump -1]
+answer	331	<p><span jsslot="" role="presentation" jsname="bN97Pc"><span dir="auto">Google Earth Engine</span></span><br></p>	[jump 0]
+answer	332	<p><span jsslot="" role="presentation" jsname="bN97Pc"><span dir="auto">Google Earth Timelapse</span></span><br></p>	[jump 0]
+lessonpage	98	GEE - quiz2
+answer	333	<p><span jsslot="" role="presentation" jsname="bN97Pc"><span dir="auto">Public Data Catalog</span></span><br></p>	[jump 0]
+answer	334	<p><span jsslot="" role="presentation" jsname="bN97Pc"><span dir="auto">Co-located Data Storage and Computation</span></span><br></p>	[jump 0]
+answer	335	<p><span jsslot="" role="presentation" jsname="bN97Pc"></span></p><div><div><span dir="auto">Javascript and Python API</span></div></div><br><p></p>	[jump 0]
+answer	336	<p><span jsslot="" role="presentation" jsname="bN97Pc"></span></p><div><div><span dir="auto">Browser-based Code Editor</span></div></div><br><p></p>	[jump 0]
+answer	337	<p><span jsslot="" role="presentation" jsname="bN97Pc"><span dir="auto">All of them</span></span><br></p>	[jump -1]
+lessonpage	99	2. Loading End-to-End GEE Full Course Material
+answer	300	2. Loading End-to-End GEE Full Course Material	[jump 0]
+answer	311	Next	[jump -1]
+answer	312	Previous	[jump -40]
+lessonpage	100	4. javascript
+answer	302	4. javascript	[jump 0]
+answer	307	Next	[jump -1]
+answer	308	Previous	[jump -40]
+answer	315	End-to-End	[jump 99]
+lessonpage	101	5. Compute area with specific properties
+answer	303	5. Area computation	[jump 0]
+answer	309	End	[jump -9]
+answer	310	Next	[jump -1]
+answer	316	javascript	[jump 100]
+answer	317	Start	[jump 93]
+lessonpage	102	GEE - quiz3
+answer	338	<p><span dir="auto">Data is downloaded, pre-processed and co-located with computational resources</span><br></p>	[jump -1]
+answer	339	<p><span dir="auto">It supports only low-resolution datasets</span><br></p>	[jump 0]
+answer	340	<p><span dir="auto">The API takes advantage of parallel processing</span><br></p>	[jump -1]
+answer	341	<p><span dir="auto">Google Earth Engine is integrated with Google's AI Platform</span><br></p>	[jump 0]
+lessonpage	103	GEE - quiz4
+answer	342	<p><span dir="auto">Google Earth Engine User Guide</span><br></p>	[jump -1]
+answer	343	<p><span dir="auto">GIS Stack Exchange</span><br></p>	[jump -1]
+answer	344	<p><span dir="auto">Earth Engine Developer Forum</span><br></p>	[jump -1]
+lessonpage	104	End of cluster
+answer	318		[jump -9]
+cm	392	Homework
+cm	393	
+ Source: https://www.sentinel-hub.com/
+cm	394	Regarding to question about administrative borders...
+cm	395	
+
+In addition to the data available on EO Browse...
+cm	406	Lecture 2 – Google Earth Engine: the Code Editor (16.11)
+section	119	machine learning classifiers
+cm	396	Classifiers
+lessonpage	105	ML algorithms
+answer	347	ML algorithms	[jump 0]
+answer	352	Supervised Classification	[jump 108]
+answer	353	Unsupervised Classification	[jump 106]
+answer	368	Improving the Classification	[jump 107]
+answer	369	Advanced examples	[jump 109]
+lessonpage	106	Unsupervised Classification
+answer	346	Unsupervised Classification	[jump 0]
+answer	350	Supervised Classification	[jump 108]
+answer	351	ML algorithms	[jump 105]
+answer	366	Improving the Classification	[jump 107]
+answer	367	Advanced examples	[jump 109]
+lessonpage	107	Improving the Classification
+answer	354	Improving the Classification	[jump 0]
+answer	355	ML algorithms	[jump 105]
+answer	356	Supervised Classification	[jump 108]
+answer	357	Unsupervised Classification	[jump 106]
+answer	365	Advanced examples	[jump 109]
+lessonpage	108	Supervised Classification
+answer	345	Supervised Classification	[jump 0]
+answer	348	Unsupervised Classification	[jump 106]
+answer	349	ML algorithms	[jump 105]
+answer	363	Improving the Classification	[jump 107]
+answer	364	Advanced examples	[jump 109]
+lessonpage	109	Landslides and wildfire
+answer	358	Advanced examples	[jump 0]
+answer	359	ML algorithms	[jump 105]
+answer	360	Suprevised Classification	[jump 108]
+answer	361	Unsuprevised Classification	[jump 106]
+answer	362	Improving the Classification	[jump 107]
+cm	397	ML in GEE
+cm	398	Homework
+cm	407	Lecture 3 – Machine learning for land cover classification (23.11)
+section	120	Flood mapping approaches
+cm	399	A Procedure for High Resolution Satellite Imagery Quality Assessment
+cm	400	TATSSI: A Free and Open-Source Platform for Analyzing Earth Observation Products with Quality Data Assessment
+cm	401	Learning objectives of this topic
+lessonpage	110	Multispectral Information
+answer	370	Wavelength	[jump 0]
+answer	382	Next	[jump -1]
+lessonpage	111	Satellites characteristic
+answer	371	Satellites	[jump 0]
+answer	372	Wavelength	[jump -40]
+answer	383	Next	[jump -1]
+lessonpage	112	Water indices
+answer	373	Water indices	[jump 0]
+answer	374	Satellites	[jump -40]
+answer	384	Next	[jump -1]
+lessonpage	113	Other water indexes
+answer	375	Other water indexes	[jump 0]
+answer	376	Water indexes	[jump -40]
+answer	385	Next	[jump -1]
+lessonpage	114	SAR backscatter analysis
+answer	377	SAR	[jump 0]
+answer	378	Other indexes	[jump -40]
+answer	379	Next	[jump -1]
+lessonpage	115	InSAR detection techniques
+answer	380	InSAR	[jump 0]
+answer	381	SAR	[jump -40]
+answer	388	ICEYE	[jump -1]
+lessonpage	116	ICEYE - high temporal and spatial resolution SAR
+answer	386	ICEYE	[jump 0]
+answer	387	BACK TO START	[jump 110]
+answer	389	BACK	[jump 115]
+cm	408	Lecture 4 – Flood mapping: optical indices and SAR (30.11)
+section	121	Landslides mapping approaches
+cm	402	Landslides
+lessonpage	117	Understanding Landslides
+answer	391	Understanding Landslides	[jump 0]
+answer	392	GEE example	[jump -1]
+lessonpage	118	GEE js example
+answer	390	GEE js example	[jump 0]
+cm	409	Lecture 5 – Landslide mapping with satellite data (7.12)
+section	122	Wildfire mapping approaches
+cm	403	Fire detection and severity estimation
+lessonpage	119	Burn Severity Background
+answer	393	Introduction to fire mapping	[jump 0]
+answer	394	Remote Sensing and Electromagnetic Energy	[jump -1]
+lessonpage	120	Remote Sensing and Electromagnetic Energy
+answer	395	Spectral characteristics	[jump 0]
+answer	396	Burn Severity Mapping	[jump -1]
+lessonpage	121	Burn Severity Mapping
+answer	397	Burn Severity Mapping	[jump 0]
+answer	398	GEE example	[jump -1]
+lessonpage	122	GEE js example
+answer	399	GEE js example	[jump 0]
+cm	410	Lecture 6 – Wildfire detection and burn severity (14.12)
+section	123	Application Programming Interface for GEE
+cm	404	Application Programming Interfaces (API) for GEE
+lessonpage	123	Python (google colab and jupyter)
+answer	401	python	[jump 0]
+answer	402	Next	[jump -1]
+answer	409	Previous	[jump -40]
+lessonpage	124	API-quiz
+answer	403	<p><span dir="auto">Python</span><br></p>	[jump 126]
+answer	404	<p>R<br></p>	[jump 126]
+answer	405	<p><span dir="auto">Javascript</span><br></p>	[jump 126]
+answer	406	<p><span dir="auto">Julia</span><br></p>	[jump 126]
+lessonpage	125	Google Colab - exercise
+answer	410	Colab	[jump 0]
+answer	411	Next	[jump -1]
+answer	412	Previous	[jump -40]
+lessonpage	126	The End
+answer	418	The End	[jump -9]
+lessonpage	127	Cloud masking - Bitmasks in Google Earth Engine
+answer	413	Cloud masking	[jump 0]
+answer	414	Next	[jump -1]
+answer	415	Previous	[jump -40]
+lessonpage	128	RGEE - community package for GEE in R
+answer	400	RGEE	[jump 0]
+answer	407	Quiz	[jump -1]
+answer	408	Python	[jump -40]
+answer	416	Colab	[jump 123]
+answer	417	Next	[jump -1]
+cm	411	Lecture 7 – GEE beyond the Code Editor: Python, Colab, geemap, rgee (21.12)
+cm	412	Lecture 8 – From pixels to hazard maps: wrap-up (11.01)

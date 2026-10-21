@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+
+    <title></title>
+    <link rel="stylesheet" href="../lib/dist/reveal.css" />
+    <link rel="stylesheet" href="../lib/dist/theme/beige.css" id="theme" />
+    <link rel="stylesheet" href="../lib/plugin/highlight/zenburn.css" />
+	<link rel="stylesheet" href="../lib/css/layout.css" />
+	<link rel="stylesheet" href="../lib/plugin/customcontrols/style.css">
+	<link rel="stylesheet" href="../lib/plugin/chalkboard/style.css">
+
+	<link rel="stylesheet" href="../lib/plugin/reveal-pointer/pointer.css" />
+
+
+    <script defer src="../lib/dist/fontawesome/all.min.js"></script>
+
+	<script type="text/javascript">
+		var forgetPop = true;
+		function onPopState(event) {
+			if(forgetPop){
+				forgetPop = false;
+			} else {
+				parent.postMessage(event.target.location.href, "app://obsidian.md");
+			}
+        }
+		window.onpopstate = onPopState;
+		window.onmessage = event => {
+			if(event.data == "reload"){
+				window.document.location.reload();
+			}
+			forgetPop = true;
+		}
+
+		function fitElements(){
+			const itemsToFit = document.getElementsByClassName('fitText');
+			for (const item in itemsToFit) {
+				if (Object.hasOwnProperty.call(itemsToFit, item)) {
+					var element = itemsToFit[item];
+					fitElement(element,1, 1000);
+					element.classList.remove('fitText');
+				}
+			}
+		}
+
+		function fitElement(element, start, end){
+
+			let size = (end + start) / 2;
+			element.style.fontSize = `${size}px`;
+
+			if(Math.abs(start - end) < 1){
+				while(element.scrollHeight > element.offsetHeight){
+					size--;
+					element.style.fontSize = `${size}px`;
+				}
+				return;
+			}
+
+			if(element.scrollHeight > element.offsetHeight){
+				fitElement(element, start, size);
+			} else {
+				fitElement(element, size, end);
+			}		
+		}
+
+
+		document.onreadystatechange = () => {
+			fitElements();
+			if (document.readyState === 'complete') {
+				if (window.location.href.indexOf("?export") != -1){
+					parent.postMessage(event.target.location.href, "app://obsidian.md");
+				}
+				if (window.location.href.indexOf("print-pdf") != -1){
+					let stateCheck = setInterval(() => {
+						clearInterval(stateCheck);
+						window.print();
+					}, 250);
+				}
+			}
+	};
+
+
+        </script>
+  </head>
+  <body>
+    <div class="reveal">
+      <div class="slides"><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1920px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+<img src="../assets/Kursy/prezentacje/IOK/pliki/sateliteGEEbanner.png" alt="" style="width: 1920px; object-fit: fill">
+
+<div class="has-light-background" style="background-color: #EEB73F; padding: 250px 0  250px 300px; box-sizing: border-box; position: absolute; left: 0%; top: 33%; height: 34%; width: 60%; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" align="left">
+
+
+### Lecture 8<!-- .element: style="letter-spacing: 1.5rem" -->
+## From pixels to hazard maps
+#### wrap-up, uncertainty, what next
+
+#### Marek Urbaniak
+
+</div>
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1920px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+<div class="has-light-background" style="background-color: white; padding: 0 20px; box-sizing: border-box; position: absolute; left: 0%; top: 0%; height: 10%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" align="left">
+
+ <div class="block">
+
+## Today (45 min)
+</div>
+
+
+</div>
+
+<div class="" style="position: absolute; left: 5%; top: 17%; height: 66%; width: 90%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-start" align="left">
+
+
+
+
+<div class="has-light-background" style="background-color: #ffB73F; position: absolute; left: 92%; top: 55%; height: 26%; width: 13%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+</div>
+<div class="has-light-background" style="background-color: #00ced1; position: absolute; left: 87%; top: 75%; height: 26%; width: 13%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+</div>
+
+<div class="block">
+
+<!-- .element: style="font-size: 44px; position: absolute; left: 0%; top: 15%; height: 80%; width: 80%; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" align="left" -->
+1. One workflow, three hazards – what you actually learned
+2. Where the errors come from: data quality, dates, thresholds, validation
+3. How to write the limitations section (and why reviewers read it first)
+4. Operational services: the same methods, every day, by someone else
+5. Assessment and deadlines
+6. Where to go next: courses, books, data
+</div>
+
+
+
+<style>.reveal table{max-width:100%;border-collapse:collapse}.reveal table th,.reveal table td{padding:3px 8px;line-height:1.25}</style>
+
+
+</div>
+
+<style>
+.horizontal_dotted_line{
+  border-bottom: 2px dotted gray;
+} 
+</style>
+
+<div class="horizontal_dotted_line" style="position: absolute; left: 3%; top: 94%; height: 0%; width: 94%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+</div>
+
+<div class="" style="padding: 0 30px; box-sizing: border-box; position: absolute; left: 0%; top: 64%; height: 30%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-end" align="left">
+
+
+</div>
+
+<div class="" style="padding: 0 30px; box-sizing: border-box; position: absolute; left: 0%; top: 58%; height: 30%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-end" align="left">
+
+
+</div>
+
+<div class="" style="position: absolute; left: 0%; top: 94%; height: 6%; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+© 2026 Pracownia Meteorologii<!-- .element: style="font-weight: 300" -->
+</div>
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1920px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+<div class="has-light-background" style="background-color: white; padding: 0 20px; box-sizing: border-box; position: absolute; left: 0%; top: 0%; height: 10%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" align="left">
+
+ <div class="block">
+
+## One workflow, three hazards
+</div>
+
+
+</div>
+
+<div class="" style="position: absolute; left: 5%; top: 17%; height: 66%; width: 90%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-start" align="left">
+
+
+
+
+
+<div class="block">
+
+<!-- .element: style="font-size: 24px; position: absolute; left: 0%; top: 15%; height: 80%; width: 95%; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" align="left" -->
+| Step | Flood (lab 4) | Landslide (lab 5) | Wildfire (lab 6) |
+|---|---|---|---|
+| sensor | Sentinel-1 VH (+ S2 MNDWI) | Sentinel-1 VV+VH (+ S2 NDVI) | Sentinel-2 B8/B12 (+ FIRMS) |
+| before | 2–4 weeks, same orbit | months, same orbit | 2–4 weeks, same season |
+| after | days after peak | weeks after event | 1–4 weeks after containment |
+| quantity | backscatter dB | log-ratio of mean backscatter | NBR |
+| difference | after − before | |after/before| | pre − post (dNBR) |
+| threshold | −3 dB / ratio 1.25 / Otsu | change > t, then density grid | USGS classes (100, 270, 440, 660) |
+| masks | permanent water, slope < 5°, specks | slope > 5°, water, built-up | clouds (SCL), perimeter |
+| output | extent, ha, exposed people | density heatmap | severity classes, ha per class |
+| reference | GFM, EMS, gauges | EMS grading, inventories | EFFIS, MTBS, CBI |
+
+Plus lab 2 (indices, areas), lab 3 (classification, accuracy) and lab 7 (the same in Python/R). You can now build a before/after change product for **any** hazard with an event date.
+</div>
+
+
+
+
+</div>
+
+<style>
+.horizontal_dotted_line{
+  border-bottom: 2px dotted gray;
+} 
+</style>
+
+<div class="horizontal_dotted_line" style="position: absolute; left: 3%; top: 94%; height: 0%; width: 94%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+</div>
+
+<div class="" style="padding: 0 30px; box-sizing: border-box; position: absolute; left: 0%; top: 64%; height: 30%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-end" align="left">
+
+
+</div>
+
+<div class="" style="padding: 0 30px; box-sizing: border-box; position: absolute; left: 0%; top: 58%; height: 30%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-end" align="left">
+
+
+</div>
+
+<div class="" style="position: absolute; left: 0%; top: 94%; height: 6%; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+© 2026 Pracownia Meteorologii<!-- .element: style="font-weight: 300" -->
+</div>
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1920px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+<div class="has-light-background" style="background-color: white; padding: 0 20px; box-sizing: border-box; position: absolute; left: 0%; top: 0%; height: 10%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" align="left">
+
+ <div class="block">
+
+## Where the errors come from
+</div>
+
+
+</div>
+
+<div class="" style="position: absolute; left: 5%; top: 17%; height: 66%; width: 90%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-start" align="left">
+
+
+
+
+<div class="has-light-background" style="background-color: #ffB73F; position: absolute; left: 80%; top: 53%; height: 26%; width: 13%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+</div>
+
+<div class="block">
+
+<!-- .element: style="font-size: 22px; position: absolute; left: 0%; top: 15%; height: 78%; width: 50%; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" align="left" -->
+**1. Input data quality**
+- clouds, shadows, haze not masked; cirrus in "clear" scenes
+- geometric misregistration between dates (a 1-pixel shift creates a fake change along every edge)
+- radiometric: different processing baselines, TOA vs BOA mixed
+- SAR: speckle, different orbits/incidence angles, wind on water
+- QA flags and quality bands exist for a reason – read them (lab 7)
+</div>
+
+
+
+<div class="block">
+
+<!-- .element: style="font-size: 22px; background-color: #e8f4f8; padding: 15px; box-sizing: border-box; position: absolute; left: 53%; top: 15%; height: 78%; width: 45%; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" class="has-light-background" align="left" -->
+**2. Method choices**
+- dates (phenology, snow, harvest) – the number one source of false change
+- thresholds transferred from another biome
+- spatial resolution vs object size (20 m SWIR, small landslides)
+- composite method (median vs. single scene)
+
+**3. Validation**
+- no reference data = no accuracy, only a picture
+- reference from the same sensor is not independent
+- accuracy varies by class and by region – report per class
+
+Two papers on quality assessment in Moodle (section *Flood mapping*): Sensors 2009, 9, 3289 (high-resolution imagery QA); IJGI 2021, 10, 267 (TATSSI – quality flags of EO products).
+</div>
+
+
+
+
+</div>
+
+<style>
+.horizontal_dotted_line{
+  border-bottom: 2px dotted gray;
+} 
+</style>
+
+<div class="horizontal_dotted_line" style="position: absolute; left: 3%; top: 94%; height: 0%; width: 94%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+</div>
+
+<div class="" style="padding: 0 30px; box-sizing: border-box; position: absolute; left: 0%; top: 64%; height: 30%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-end" align="left">
+
+
+</div>
+
+<div class="" style="padding: 0 30px; box-sizing: border-box; position: absolute; left: 0%; top: 58%; height: 30%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-end" align="left">
+
+
+</div>
+
+<div class="" style="position: absolute; left: 0%; top: 94%; height: 6%; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+© 2026 Pracownia Meteorologii<!-- .element: style="font-weight: 300" -->
+</div>
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1920px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+<div class="has-light-background" style="background-color: white; padding: 0 20px; box-sizing: border-box; position: absolute; left: 0%; top: 0%; height: 10%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" align="left">
+
+ <div class="block">
+
+## Uncertainty you can quantify in one afternoon
+</div>
+
+
+</div>
+
+<div class="" style="position: absolute; left: 5%; top: 17%; height: 66%; width: 90%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-start" align="left">
+
+
+
+
+<div class="has-light-background" style="background-color: #00ced1; transform: rotate(-15deg); position: absolute; left: 87%; top: 75%; height: 26%; width: 13%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+</div>
+
+<div class="block">
+
+<!-- .element: style="font-size: 42px; position: absolute; left: 0%; top: 15%; height: 78%; width: 95%; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" align="left" -->
+1. **Threshold sensitivity**: run the map with the threshold ± 20 % → range of area (ha). Report *"flooded area 4 210 ha (3 650–4 820 for ratio 1.15–1.40)"*, not a single number
+2. **Date sensitivity**: a second pre-event composite (different weeks) → how much of the "change" moves
+3. **Confusion matrix** against any independent reference (EMS, EFFIS, field, VHR image): overall accuracy, per-class, kappa (lecture 3)
+4. **Area-adjusted accuracy** (Olofsson et al. 2014) – if you go on to a thesis: stratified sampling, confidence intervals on the area
+5. **Visual check** of 20 random pixels per class in Copernicus Browser – cheap, honest, always possible
+
+The report sentence that makes you credible: *"The method detects X with Y % accuracy against Z; it fails in … because …"*
+</div>
+
+
+
+
+
+
+</div>
+
+<style>
+.horizontal_dotted_line{
+  border-bottom: 2px dotted gray;
+} 
+</style>
+
+<div class="horizontal_dotted_line" style="position: absolute; left: 3%; top: 94%; height: 0%; width: 94%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+</div>
+
+<div class="" style="padding: 0 30px; box-sizing: border-box; position: absolute; left: 0%; top: 64%; height: 30%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-end" align="left">
+
+<div class="block">
+
+source: Olofsson, P. et al. (2014). Good practices for estimating area and assessing accuracy of land change. *Remote Sensing of Environment* 148, 42–57
+</div>
+
+
+
+</div>
+
+<div class="" style="padding: 0 30px; box-sizing: border-box; position: absolute; left: 0%; top: 58%; height: 30%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-end" align="left">
+
+
+</div>
+
+<div class="" style="position: absolute; left: 0%; top: 94%; height: 6%; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+© 2026 Pracownia Meteorologii<!-- .element: style="font-weight: 300" -->
+</div>
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1920px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+<div class="has-light-background" style="background-color: white; padding: 0 20px; box-sizing: border-box; position: absolute; left: 0%; top: 0%; height: 10%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" align="left">
+
+ <div class="block">
+
+## The same methods, every day, by someone else
+</div>
+
+
+</div>
+
+<div class="" style="position: absolute; left: 5%; top: 17%; height: 66%; width: 90%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-start" align="left">
+
+
+
+
+<div class="has-light-background" style="background-color: #ffB73F; position: absolute; left: 80%; top: 53%; height: 26%; width: 13%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+</div>
+
+<div class="block">
+
+<!-- .element: style="font-size: 25px; position: absolute; left: 0%; top: 15%; height: 78%; width: 95%; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" align="left" -->
+| Service | Hazard | Method inside | You used it as |
+|---|---|---|---|
+| [Copernicus EMS Rapid Mapping](https://rapidmapping.emergency.copernicus.eu/) | all | VHR optical + SAR, analysts | reference maps |
+| [Global Flood Monitoring](https://global-flood.emergency.copernicus.eu/) | floods | Sentinel-1, Otsu + ensemble | lab 4 reference |
+| [GloFAS / EFAS](https://global-flood.emergency.copernicus.eu/glofas-forecasting/) | floods | hydrological forecast | context |
+| [EFFIS](https://forest-fire.emergency.copernicus.eu/) | fires | MODIS/S2 burned area, FWI | lab 6 reference |
+| [NASA FIRMS](https://firms.modaps.eosdis.nasa.gov/) | fires | VIIRS/MODIS active fire | lab 6 timeline |
+| [NASA LHASA](https://gpm.nasa.gov/landslides/) | landslides | rainfall + susceptibility nowcast | context |
+| [EGMS](https://egms.land.copernicus.eu/) | slow motion | InSAR time series | context |
+| [Copernicus Browser Highlights](https://browser.dataspace.copernicus.eu/) | all | curated events | lab 1 |
+
+Know them, cite them, compare against them – and know that the method you ran in the lab is what runs inside.
+</div>
+
+
+
+
+</div>
+
+<style>
+.horizontal_dotted_line{
+  border-bottom: 2px dotted gray;
+} 
+</style>
+
+<div class="horizontal_dotted_line" style="position: absolute; left: 3%; top: 94%; height: 0%; width: 94%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+</div>
+
+<div class="" style="padding: 0 30px; box-sizing: border-box; position: absolute; left: 0%; top: 64%; height: 30%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-end" align="left">
+
+
+</div>
+
+<div class="" style="padding: 0 30px; box-sizing: border-box; position: absolute; left: 0%; top: 58%; height: 30%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-end" align="left">
+
+
+</div>
+
+<div class="" style="position: absolute; left: 0%; top: 94%; height: 6%; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+© 2026 Pracownia Meteorologii<!-- .element: style="font-weight: 300" -->
+</div>
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1920px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+<div class="has-light-background" style="background-color: white; padding: 0 20px; box-sizing: border-box; position: absolute; left: 0%; top: 0%; height: 10%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" align="left">
+
+ <div class="block">
+
+## What is coming (2026–2030)
+</div>
+
+
+</div>
+
+<div class="" style="position: absolute; left: 5%; top: 17%; height: 66%; width: 90%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-start" align="left">
+
+
+
+
+<div class="has-light-background" style="background-color: #00ced1; transform: rotate(-15deg); position: absolute; left: 87%; top: 75%; height: 26%; width: 13%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+</div>
+
+<div class="block">
+
+<!-- .element: style="font-size: 42px; position: absolute; left: 0%; top: 15%; height: 78%; width: 95%; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" align="left" -->
+- **Sentinel-1C/1D** restore the 6-day repeat; **NISAR** (NASA/ISRO, L-band, 2025) – free L-band SAR every 12 days, better under vegetation
+- **Sentinel-2C** + the expansion missions (CHIME hyperspectral, LSTM thermal, ROSE-L L-band SAR) ~2028–2030
+- **Landsat Next** (26 bands, ~2031)
+- **Earth Engine**: noncommercial tiers, Cloud Score+, more AI-ready embeddings (`GOOGLE/SATELLITE_EMBEDDING/V1/ANNUAL`) – a 64-band "fingerprint" per pixel you can classify with RF directly
+- **Foundation models** (Prithvi, Clay, SatMAE) – pretrained on millions of scenes, fine-tuned for floods/fires with a few hundred labels
+- **Copernicus Data Space**: openEO and STAC APIs – the open alternative to GEE for reproducible science
+</div>
+
+
+
+
+</div>
+
+<style>
+.horizontal_dotted_line{
+  border-bottom: 2px dotted gray;
+} 
+</style>
+
+<div class="horizontal_dotted_line" style="position: absolute; left: 3%; top: 94%; height: 0%; width: 94%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+</div>
+
+<div class="" style="padding: 0 30px; box-sizing: border-box; position: absolute; left: 0%; top: 64%; height: 30%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-end" align="left">
+
+
+</div>
+
+<div class="" style="padding: 0 30px; box-sizing: border-box; position: absolute; left: 0%; top: 58%; height: 30%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-end" align="left">
+
+
+</div>
+
+<div class="" style="position: absolute; left: 0%; top: 94%; height: 6%; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+© 2026 Pracownia Meteorologii<!-- .element: style="font-weight: 300" -->
+</div>
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1920px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+<div class="has-light-background" style="background-color: white; padding: 0 20px; box-sizing: border-box; position: absolute; left: 0%; top: 0%; height: 10%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" align="left">
+
+ <div class="block">
+
+## Assessment
+</div>
+
+
+</div>
+
+<div class="" style="position: absolute; left: 5%; top: 17%; height: 66%; width: 90%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-start" align="left">
+
+
+
+
+<div class="has-light-background" style="background-color: #ffB73F; position: absolute; left: 80%; top: 53%; height: 26%; width: 13%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+</div>
+
+<div class="block">
+
+<!-- .element: style="font-size: 44px; position: absolute; left: 0%; top: 15%; height: 78%; width: 95%; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" align="left" -->
+<!-- TODO: fill in the actual rules. Placeholder based on the Moodle assignments: -->
+- Lab reports in Moodle: index areas (lab 2), classification report (lab 3), flood / landslide / fire notes (labs 4–6)
+- Capstone notebook (lab 7): one hazard reproduced in Python or R, with text, figures, parameters, limitations
+- Lesson quizzes (GEE, API)
+- Deadline for all submissions: __.01.2027
+- Grade: **% reports,** % capstone, __ % quizzes
+</div>
+
+
+
+
+</div>
+
+<style>
+.horizontal_dotted_line{
+  border-bottom: 2px dotted gray;
+} 
+</style>
+
+<div class="horizontal_dotted_line" style="position: absolute; left: 3%; top: 94%; height: 0%; width: 94%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+</div>
+
+<div class="" style="padding: 0 30px; box-sizing: border-box; position: absolute; left: 0%; top: 64%; height: 30%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-end" align="left">
+
+
+</div>
+
+<div class="" style="padding: 0 30px; box-sizing: border-box; position: absolute; left: 0%; top: 58%; height: 30%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-end" align="left">
+
+
+</div>
+
+<div class="" style="position: absolute; left: 0%; top: 94%; height: 6%; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+© 2026 Pracownia Meteorologii<!-- .element: style="font-weight: 300" -->
+</div>
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1920px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+<div class="has-light-background" style="background-color: white; padding: 0 20px; box-sizing: border-box; position: absolute; left: 0%; top: 0%; height: 10%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" align="left">
+
+ <div class="block">
+
+## Where to go next
+</div>
+
+
+</div>
+
+<div class="" style="position: absolute; left: 5%; top: 17%; height: 66%; width: 90%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-start" align="left">
+
+
+
+
+<div class="has-light-background" style="background-color: #00ced1; transform: rotate(-15deg); position: absolute; left: 87%; top: 75%; height: 26%; width: 13%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+</div>
+
+<div class="block">
+
+<!-- .element: style="font-size: 32px; position: absolute; left: 0%; top: 15%; height: 80%; width: 48%; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" align="left" -->
+**Courses (free)**
+- [End-to-End Google Earth Engine](https://courses.spatialthoughts.com/end-to-end-gee.html) – Spatial Thoughts; now you can follow it
+- [NASA ARSET](https://appliedsciences.nasa.gov/get-involved/training/english/arset-fundamentals-remote-sensing) – fundamentals, SAR, floods, fires (recorded webinars)
+- [Earth Engine tutorials](https://developers.google.com/earth-engine/tutorials/ttt), [geemap tutorials](https://geemap.org/tutorials/)
+- [UN-SPIDER recommended practices](https://un-spider.org/advisory-support/recommended-practices) – all hazards, step by step
+- [Copernicus Data Space videos](https://www.youtube.com/@copernicusdataspaceecosystem)
+</div>
+
+
+
+<div class="block">
+
+<!-- .element: style="font-size: 29px; background-color: #e8f4f8; padding: 15px; box-sizing: border-box; position: absolute; left: 52%; top: 15%; height: 80%; width: 48%; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" class="has-light-background" align="left" -->
+**Books**
+- Cardille, Crowley, Saah, Clinton (eds.) 2024, *[Cloud-Based Remote Sensing with Google Earth Engine](https://www.eefabook.org/)* – free, every chapter is a GEE script
+- Lovelace, Nowosad, Muenchow, *[Geocomputation with R](https://r.geocompx.org/)*; Pebesma & Bivand, *[Spatial Data Science](https://r-spatial.org/book/)*
+- Wickham & Grolemund, *[R for Data Science](https://r4ds.hadley.nz/)*; Wickham, *[Advanced R](https://adv-r.hadley.nz/)*
+- Wimberly, *[Geographic Data Science with R](https://bookdown.org/mcwimberly/gdswr-book/)*
+- Hengl & MacMillan, *[Predictive Soil Mapping with R](https://soilmapper.org/)*
+- *[rgee documentation](https://r-spatial.github.io/rgee/)*
+
+**Papers you read in this course**
+- Handwerger et al. 2022, NHESS (landslides, SAR)
+- Notti et al. 2018, Remote Sensing (floods, open data)
+- Key & Benson 2006 (NBR); Olofsson et al. 2014 (accuracy)
+</div>
+
+
+
+
+</div>
+
+<style>
+.horizontal_dotted_line{
+  border-bottom: 2px dotted gray;
+} 
+</style>
+
+<div class="horizontal_dotted_line" style="position: absolute; left: 3%; top: 94%; height: 0%; width: 94%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+</div>
+
+<div class="" style="padding: 0 30px; box-sizing: border-box; position: absolute; left: 0%; top: 64%; height: 30%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-end" align="left">
+
+
+</div>
+
+<div class="" style="padding: 0 30px; box-sizing: border-box; position: absolute; left: 0%; top: 58%; height: 30%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-end" align="left">
+
+
+</div>
+
+<div class="" style="position: absolute; left: 0%; top: 94%; height: 6%; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+© 2026 Pracownia Meteorologii<!-- .element: style="font-weight: 300" -->
+</div>
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1920px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+<div class="block">
+
+# Thank you 😄
+</div>
+
+
+
+### … and good luck with the capstone notebooks
+</div></script></section></div>
+    </div>
+
+    <script src="../lib/dist/reveal.js"></script>
+
+    <script src="../lib/plugin/markdown/markdown.js"></script>
+    <script src="../lib/plugin/highlight/highlight.js"></script>
+    <script src="../lib/plugin/zoom/zoom.js"></script>
+    <script src="../lib/plugin/notes/notes.js"></script>
+    <script src="../lib/plugin/math/math.js"></script>
+	<script src="../lib/plugin/mermaid/mermaid.js"></script>
+	<script src="../lib/plugin/chart/chart.min.js"></script>
+	<script src="../lib/plugin/chart/plugin.js"></script>
+	<script src="../lib/plugin/menu/menu.js"></script>
+	<script src="../lib/plugin/customcontrols/plugin.js"></script>
+	<script src="../lib/plugin/chalkboard/plugin.js"></script>
+	<script src="../lib/plugin/reveal-pointer/pointer.js"></script>
+	<script src="../lib/plugin/elapsed-time-bar/elapsed-time-bar.js"></script>
+
+    <script>
+      function extend() {
+        var target = {};
+        for (var i = 0; i < arguments.length; i++) {
+          var source = arguments[i];
+          for (var key in source) {
+            if (source.hasOwnProperty(key)) {
+              target[key] = source[key];
+            }
+          }
+        }
+        return target;
+      }
+
+	  function isLight(color) {
+		let hex = color.replace('#', '');
+
+		// convert #fff => #ffffff
+		if(hex.length == 3){
+			hex = `${hex[0]}${hex[0]}${hex[1]}${hex[1]}${hex[2]}${hex[2]}`;
+		}
+
+		const c_r = parseInt(hex.substr(0, 2), 16);
+		const c_g = parseInt(hex.substr(2, 2), 16);
+		const c_b = parseInt(hex.substr(4, 2), 16);
+		const brightness = ((c_r * 299) + (c_g * 587) + (c_b * 114)) / 1000;
+		return brightness > 155;
+	}
+
+	var bgColor = getComputedStyle(document.documentElement).getPropertyValue('--r-background-color').trim();
+	var isLight = isLight(bgColor);
+
+	if(isLight){
+		document.body.classList.add('has-light-background');
+	} else {
+		document.body.classList.add('has-dark-background');
+	}
+
+      // default options to init reveal.js
+      var defaultOptions = {
+        controls: true,
+        progress: true,
+        history: true,
+        center: true,
+        transition: 'default', // none/fade/slide/convex/concave/zoom
+        plugins: [
+          RevealMarkdown,
+          RevealHighlight,
+          RevealZoom,
+          RevealNotes,
+          RevealMath.MathJax3,
+		  RevealMermaid,
+		  RevealChart,
+		  RevealCustomControls,
+		  RevealMenu,
+	      RevealPointer,
+		  RevealChalkboard, 
+		  ElapsedTimeBar
+        ],
+
+
+    	allottedTime: 2700 * 1000,
+
+		mathjax3: {
+			mathjax: '../lib/plugin/math/mathjax/tex-mml-chtml.js',
+		},
+		markdown: {
+		  gfm: true,
+		  mangle: true,
+		  pedantic: false,
+		  smartLists: false,
+		  smartypants: false,
+		},
+
+		mermaid: {
+			theme: isLight ? 'default' : 'dark',
+		},
+
+		customcontrols: {
+			controls: [
+				{id: 'toggle-overview',
+				title: 'Toggle overview (O)',
+				icon: '<i class="fa fa-th"></i>',
+				action: 'Reveal.toggleOverview();'
+				},
+				{ icon: '<i class="fa fa-pen-square"></i>',
+				title: 'Toggle chalkboard (B)',
+				action: 'RevealChalkboard.toggleChalkboard();'
+				},
+				{ icon: '<i class="fa fa-pen"></i>',
+				title: 'Toggle notes canvas (C)',
+				action: 'RevealChalkboard.toggleNotesCanvas();'
+				},
+			]
+		},
+		menu: {
+			loadIcons: false
+		}
+      };
+
+      // options from URL query string
+      var queryOptions = Reveal().getQueryHash() || {};
+
+      var options = extend(defaultOptions, {"width":1920,"height":1200,"margin":0,"maxScale":4,"controls":true,"progress":true,"slideNumber":true,"transition":"zoom","transitionSpeed":"slow"}, queryOptions);
+    </script>
+
+    <script>
+      Reveal.initialize(options);
+    </script>
+  </body>
+
+  <!-- created with Advanced Slides -->
+</html>

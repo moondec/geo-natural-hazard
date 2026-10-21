@@ -1,0 +1,994 @@
+/* IOT COURSE PILOT START course=10 */
+.course-10 {
+  --iot-canvas: #eef3f8;
+  --iot-surface: #f8fafd;
+  --iot-white: #fff;
+  --iot-ink: #15202b;
+  --iot-muted: #5a6a7a;
+  --iot-line: #c9d6e3;
+  --iot-accent: #0b4f8a;
+  --iot-accent-soft: #dbe9f7;
+  --iot-night: #10213a;
+  --iot-night-2: #182c48;
+  --iot-radius: 16px;
+  --iot-shadow: 0 18px 45px rgba(16, 40, 70, .12);
+}
+.course-10 .iot-course-intro,
+.course-10 .iot-module-intro { color: var(--iot-ink); line-height: 1.55; }
+.course-10 .iot-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1.06fr) minmax(340px, .94fr);
+  gap: 42px;
+  align-items: center;
+  padding: 32px;
+  border-radius: var(--iot-radius);
+  background: var(--iot-canvas);
+}
+.course-10 .iot-eyebrow,
+.course-10 .iot-module-label {
+  margin: 0 0 12px;
+  color: var(--iot-accent);
+  font-size: .78rem;
+  font-weight: 800;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+.course-10 .iot-title {
+  max-width: 680px;
+  font-size: clamp(2.6rem, 5vw, 4.4rem);
+  font-weight: 760;
+  line-height: .98;
+  letter-spacing: -.055em;
+}
+.course-10 .iot-lead {
+  max-width: 570px;
+  margin: 20px 0 0;
+  color: var(--iot-muted);
+  font-size: 1.16rem;
+}
+.course-10 .iot-actions { margin: 26px 0 0; }
+.course-10 .iot-button {
+  display: inline-flex;
+  min-height: 46px;
+  align-items: center;
+  justify-content: center;
+  padding: 11px 17px;
+  border: 1px solid var(--iot-accent);
+  border-radius: var(--iot-radius);
+  color: #fff;
+  background: var(--iot-accent);
+  font-weight: 760;
+  text-decoration: none;
+  transition: transform .15s ease;
+}
+.course-10 .iot-button:hover { color: #fff; transform: translateY(-2px); }
+.course-10 .iot-button:active { transform: translateY(0); }
+.course-10 .iot-system-map {
+  overflow: hidden;
+  margin: 0;
+  padding: 24px;
+  border-radius: var(--iot-radius);
+  color: #e6eef8;
+  background: var(--iot-night);
+  box-shadow: var(--iot-shadow);
+}
+.course-10 .iot-system-map figcaption { color: #b5c6d8; font-size: .82rem; }
+.course-10 .iot-flow {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 12px;
+  align-items: center;
+  margin-top: 30px;
+}
+.course-10 .iot-flow-node {
+  min-height: 84px;
+  padding: 15px;
+  border: 1px solid rgba(255,255,255,.18);
+  border-radius: var(--iot-radius);
+  background: var(--iot-night-2);
+}
+.course-10 .iot-flow-node strong,
+.course-10 .iot-flow-node span { display: block; }
+.course-10 .iot-flow-node span { margin-top: 5px; color: #b5c6d8; font-size: .8rem; }
+.course-10 .iot-flow-arrow { color: #7fb8f0; font-size: 1.25rem; font-weight: 900; }
+.course-10 .iot-flow-wide { grid-column: 1 / -1; width: 70%; margin: 0 auto; border-color: #4f7aa8; }
+.course-10 .iot-map-result {
+  margin: 22px 0 0;
+  padding-top: 18px;
+  border-top: 1px solid rgba(255,255,255,.15);
+  color: #dbe6f2;
+  font-size: .86rem;
+}
+.course-10 .iot-roadmap {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(105px, 1fr));
+  overflow-x: auto;
+  margin-top: 14px;
+  border: 1px solid var(--iot-line);
+  border-radius: var(--iot-radius);
+  background: var(--iot-surface);
+}
+.course-10 .iot-roadmap > * {
+  min-width: 105px;
+  padding: 16px 12px;
+  border-right: 1px solid var(--iot-line);
+  color: var(--iot-ink);
+  text-decoration: none;
+}
+.course-10 .iot-roadmap > *:last-child { border-right: 0; }
+.course-10 .iot-roadmap [aria-current="step"] { color: #fff; background: var(--iot-accent); }
+.course-10 .iot-roadmap small,
+.course-10 .iot-roadmap strong { display: block; }
+.course-10 .iot-roadmap small { margin-bottom: 3px; opacity: .72; }
+.course-10 .iot-roadmap strong { font-size: .83rem; }
+.course-10 .iot-principles {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-top: 14px;
+}
+.course-10 .iot-principles > div {
+  padding: 16px;
+  border-left: 4px solid var(--iot-accent);
+  background: var(--iot-surface);
+}
+.course-10 .iot-principles strong,
+.course-10 .iot-principles span { display: block; }
+.course-10 .iot-principles span { margin-top: 4px; color: var(--iot-muted); font-size: .84rem; }
+.course-10 .iot-module-intro { margin: 8px 0 24px; }
+.course-10 .iot-module-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(280px, .8fr);
+  gap: 18px;
+}
+.course-10 .iot-module-main {
+  padding: 28px;
+  border: 1px solid var(--iot-line);
+  border-radius: var(--iot-radius);
+  background: var(--iot-white);
+  box-shadow: var(--iot-shadow);
+}
+.course-10 .iot-module-title {
+  max-width: 720px;
+  font-size: clamp(1.8rem, 4vw, 2.7rem);
+  font-weight: 760;
+  line-height: 1.08;
+  letter-spacing: -.04em;
+}
+.course-10 .iot-module-main > p { max-width: 65ch; margin: 14px 0 0; color: var(--iot-muted); }
+.course-10 .iot-outcome {
+  display: grid;
+  grid-template-columns: 44px 1fr;
+  gap: 14px;
+  margin-top: 24px;
+  padding: 18px;
+  border-radius: var(--iot-radius);
+  background: var(--iot-accent-soft);
+}
+.course-10 .iot-outcome > span {
+  display: grid;
+  width: 44px;
+  height: 44px;
+  place-items: center;
+  border-radius: var(--iot-radius);
+  color: #fff;
+  background: var(--iot-accent);
+  font-weight: 850;
+}
+.course-10 .iot-outcome p { margin: 3px 0 0; color: #3b4d61; }
+.course-10 .iot-route {
+  padding: 24px;
+  border-radius: var(--iot-radius);
+  color: #e6eef8;
+  background: var(--iot-night);
+}
+.course-10 .iot-route-title { font-size: 1.22rem; font-weight: 760; }
+.course-10 .iot-route ol { margin: 16px 0 0; padding: 0; list-style: none; counter-reset: route; }
+.course-10 .iot-route li {
+  display: grid;
+  grid-template-columns: 30px 1fr;
+  gap: 11px;
+  padding: 11px 0;
+  border-bottom: 1px solid rgba(255,255,255,.13);
+  counter-increment: route;
+}
+.course-10 .iot-route li:last-child { border-bottom: 0; }
+.course-10 .iot-route li::before {
+  display: grid;
+  width: 29px;
+  height: 29px;
+  place-items: center;
+  border: 1px solid #5b7fa6;
+  border-radius: var(--iot-radius);
+  color: #c0cfe0;
+  content: counter(route);
+  font-size: .74rem;
+  font-weight: 750;
+}
+.course-10 .iot-route strong,
+.course-10 .iot-route span { display: block; }
+.course-10 .iot-route span { color: #b5c6d8; font-size: .8rem; }
+@media (max-width: 820px) {
+  .course-10 .iot-hero,
+  .course-10 .iot-module-grid { grid-template-columns: 1fr; }
+  .course-10 .iot-hero { gap: 28px; padding: 24px; }
+  .course-10 .iot-principles { grid-template-columns: 1fr; }
+}
+@media (max-width: 520px) {
+  .course-10 .iot-title { font-size: 2.6rem; }
+  .course-10 .iot-flow { grid-template-columns: 1fr; }
+  .course-10 .iot-flow-arrow { transform: rotate(90deg); text-align: center; }
+  .course-10 .iot-flow-wide { grid-column: auto; width: 100%; }
+  .course-10 .iot-module-main,
+  .course-10 .iot-route { padding: 20px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .course-10 .iot-button { transition: none; }
+  .course-10 .iot-button:hover { transform: none; }
+}
+/* IOT COURSE PILOT END course=10 */
+/* IOT COURSE NEXT START course=10 */
+.course-10 .iot-course-intro,
+.course-10 .iot-module-intro {
+  --iot-ink-soft: #46586b;
+  --iot-line-strong: #afc2d6;
+  --iot-chip: #eef3f8;
+  --iot-warn-bg: #fdf6e7;
+  --iot-warn-ink: #7a4d00;
+  --iot-info-bg: #edf3fa;
+  --iot-check-bg: #e9f3fb;
+}
+body.course-10.limitedwidth #page.drawers .main-inner,
+body.course-10.pagelayout-course #page.drawers .main-inner {
+  width: 100%;
+  max-width: none;
+}
+.course-10 h4.iot-title,
+.course-10 h4.iot-module-title,
+.course-10 p.iot-route-title {
+  margin: 0;
+  padding: 0;
+  color: inherit;
+}
+.course-10 .iot-module-main > p:first-of-type { color: var(--iot-muted); }
+.course-10 .iot-module-main > p { max-width: none; margin: 14px 0 0; color: var(--iot-ink); }
+.course-10 .iot-module-grid { grid-template-columns: minmax(0, 1fr); }
+.course-10 .iot-module-main {
+  display: grid;
+  grid-template-columns: minmax(0, 1.25fr) minmax(260px, .75fr);
+  gap: 0 18px;
+}
+.course-10 .iot-module-main > * { grid-column: 1 / -1; }
+.course-10 .iot-module-main > .iot-module-title { grid-column: 1; grid-row: 1; }
+.course-10 .iot-module-main > p:first-of-type { grid-column: 1; grid-row: 2; }
+.course-10 .iot-module-main > .iot-outcome { grid-column: 1; grid-row: 3; }
+.course-10 .iot-module-main > .iot-route {
+  grid-column: 2;
+  grid-row: 1 / 4;
+  min-width: 0;
+}
+.course-10 .iot-h {
+  max-width: none;
+  margin: 28px 0 0;
+  padding-top: 14px;
+  border-top: 1px solid var(--iot-line);
+  color: var(--iot-accent);
+  font-size: 1.02rem;
+  font-weight: 800;
+  letter-spacing: -.01em;
+}
+.course-10 .iot-module-main code,
+.course-10 .iot-note code {
+  padding: .08em .35em;
+  border: 1px solid var(--iot-line);
+  border-radius: 5px;
+  background: var(--iot-chip);
+  color: var(--iot-ink);
+  font-size: .88em;
+  overflow-wrap: break-word;
+}
+.course-10 .iot-code {
+  overflow-x: auto;
+  max-width: 100%;
+  margin: 14px 0 0;
+  padding: 16px;
+  border: 1px solid var(--iot-line);
+  border-radius: var(--iot-radius);
+  background: var(--iot-chip);
+  color: var(--iot-ink);
+  font-size: .86rem;
+  line-height: 1.5;
+  tab-size: 2;
+}
+.course-10 .iot-code code {
+  padding: 0;
+  border: 0;
+  background: none;
+  font-size: inherit;
+  white-space: pre;
+}
+.course-10 .iot-list { max-width: none; margin: 12px 0 0; padding-left: 1.25rem; }
+.course-10 .iot-list li { margin-top: 6px; }
+.course-10 ol.iot-list--num { list-style: decimal; }
+.course-10 .iot-spec {
+  display: grid;
+  grid-template-columns: minmax(160px, 15rem) minmax(0, 1fr);
+  gap: 1px;
+  margin: 14px 0 0;
+  border: 1px solid var(--iot-line);
+  border-radius: var(--iot-radius);
+  overflow: hidden;
+  background: var(--iot-line);
+}
+.course-10 .iot-spec dt {
+  margin: 0;
+  padding: 11px 14px;
+  background: var(--iot-chip);
+  color: var(--iot-accent);
+  font-weight: 750;
+  overflow-wrap: break-word;
+}
+.course-10 .iot-spec dd {
+  margin: 0;
+  padding: 11px 14px;
+  background: var(--iot-white);
+  color: var(--iot-ink);
+}
+.course-10 .iot-table-wrap {
+  overflow-x: auto;
+  margin: 14px 0 0;
+  border: 1px solid var(--iot-line-strong);
+  border-radius: var(--iot-radius);
+  background: var(--iot-white);
+}
+.course-10 .iot-table-wrap:focus-visible { outline: 3px solid var(--iot-accent); outline-offset: 2px; }
+.course-10 .iot-table {
+  width: 100%;
+  min-width: 34rem;
+  margin: 0;
+  border-collapse: collapse;
+  color: var(--iot-ink);
+  font-size: .93rem;
+}
+.course-10 .iot-table caption {
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--iot-line-strong);
+  background: var(--iot-chip);
+  color: var(--iot-ink-soft);
+  font-size: .85rem;
+  text-align: left;
+  caption-side: top;
+}
+.course-10 .iot-table th,
+.course-10 .iot-table td {
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--iot-line);
+  text-align: left;
+  vertical-align: top;
+}
+.course-10 .iot-table thead th {
+  border-bottom: 2px solid var(--iot-line-strong);
+  background: var(--iot-surface);
+  color: var(--iot-accent);
+  font-weight: 800;
+}
+.course-10 .iot-table tbody th { color: var(--iot-ink); font-weight: 750; }
+.course-10 .iot-table tbody tr:nth-child(even) th,
+.course-10 .iot-table tbody tr:nth-child(even) td { background: #f4f7fb; }
+.course-10 .iot-table tbody tr:last-child th,
+.course-10 .iot-table tbody tr:last-child td { border-bottom: 0; }
+.course-10 .iot-note {
+  margin: 16px 0 0;
+  padding: 16px 18px;
+  border-left: 5px solid var(--iot-accent);
+  border-radius: 0 var(--iot-radius) var(--iot-radius) 0;
+  background: var(--iot-info-bg);
+  color: var(--iot-ink);
+}
+.course-10 .iot-note > p { max-width: none; margin: 8px 0 0; color: var(--iot-ink); }
+.course-10 .iot-note .iot-note-title {
+  margin: 0;
+  color: var(--iot-accent);
+  font-size: .95rem;
+  font-weight: 800;
+}
+.course-10 .iot-note .iot-list { margin-top: 8px; }
+.course-10 .iot-note--check { background: var(--iot-check-bg); }
+.course-10 .iot-note--warn { border-left-color: var(--iot-warn-ink); background: var(--iot-warn-bg); }
+.course-10 .iot-note--warn .iot-note-title { color: var(--iot-warn-ink); }
+.course-10 .iot-fineprint {
+  max-width: none;
+  margin: 12px 0 0;
+  color: var(--iot-ink-soft);
+  font-size: .88rem;
+  line-height: 1.5;
+}
+.course-10 .iot-links {
+  max-width: none;
+  margin: 18px 0 0;
+  padding-top: 14px;
+  border-top: 1px solid var(--iot-line);
+  font-size: .9rem;
+}
+.course-10 .iot-module-main a,
+.course-10 .iot-note a { color: var(--iot-accent); text-decoration: underline; }
+.course-10 .iot-module-main a:hover,
+.course-10 .iot-note a:hover { text-decoration-thickness: 2px; }
+.course-10 .iot-module-main a:focus-visible,
+.course-10 .iot-note a:focus-visible,
+.course-10 .iot-roadmap a:focus-visible,
+.course-10 .iot-button:focus-visible { outline: 3px solid var(--iot-accent); outline-offset: 2px; }
+.course-10 .iot-roadmap a { text-decoration: none; }
+.course-10 .iot-roadmap a:hover strong { text-decoration: underline; }
+.course-10 .iot-roadmap a:focus-visible { outline-offset: -3px; }
+.course-10 .iot-route ol { list-style: none; }
+.course-10 .iot-route li div > span { overflow-wrap: break-word; }
+@media (max-width: 820px) {
+  .course-10 .iot-module-main { display: block; }
+  .course-10 .iot-module-main > .iot-route { margin-top: 18px; }
+  .course-10 .iot-spec { grid-template-columns: minmax(0, 1fr); }
+  .course-10 .iot-spec dt { padding-bottom: 4px; }
+  .course-10 .iot-table { min-width: 30rem; }
+}
+@media (max-width: 520px) {
+  .course-10 .iot-h { font-size: .98rem; }
+  .course-10 .iot-table { min-width: 26rem; font-size: .88rem; }
+  .course-10 .iot-code { font-size: .8rem; }
+}
+@media (prefers-contrast: more) {
+  .course-10 .iot-module-main > p:first-of-type,
+  .course-10 .iot-fineprint { color: var(--iot-ink); }
+  .course-10 .iot-table th,
+  .course-10 .iot-table td { border-bottom-color: var(--iot-line-strong); }
+}
+/* "Zacznij tutaj" tiles on the course start section; the first one is the GitHub / Classroom50 guide. */
+.course-10 .iot-start {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr) minmax(0, 1fr);
+  gap: 12px;
+  margin-top: 16px;
+}
+.course-10 .iot-start a {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 18px 20px;
+  border: 1px solid var(--iot-line);
+  border-radius: var(--iot-radius);
+  background: var(--iot-white);
+  color: var(--iot-ink);
+  text-decoration: none;
+}
+.course-10 .iot-start a:hover { border-color: var(--iot-accent); box-shadow: var(--iot-shadow); }
+.course-10 .iot-start a:focus-visible { outline: 3px solid var(--iot-accent); outline-offset: 2px; }
+.course-10 .iot-start small {
+  color: var(--iot-accent);
+  font-size: .76rem;
+  font-weight: 800;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+.course-10 .iot-start strong { font-size: 1.06rem; line-height: 1.25; }
+.course-10 .iot-start span { color: var(--iot-muted); font-size: .92rem; line-height: 1.45; }
+.course-10 .iot-start a.iot-start-primary { border-color: var(--iot-accent); background: var(--iot-accent); color: #fff; }
+.course-10 .iot-start a.iot-start-primary small { color: #bcd8f5; }
+.course-10 .iot-start a.iot-start-primary span { color: #e3eefb; }
+.course-10 .iot-start a.iot-start-primary:hover { background: #083d6b; }
+@media (max-width: 820px) {
+  .course-10 .iot-start { grid-template-columns: minmax(0, 1fr); }
+}
+/* Course banner: photo with the title as real text on the darkened left part; licence credit bottom right. */
+.course-10 .iot-banner {
+  position: relative;
+  margin: 0 0 16px;
+  overflow: hidden;
+  border-radius: var(--iot-radius);
+  background: #0a1f33;
+}
+.course-10 .iot-banner img {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 4 / 1;
+  object-fit: cover;
+}
+.course-10 .iot-banner-text {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 0 4%;
+  /* extra shade behind the text: the photo is busy (bright pins) on the left */
+  background: linear-gradient(90deg, rgba(10, 31, 51, .82) 0%, rgba(10, 31, 51, .55) 42%, rgba(10, 31, 51, 0) 72%);
+  text-shadow: 0 1px 12px rgba(0, 0, 0, .45);
+}
+.course-10 .iot-banner-eyebrow {
+  margin: 0;
+  color: #9ec5ef;
+  font-size: clamp(.68rem, 1.05vw, .92rem);
+  font-weight: 800;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+.course-10 .iot-banner-title {
+  margin: .25em 0 0;
+  color: #fff;
+  font-size: clamp(1.35rem, 3.4vw, 2.9rem);
+  font-weight: 800;
+  letter-spacing: -.02em;
+  line-height: 1.08;
+}
+.course-10 .iot-banner figcaption {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  padding: 4px 10px;
+  border-top-left-radius: 8px;
+  background: rgba(10, 31, 51, .72);
+  color: rgba(255, 255, 255, .82);
+  font-size: .7rem;
+}
+.course-10 .iot-banner figcaption a { color: inherit; }
+@media (max-width: 520px) {
+  .course-10 .iot-banner img { aspect-ratio: 5 / 2; }
+  .course-10 .iot-banner-title br { display: none; }
+}
+/* IOT COURSE NEXT END course=10 */
+
+/* IOT MATERIALS START course=10 v1 */
+/*
+ * Ujednolicenie treści aktywności kursu pilotowego (course id=10).
+ * Blok jest w całości scoped do `.course-10` i dokłada się do dwóch
+ * zaakceptowanych bloków: `course-pilot.scss` (baza) i `course-next.scss`
+ * (sekcje 0-7). Nie nadpisuje żadnej klasy `iot-` z tamtych bloków.
+ *
+ * Idempotency: wklejaj wyłącznie pomiędzy markerami START/END. Ponowne
+ * wdrożenie = podmiana całego bloku o tej samej parze markerów.
+ * Wersja bloku musi być zgodna z `data-iot-material` w content/*.html.
+ */
+
+/* --------------------------------------------------------------- tokeny -- */
+.course-10 .iot-material {
+  --m-ink: var(--iot-ink, #15202b);
+  --m-soft: var(--iot-ink-soft, #46586b);
+  --m-line: var(--iot-line, #c9d6e3);
+  --m-line-strong: var(--iot-line-strong, #afc2d6);
+  --m-accent: var(--iot-accent, #0b4f8a);
+  --m-surface: var(--iot-surface, #f8fafd);
+  --m-white: var(--iot-white, #fff);
+  --m-chip: var(--iot-chip, #eef3f8);
+  --m-radius: var(--iot-radius, 16px);
+  --m-info-bg: var(--iot-info-bg, #edf3fa);
+  --m-check-bg: var(--iot-check-bg, #e9f3fb);
+  --m-warn-bg: var(--iot-warn-bg, #fdf6e7);
+  --m-warn-ink: var(--iot-warn-ink, #7a4d00);
+  --m-danger-bg: #fdeeee;
+  --m-danger-ink: #8a1c1c;
+  --m-gap: 16px;
+
+  max-width: none;
+  color: var(--m-ink);
+  line-height: 1.55;
+}
+
+/* -------------------------------------------------- rytm pionowy bloku -- */
+.course-10 .iot-material > * { margin-top: var(--m-gap); }
+.course-10 .iot-material > :first-child { margin-top: 0; }
+.course-10 .iot-material p { max-width: none; margin-bottom: 0; color: var(--m-ink); }
+
+/* ------------------------------------------------------------ nagłówki -- */
+.course-10 .iot-material h2,
+.course-10 .iot-material h3,
+.course-10 .iot-material h4,
+.course-10 .iot-material h5 {
+  max-width: none;
+  margin-bottom: 0;
+  color: var(--m-accent);
+  font-weight: 800;
+  letter-spacing: -.015em;
+  line-height: 1.2;
+}
+.course-10 .iot-material h2 { margin-top: 30px; font-size: 1.42rem; }
+.course-10 .iot-material h3 { margin-top: 26px; font-size: 1.16rem; }
+.course-10 .iot-material h4 { margin-top: 22px; font-size: 1.02rem; }
+.course-10 .iot-material h5 { margin-top: 20px; font-size: .95rem; color: var(--m-soft); }
+.course-10 .iot-material > h2:first-child,
+.course-10 .iot-material > h3:first-child,
+.course-10 .iot-material > h4:first-child { margin-top: 0; }
+
+/* ------------------------------------------------- etykieta rozdziału -- */
+/* Zastępuje pigułki `background:AntiqueWhite` / `background:#f04960`. */
+.course-10 .iot-material-divider {
+  margin: 0;
+  padding: 12px 0 12px 16px;
+  border-left: 5px solid var(--m-accent);
+  background: var(--m-surface);
+  color: var(--m-accent);
+  font-size: 1.06rem;
+  font-weight: 800;
+  letter-spacing: -.01em;
+}
+.course-10 .iot-material-divider--sub {
+  border-left-width: 3px;
+  font-size: .98rem;
+  font-weight: 750;
+}
+.course-10 .iot-material-divider a { color: inherit; }
+
+/* --------------------------------------------------- akapit prowadzący -- */
+.course-10 .iot-material-lead {
+  margin: 0;
+  padding: 18px 20px;
+  border-left: 5px solid var(--m-accent);
+  border-radius: 0 var(--m-radius) var(--m-radius) 0;
+  background: var(--m-info-bg);
+  color: var(--m-ink);
+  font-size: 1.02rem;
+}
+.course-10 .iot-material-lead > p { margin-top: 10px; }
+.course-10 .iot-material-lead > :first-child { margin-top: 0; }
+
+/* ------------------------------------------------------------- kod dostępu */
+.course-10 .iot-material-key {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 14px;
+  align-items: baseline;
+  margin: 0;
+  padding: 14px 18px;
+  border: 1px solid var(--m-line-strong);
+  border-radius: var(--m-radius);
+  background: var(--m-surface);
+}
+.course-10 .iot-material-key dt {
+  margin: 0;
+  color: var(--m-soft);
+  font-size: .82rem;
+  font-weight: 800;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+.course-10 .iot-material-key dd {
+  margin: 0;
+  padding: 4px 14px;
+  border-radius: 8px;
+  background: var(--m-accent);
+  color: #fff;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 1.24rem;
+  font-weight: 700;
+  letter-spacing: .06em;
+}
+
+/* -------------------------------------------------------------- callout -- */
+.course-10 .iot-material-callout {
+  margin: 0;
+  padding: 16px 18px;
+  border-left: 5px solid var(--m-accent);
+  border-radius: 0 var(--m-radius) var(--m-radius) 0;
+  background: var(--m-info-bg);
+  color: var(--m-ink);
+}
+.course-10 .iot-material-callout > * { margin-top: 10px; }
+.course-10 .iot-material-callout > :first-child { margin-top: 0; }
+.course-10 .iot-material-callout-title {
+  margin: 0;
+  color: var(--m-accent);
+  font-size: .95rem;
+  font-weight: 800;
+}
+.course-10 .iot-material-callout--check { background: var(--m-check-bg); }
+.course-10 .iot-material-callout--task {
+  border-left-color: var(--m-accent);
+  background: var(--m-check-bg);
+}
+.course-10 .iot-material-callout--warn {
+  border-left-color: var(--m-warn-ink);
+  background: var(--m-warn-bg);
+}
+.course-10 .iot-material-callout--warn .iot-material-callout-title { color: var(--m-warn-ink); }
+.course-10 .iot-material-callout--danger {
+  border-left-color: var(--m-danger-ink);
+  background: var(--m-danger-bg);
+}
+.course-10 .iot-material-callout--danger .iot-material-callout-title { color: var(--m-danger-ink); }
+
+/* ---------------------------------------------------------------- listy -- */
+.course-10 .iot-material-list {
+  max-width: none;
+  margin: 0;
+  padding-left: 1.3rem;
+}
+.course-10 .iot-material-list li { margin-top: 6px; }
+.course-10 .iot-material-list li:first-child { margin-top: 0; }
+.course-10 .iot-material-list ul,
+.course-10 .iot-material-list ol { margin-top: 6px; padding-left: 1.2rem; }
+
+/* Procedura - kroki numerowane. */
+.course-10 ol.iot-material-steps {
+  max-width: none;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: iotstep;
+}
+/* Krok to zwykły blok z wcięciem, a numer jest przypięty po lewej. Siatka (grid)
+ * rozbijała tekst przeplatany <b>/<code> na osobne komórki i część trafiała do
+ * kolumny numeru (30 px) — treść kroku łamała się wtedy po jednym słowie. */
+.course-10 .iot-material-steps > li {
+  position: relative;
+  display: block;
+  min-height: 49px;
+  padding: 10px 0 10px 42px;
+  border-bottom: 1px solid var(--m-line);
+  counter-increment: iotstep;
+}
+.course-10 .iot-material-steps > li:last-child { border-bottom: 0; }
+.course-10 .iot-material-steps > li > * + * { margin-top: 8px; }
+.course-10 .iot-material-steps > li::before {
+  position: absolute;
+  top: 10px;
+  left: 0;
+  display: grid;
+  width: 29px;
+  height: 29px;
+  place-items: center;
+  border: 1px solid var(--m-line-strong);
+  border-radius: 9px;
+  background: var(--m-chip);
+  color: var(--m-accent);
+  content: counter(iotstep);
+  font-size: .78rem;
+  font-weight: 800;
+}
+.course-10 .iot-material-steps > li > :first-child { margin-top: 0; }
+
+/*
+ * Tabele w materiałach (`.iot-material-table`) — ten sam wygląd co `.iot-table`
+ * z bloku course-next.scss. Bez tych reguł tabele w ćwiczeniach i lekcjach
+ * nie miały obramowań ani wyróżnionego nagłówka. Ramkę rysuje sama tabela
+ * (bez osobnego wrappera), a na wąskim ekranie tabela przewija się poziomo.
+ */
+.course-10 .iot-material-table {
+  width: 100%;
+  margin: 0;
+  border: 1px solid var(--m-line-strong);
+  border-collapse: separate;
+  border-spacing: 0;
+  border-radius: var(--m-radius);
+  overflow: hidden;
+  background: var(--m-white);
+  color: var(--m-ink);
+  font-size: .93rem;
+}
+.course-10 .iot-material-table caption {
+  padding: 0 0 8px;
+  color: var(--m-soft);
+  font-size: .85rem;
+  text-align: left;
+  caption-side: top;
+}
+.course-10 .iot-material-table th,
+.course-10 .iot-material-table td {
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--m-line);
+  text-align: left;
+  vertical-align: top;
+}
+.course-10 .iot-material-table thead th {
+  border-bottom: 2px solid var(--m-line-strong);
+  background: var(--m-surface);
+  color: var(--m-accent);
+  font-weight: 800;
+}
+.course-10 .iot-material-table tbody th { color: var(--m-ink); font-weight: 750; }
+.course-10 .iot-material-table tbody tr:nth-child(even) th,
+.course-10 .iot-material-table tbody tr:nth-child(even) td { background: #f4f7fb; }
+.course-10 .iot-material-table tbody tr:last-child th,
+.course-10 .iot-material-table tbody tr:last-child td { border-bottom: 0; }
+.course-10 .iot-material-table pre { margin: 0; white-space: pre-wrap; }
+@media (max-width: 820px) {
+  .course-10 .iot-material-table { display: block; overflow-x: auto; }
+}
+
+/* ------------------------------------------------------------------ kod -- */
+.course-10 .iot-material code {
+  padding: .08em .35em;
+  border: 1px solid var(--m-line);
+  border-radius: 5px;
+  background: var(--m-chip);
+  color: var(--m-ink);
+  font-size: .88em;
+  overflow-wrap: break-word;
+}
+.course-10 .iot-material-code {
+  overflow-x: auto;
+  max-width: 100%;
+  margin: 0;
+  padding: 16px 18px;
+  border: 1px solid var(--m-line);
+  border-radius: var(--m-radius);
+  background: var(--m-chip);
+  color: var(--m-ink);
+  font-size: .86rem;
+  line-height: 1.5;
+  tab-size: 2;
+}
+.course-10 .iot-material-code:focus-visible {
+  outline: 3px solid var(--m-accent);
+  outline-offset: 2px;
+}
+.course-10 .iot-material-code code {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font-size: inherit;
+  white-space: pre;
+}
+
+/* --------------------------------------------------------------- media -- */
+.course-10 .iot-material-figure {
+  margin: 0;
+  padding: 14px;
+  border: 1px solid var(--m-line);
+  border-radius: var(--m-radius);
+  background: var(--m-surface);
+}
+.course-10 .iot-material-figure img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  background: var(--m-white);
+}
+.course-10 .iot-material-figure figcaption {
+  margin-top: 10px;
+  color: var(--m-soft);
+  font-size: .86rem;
+  line-height: 1.45;
+}
+.course-10 .iot-material-figure--plain {
+  padding: 0;
+  border: 0;
+  background: none;
+}
+
+/* Siatka rycin - desktop-first, na wąskim ekranie schodzi do jednej kolumny. */
+.course-10 .iot-material-gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 14px;
+  align-items: start;
+}
+.course-10 .iot-material-gallery > * { margin-top: 0; }
+
+/* Miniatura w ciągu tekstu (np. breadboard, przewody). */
+.course-10 .iot-material img.iot-material-thumb {
+  display: inline-block;
+  max-width: 100%;
+  height: auto;
+  margin: 0 4px;
+  vertical-align: middle;
+  border-radius: 4px;
+}
+
+/* Osadzenie zewnętrzne (iframe) - zachowuje deklarowany rozmiar na desktopie. */
+.course-10 .iot-material-embed {
+  overflow: auto;
+  max-width: 100%;
+  margin: 0;
+  padding: 12px;
+  border: 1px solid var(--m-line);
+  border-radius: var(--m-radius);
+  background: var(--m-surface);
+}
+.course-10 .iot-material-embed iframe {
+  display: block;
+  max-width: 100%;
+  border: 0;
+  border-radius: 8px;
+  background: var(--m-white);
+}
+.course-10 .iot-material-embed figcaption {
+  margin-top: 10px;
+  color: var(--m-soft);
+  font-size: .86rem;
+}
+
+/* ---------------------------------------------------------------- linki -- */
+.course-10 .iot-material a { color: var(--m-accent); text-decoration: underline; }
+.course-10 .iot-material a:hover { color: var(--m-accent); text-decoration-thickness: 2px; }
+.course-10 .iot-material a:focus-visible {
+  outline: 3px solid var(--m-accent);
+  outline-offset: 2px;
+}
+
+/* Lista źródeł / odnośników. */
+.course-10 .iot-material-links {
+  max-width: none;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: .93rem;
+}
+.course-10 .iot-material-links li {
+  padding: 8px 0;
+  border-bottom: 1px solid var(--m-line);
+  overflow-wrap: break-word;
+}
+.course-10 .iot-material-links li:last-child { border-bottom: 0; }
+
+/* Rząd odnośników graficznych (logotypy platform). */
+.course-10 .iot-material-logos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  align-items: center;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.course-10 .iot-material-logos li { margin: 0; }
+.course-10 .iot-material-logos a {
+  display: inline-block;
+  padding: 10px 14px;
+  border: 1px solid var(--m-line);
+  border-radius: var(--m-radius);
+  background: var(--m-white);
+  text-decoration: none;
+}
+.course-10 .iot-material-logos a:hover { border-color: var(--m-accent); }
+.course-10 .iot-material-logos img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+/* Przypisy bibliograficzne. */
+.course-10 .iot-material-footnotes {
+  max-width: none;
+  margin: 0;
+  padding-left: 1.6rem;
+  color: var(--m-soft);
+  font-size: .86rem;
+}
+.course-10 .iot-material-footnotes li { margin-top: 6px; overflow-wrap: break-word; }
+.course-10 .iot-material-footnotes p { margin: 0; color: inherit; }
+
+/* Drobny druk / adnotacja źródłowa. */
+.course-10 .iot-material-fineprint {
+  max-width: none;
+  margin: 0;
+  color: var(--m-soft);
+  font-size: .88rem;
+  line-height: 1.5;
+}
+
+/* ------------------------------------------------ bezpieczne zawijanie -- */
+@media (max-width: 820px) {
+  .course-10 .iot-material-gallery { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 520px) {
+  .course-10 .iot-material-lead,
+  .course-10 .iot-material-callout { padding: 14px 16px; }
+  .course-10 .iot-material-code { padding: 14px; font-size: .8rem; }
+  .course-10 .iot-material-key dd { font-size: 1.1rem; }
+}
+@media (prefers-contrast: more) {
+  .course-10 .iot-material-fineprint,
+  .course-10 .iot-material-footnotes,
+  .course-10 .iot-material-figure figcaption { color: var(--m-ink); }
+  .course-10 .iot-material-divider { border-left-color: var(--m-ink); }
+}
+/* IOT MATERIALS END course=10 v1 */
+
+/* IOT GEO EXTRA START */
+.course-10 .iot-module-main { grid-template-rows: auto; }
+.course-10 .iot-module-main > * { grid-column: 1; }
+.course-10 .iot-module-main > .iot-route { grid-column: 2; grid-row: 1 / span 30; align-self: start; }
+.course-10 .iot-module-main > .iot-outcome { align-self: start; }
+.course-10 .iot-route li div > a { color: #9ec5ef; font-size: .8rem; text-decoration: none; }
+.course-10 .iot-route li div > a:hover { text-decoration: underline; }
+/* IOT GEO EXTRA END */

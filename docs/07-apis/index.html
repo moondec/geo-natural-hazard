@@ -1,0 +1,1173 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+
+    <title></title>
+    <link rel="stylesheet" href="../lib/dist/reveal.css" />
+    <link rel="stylesheet" href="../lib/dist/theme/beige.css" id="theme" />
+    <link rel="stylesheet" href="../lib/plugin/highlight/zenburn.css" />
+	<link rel="stylesheet" href="../lib/css/layout.css" />
+	<link rel="stylesheet" href="../lib/plugin/customcontrols/style.css">
+	<link rel="stylesheet" href="../lib/plugin/chalkboard/style.css">
+
+	<link rel="stylesheet" href="../lib/plugin/reveal-pointer/pointer.css" />
+
+
+    <script defer src="../lib/dist/fontawesome/all.min.js"></script>
+
+	<script type="text/javascript">
+		var forgetPop = true;
+		function onPopState(event) {
+			if(forgetPop){
+				forgetPop = false;
+			} else {
+				parent.postMessage(event.target.location.href, "app://obsidian.md");
+			}
+        }
+		window.onpopstate = onPopState;
+		window.onmessage = event => {
+			if(event.data == "reload"){
+				window.document.location.reload();
+			}
+			forgetPop = true;
+		}
+
+		function fitElements(){
+			const itemsToFit = document.getElementsByClassName('fitText');
+			for (const item in itemsToFit) {
+				if (Object.hasOwnProperty.call(itemsToFit, item)) {
+					var element = itemsToFit[item];
+					fitElement(element,1, 1000);
+					element.classList.remove('fitText');
+				}
+			}
+		}
+
+		function fitElement(element, start, end){
+
+			let size = (end + start) / 2;
+			element.style.fontSize = `${size}px`;
+
+			if(Math.abs(start - end) < 1){
+				while(element.scrollHeight > element.offsetHeight){
+					size--;
+					element.style.fontSize = `${size}px`;
+				}
+				return;
+			}
+
+			if(element.scrollHeight > element.offsetHeight){
+				fitElement(element, start, size);
+			} else {
+				fitElement(element, size, end);
+			}		
+		}
+
+
+		document.onreadystatechange = () => {
+			fitElements();
+			if (document.readyState === 'complete') {
+				if (window.location.href.indexOf("?export") != -1){
+					parent.postMessage(event.target.location.href, "app://obsidian.md");
+				}
+				if (window.location.href.indexOf("print-pdf") != -1){
+					let stateCheck = setInterval(() => {
+						clearInterval(stateCheck);
+						window.print();
+					}, 250);
+				}
+			}
+	};
+
+
+        </script>
+  </head>
+  <body>
+    <div class="reveal">
+      <div class="slides"><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1920px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+<img src="../assets/Kursy/prezentacje/IOK/pliki/sateliteGEEbanner.png" alt="" style="width: 1920px; object-fit: fill">
+
+<div class="has-light-background" style="background-color: #EEB73F; padding: 250px 0  250px 300px; box-sizing: border-box; position: absolute; left: 0%; top: 33%; height: 34%; width: 60%; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" align="left">
+
+
+### Lecture 7<!-- .element: style="letter-spacing: 1.5rem" -->
+## GEE beyond the Code Editor
+#### Python, Colab, geemap and rgee
+
+#### Marek Urbaniak
+
+</div>
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1920px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+<div class="has-light-background" style="background-color: white; padding: 0 20px; box-sizing: border-box; position: absolute; left: 0%; top: 0%; height: 10%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" align="left">
+
+ <div class="block">
+
+## Today (90 min)
+</div>
+
+
+</div>
+
+<div class="" style="position: absolute; left: 5%; top: 17%; height: 66%; width: 90%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-start" align="left">
+
+
+
+
+<div class="has-light-background" style="background-color: #ffB73F; position: absolute; left: 92%; top: 55%; height: 26%; width: 13%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+</div>
+<div class="has-light-background" style="background-color: #00ced1; position: absolute; left: 87%; top: 75%; height: 26%; width: 13%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+</div>
+
+<div class="block">
+
+<!-- .element: style="font-size: 44px; position: absolute; left: 0%; top: 15%; height: 80%; width: 80%; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" align="left" -->
+1. Why leave the Code Editor? (reproducibility, your own data, statistics, automation)
+2. The same engine, three clients: JavaScript, Python (`ee`), R (`rgee`)
+3. Google Colab and Jupyter: a notebook in 5 minutes
+4. `geemap`: the map, the translator, the exporter
+5. JavaScript → Python: the seven differences
+6. Cloud masking properly: QA bands and bitmasks
+7. Getting data out: exports, `getInfo`, time series to pandas / data.frame
+8. `rgee` for R users: install once, authenticate, run
+9. **In the lab (4 h)**: Colab notebook + bitmask exercise + rgee
+</div>
+
+
+
+<style>.reveal table{max-width:100%;border-collapse:collapse}.reveal table th,.reveal table td{padding:3px 8px;line-height:1.25}</style>
+
+
+</div>
+
+<style>
+.horizontal_dotted_line{
+  border-bottom: 2px dotted gray;
+} 
+</style>
+
+<div class="horizontal_dotted_line" style="position: absolute; left: 3%; top: 94%; height: 0%; width: 94%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+</div>
+
+<div class="" style="padding: 0 30px; box-sizing: border-box; position: absolute; left: 0%; top: 64%; height: 30%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-end" align="left">
+
+
+</div>
+
+<div class="" style="padding: 0 30px; box-sizing: border-box; position: absolute; left: 0%; top: 58%; height: 30%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-end" align="left">
+
+
+</div>
+
+<div class="" style="position: absolute; left: 0%; top: 94%; height: 6%; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+© 2026 Pracownia Meteorologii<!-- .element: style="font-weight: 300" -->
+</div>
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1920px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+<div class="has-light-background" style="background-color: white; padding: 0 20px; box-sizing: border-box; position: absolute; left: 0%; top: 0%; height: 10%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" align="left">
+
+ <div class="block">
+
+## Why leave the Code Editor?
+</div>
+
+
+</div>
+
+<div class="" style="position: absolute; left: 5%; top: 17%; height: 66%; width: 90%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-start" align="left">
+
+
+
+
+<div class="has-light-background" style="background-color: #ffB73F; position: absolute; left: 80%; top: 53%; height: 26%; width: 13%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+</div>
+
+<div class="block">
+
+<!-- .element: style="font-size: 39px; position: absolute; left: 0%; top: 15%; height: 78%; width: 50%; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" align="left" -->
+The Code Editor is perfect for exploring. It is weak when you need to:
+- **repeat** an analysis for 50 events or 10 years (loops, parameters, scheduling)
+- combine satellite results with **your own data** (field plots, gauges, a CSV from Excel)
+- do **statistics and plots** beyond `ui.Chart` (scikit-learn, pandas, ggplot2)
+- write a **report or a thesis** where code, figures and text live together (Jupyter, Quarto)
+- share a **reproducible** workflow (a notebook on GitHub runs the same for everyone)
+</div>
+
+
+
+<div class="block">
+
+<!-- .element: style="font-size: 37px; background-color: #e8f4f8; padding: 15px; box-sizing: border-box; position: absolute; left: 53%; top: 15%; height: 78%; width: 45%; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" class="has-light-background" align="left" -->
+<img src="../assets/Kursy/prezentacje/ApplicationHazards_GEO/pliki/diagram_L07_three_clients.svg" alt="" style="width: 620px; object-fit: fill">
+
+Same catalogue, same functions, same server-side objects. Only the syntax around them changes. Everything from labs 2–6 can be pasted into Python with small edits (and `geemap` will do the edits for you).
+</div>
+
+
+
+
+</div>
+
+<style>
+.horizontal_dotted_line{
+  border-bottom: 2px dotted gray;
+} 
+</style>
+
+<div class="horizontal_dotted_line" style="position: absolute; left: 3%; top: 94%; height: 0%; width: 94%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+</div>
+
+<div class="" style="padding: 0 30px; box-sizing: border-box; position: absolute; left: 0%; top: 64%; height: 30%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-end" align="left">
+
+
+</div>
+
+<div class="" style="padding: 0 30px; box-sizing: border-box; position: absolute; left: 0%; top: 58%; height: 30%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-end" align="left">
+
+
+</div>
+
+<div class="" style="position: absolute; left: 0%; top: 94%; height: 6%; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+© 2026 Pracownia Meteorologii<!-- .element: style="font-weight: 300" -->
+</div>
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1920px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+<div class="has-light-background" style="background-color: white; padding: 0 20px; box-sizing: border-box; position: absolute; left: 0%; top: 0%; height: 10%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" align="left">
+
+ <div class="block">
+
+## Google Colab: a notebook in 5 minutes
+</div>
+
+
+</div>
+
+<div class="" style="position: absolute; left: 5%; top: 17%; height: 66%; width: 90%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-start" align="left">
+
+
+
+
+<div class="has-light-background" style="background-color: #00ced1; transform: rotate(-15deg); position: absolute; left: 87%; top: 75%; height: 26%; width: 13%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+</div>
+
+<div class="block">
+
+<!-- .element: style="font-size: 36px; position: absolute; left: 0%; top: 15%; height: 80%; width: 48%; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" align="left" -->
+- [colab.research.google.com](https://colab.research.google.com/) – free Jupyter in the browser, Python 3; `ee` and `geemap` preinstalled or one pip away; notebooks saved to your Drive
+- Cells: code (`Shift+Enter` runs) and text (Markdown) – the report writes itself
+- Authenticate once per session with **your Cloud project**:
+```python
+import ee, geemap
+ee.Authenticate()   # opens a browser window
+ee.Initialize(project='your-project-id')  # from lab 1
+```
+- Local alternative: Jupyter / VS Code / Positron; install `earthengine-api` and `geemap` from conda-forge
+- Colab can also run R (`%%R` magic with `rpy2`) – Moodle lesson page 1
+</div>
+
+
+
+<div class="block">
+
+<!-- .element: style="font-size: 24px; background-color: #e8f4f8; padding: 12px; box-sizing: border-box; position: absolute; left: 53%; top: 15%; height: 80%; width: 47%; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" class="has-light-background" align="left" -->
+```python
+roi = ee.Geometry.Point(16.93, 52.41).buffer(5000)
+s2 = (ee.ImageCollection('COPERNICUS/S2_SR_HARMONIZED')
+        .filterDate('2025-05-01', '2025-09-30')
+        .filterBounds(roi)
+        .filter(ee.Filter.lt('CLOUDY_PIXEL_PERCENTAGE', 30)))
+print('scenes:', s2.size().getInfo())
+
+def add_ndvi(img):
+    return img.addBands(img.normalizedDifference(['B8', 'B4']).rename('NDVI'))
+
+ndvi = s2.map(add_ndvi).select('NDVI').median()
+
+m = geemap.Map(center=[52.41, 16.93], zoom=11)
+m.addLayer(ndvi.clip(roi), {'min': -0.2, 'max': 0.8,
+           'palette': ['blue', 'white', 'yellow', 'green', 'darkgreen']}, 'NDVI')
+m
+```
+Compare with the JavaScript from lecture 2 – line by line the same.
+</div>
+
+
+
+
+
+
+</div>
+
+<style>
+.horizontal_dotted_line{
+  border-bottom: 2px dotted gray;
+} 
+</style>
+
+<div class="horizontal_dotted_line" style="position: absolute; left: 3%; top: 94%; height: 0%; width: 94%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+</div>
+
+<div class="" style="padding: 0 30px; box-sizing: border-box; position: absolute; left: 0%; top: 64%; height: 30%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-end" align="left">
+
+<div class="block">
+
+source: [Earth Engine Python quickstart](https://developers.google.com/earth-engine/guides/quickstart_python); [geemap.org](https://geemap.org/)
+</div>
+
+
+
+</div>
+
+<div class="" style="padding: 0 30px; box-sizing: border-box; position: absolute; left: 0%; top: 58%; height: 30%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-end" align="left">
+
+
+</div>
+
+<div class="" style="position: absolute; left: 0%; top: 94%; height: 6%; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+© 2026 Pracownia Meteorologii<!-- .element: style="font-weight: 300" -->
+</div>
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1920px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+<div class="has-light-background" style="background-color: white; padding: 0 20px; box-sizing: border-box; position: absolute; left: 0%; top: 0%; height: 10%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" align="left">
+
+ <div class="block">
+
+## JavaScript → Python: the seven differences
+</div>
+
+
+</div>
+
+<div class="" style="position: absolute; left: 5%; top: 17%; height: 66%; width: 90%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-start" align="left">
+
+
+
+
+
+<div class="block">
+
+<!-- .element: style="font-size: 22px; position: absolute; left: 0%; top: 15%; height: 80%; width: 95%; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" align="left" -->
+| | JavaScript (Code Editor) | Python (`ee`) |
+|---|---|---|
+| 1. variables | `var x = …;` | `x = …` |
+| 2. functions | `function f(img) { return …; }` | `def f(img):` + indentation, `return` |
+| 3. line continuation | free | wrap in `( … )` or use `\` |
+| 4. logical ops | `.and()`, `.or()`, `.not()` | **`.And()`, `.Or()`, `.Not()`** (capital – `and` is a keyword) |
+| 5. dictionaries / vis params | `{min: 0, max: 3000}` | `{'min': 0, 'max': 3000}` (quoted keys) |
+| 6. map and print | `Map.addLayer`, `print(obj)` | `m = geemap.Map(); m.addLayer(...)`; `print(obj.getInfo())` |
+| 7. `true/false/null` | lower case | `True / False / None` |
+
+Everything else (`ee.Image`, `filterDate`, `normalizedDifference`, `reduceRegion`, `ee.Reducer.sum().group(...)`) is **identical**. `geemap.js_snippet_to_py(js_code)` converts a Code Editor script automatically – Moodle lesson page 2.
+</div>
+
+
+
+
+
+
+</div>
+
+<style>
+.horizontal_dotted_line{
+  border-bottom: 2px dotted gray;
+} 
+</style>
+
+<div class="horizontal_dotted_line" style="position: absolute; left: 3%; top: 94%; height: 0%; width: 94%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+</div>
+
+<div class="" style="padding: 0 30px; box-sizing: border-box; position: absolute; left: 0%; top: 64%; height: 30%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-end" align="left">
+
+<div class="block">
+
+source: [Python API – differences from JavaScript](https://developers.google.com/earth-engine/guides/python_install#syntax)
+</div>
+
+
+
+</div>
+
+<div class="" style="padding: 0 30px; box-sizing: border-box; position: absolute; left: 0%; top: 58%; height: 30%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-end" align="left">
+
+
+</div>
+
+<div class="" style="position: absolute; left: 0%; top: 94%; height: 6%; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+© 2026 Pracownia Meteorologii<!-- .element: style="font-weight: 300" -->
+</div>
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1920px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+<div class="has-light-background" style="background-color: white; padding: 0 20px; box-sizing: border-box; position: absolute; left: 0%; top: 0%; height: 10%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" align="left">
+
+ <div class="block">
+
+## Client vs. server objects (the bug you will meet)
+</div>
+
+
+</div>
+
+<div class="" style="position: absolute; left: 5%; top: 17%; height: 66%; width: 90%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-start" align="left">
+
+
+
+
+<div class="has-light-background" style="background-color: #ffB73F; position: absolute; left: 80%; top: 53%; height: 26%; width: 13%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+</div>
+
+<div class="block">
+
+<!-- .element: style="font-size: 40px; position: absolute; left: 0%; top: 15%; height: 78%; width: 50%; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" align="left" -->
+```python
+n = s2.size()            # ee.Number – lives on the server, no value yet
+print(n)                 # <ee.Number object>  – not 37
+print(n.getInfo())       # 37  – one round trip to Google
+
+# WRONG: Python 'if' on a server object (always True – the object exists)
+if s2.size() > 10: ...
+# RIGHT: bring the number to the client first, or use server-side logic
+if s2.size().getInfo() > 10: ...
+img = ee.Algorithms.If(s2.size().gt(10), s2.median(), ee.Image(0))
+```
+</div>
+
+
+
+<div class="block">
+
+<!-- .element: style="font-size: 40px; background-color: #e8f4f8; padding: 15px; box-sizing: border-box; position: absolute; left: 53%; top: 15%; height: 78%; width: 45%; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" class="has-light-background" align="left" -->
+- `ee.*` objects are **recipes** sent to the server; Python only sees a handle
+- `.getInfo()` fetches the value – small things only (a number, a dictionary, a list of 100 dates). An image or a big collection → use **Export**
+- Python loops `for` over a *client* list are fine (e.g. over a list of years you typed); loops over server lists → `ee.List.map` or `collection.map`
+- the same rule existed in JavaScript (lecture 2); Python just makes it more visible because `print` does not evaluate
+</div>
+
+
+
+
+
+
+</div>
+
+<style>
+.horizontal_dotted_line{
+  border-bottom: 2px dotted gray;
+} 
+</style>
+
+<div class="horizontal_dotted_line" style="position: absolute; left: 3%; top: 94%; height: 0%; width: 94%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+</div>
+
+<div class="" style="padding: 0 30px; box-sizing: border-box; position: absolute; left: 0%; top: 64%; height: 30%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-end" align="left">
+
+<div class="block">
+
+source: [Earth Engine – client vs. server](https://developers.google.com/earth-engine/guides/client_server)
+</div>
+
+
+
+</div>
+
+<div class="" style="padding: 0 30px; box-sizing: border-box; position: absolute; left: 0%; top: 58%; height: 30%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-end" align="left">
+
+
+</div>
+
+<div class="" style="position: absolute; left: 0%; top: 94%; height: 6%; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+© 2026 Pracownia Meteorologii<!-- .element: style="font-weight: 300" -->
+</div>
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1920px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+<div class="has-light-background" style="background-color: white; padding: 0 20px; box-sizing: border-box; position: absolute; left: 0%; top: 0%; height: 10%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" align="left">
+
+ <div class="block">
+
+## Cloud masking properly: QA bands and bitmasks
+</div>
+
+
+</div>
+
+<div class="" style="position: absolute; left: 5%; top: 17%; height: 66%; width: 90%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-start" align="left">
+
+
+
+
+<div class="has-light-background" style="background-color: #00ced1; transform: rotate(-15deg); position: absolute; left: 87%; top: 75%; height: 26%; width: 13%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+</div>
+
+<div class="block">
+
+<!-- .element: style="font-size: 26px; position: absolute; left: 0%; top: 15%; height: 78%; width: 50%; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" align="left" -->
+Scene-level `CLOUDY_PIXEL_PERCENTAGE` removes cloudy *scenes*. Pixel-level masking uses a **QA band** where each **bit** is a flag:
+
+Sentinel-2 `QA60` (60 m): bit 10 = opaque cloud, bit 11 = cirrus. The band value is an integer whose binary digits are the flags: 0 = clear, 1024 = cloud (2¹⁰), 2048 = cirrus (2¹¹), 3072 = both.
+
+```python
+def mask_s2(img):
+    qa = img.select('QA60')
+    cloud  = 1 << 10          # 1024
+    cirrus = 1 << 11          # 2048
+    clear = qa.bitwiseAnd(cloud).eq(0).And(qa.bitwiseAnd(cirrus).eq(0))
+    return (img.updateMask(clear)
+               .select('B.*')
+               .copyProperties(img, ['system:time_start']))
+```
+`1 << 10` shifts a 1 ten places left = 1024; `bitwiseAnd` keeps only that bit; `.eq(0)` = the flag is off.
+</div>
+
+
+
+<div class="block">
+
+<!-- .element: style="font-size: 24px; background-color: #e8f4f8; padding: 15px; box-sizing: border-box; position: absolute; left: 53%; top: 15%; height: 78%; width: 45%; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" class="has-light-background" align="left" -->
+Better masks (2026):
+- Sentinel-2 L2A **`SCL`** band (20 m): 3 = cloud shadow, 8–9 = cloud, 10 = cirrus, 11 = snow → `img.select('SCL').remap([4,5,6,7,11],[1,1,1,1,1],0)` keeps vegetation, bare, water, unclassified, snow
+- **Cloud Score+** (`GOOGLE/CLOUD_SCORE_PLUS/V1/S2_HARMONIZED`): per-pixel quality 0–1, link by `system:index`, `cs_cdf >= 0.6` – currently the recommended S2 mask
+- Landsat 8/9 `QA_PIXEL`: bit 3 cloud, bit 4 shadow, bit 5 snow – same `bitwiseAnd` trick
+- MODIS `state_1km`, VIIRS `QF1`: multi-bit fields (2 bits = 4 states) → `bitwiseAnd(3)` after a shift
+
+Moodle lesson page 3 has the JS and Python versions side by side.
+</div>
+
+
+
+
+
+
+</div>
+
+<style>
+.horizontal_dotted_line{
+  border-bottom: 2px dotted gray;
+} 
+</style>
+
+<div class="horizontal_dotted_line" style="position: absolute; left: 3%; top: 94%; height: 0%; width: 94%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+</div>
+
+<div class="" style="padding: 0 30px; box-sizing: border-box; position: absolute; left: 0%; top: 64%; height: 30%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-end" align="left">
+
+<div class="block">
+
+source: [Working with QA bands and bitmasks in GEE (Spatial Thoughts)](https://spatialthoughts.com/2021/08/19/qa-bands-bitmasks-gee/); [Cloud Score+ dataset](https://developers.google.com/earth-engine/datasets/catalog/GOOGLE_CLOUD_SCORE_PLUS_V1_S2_HARMONIZED)
+</div>
+
+
+
+</div>
+
+<div class="" style="padding: 0 30px; box-sizing: border-box; position: absolute; left: 0%; top: 58%; height: 30%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-end" align="left">
+
+
+</div>
+
+<div class="" style="position: absolute; left: 0%; top: 94%; height: 6%; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+© 2026 Pracownia Meteorologii<!-- .element: style="font-weight: 300" -->
+</div>
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1920px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+<div class="has-light-background" style="background-color: white; padding: 0 20px; box-sizing: border-box; position: absolute; left: 0%; top: 0%; height: 10%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" align="left">
+
+ <div class="block">
+
+## Getting data out
+</div>
+
+
+</div>
+
+<div class="" style="position: absolute; left: 5%; top: 17%; height: 66%; width: 90%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-start" align="left">
+
+
+
+
+<div class="has-light-background" style="background-color: #ffB73F; position: absolute; left: 80%; top: 53%; height: 26%; width: 13%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+</div>
+
+<div class="block">
+
+<!-- .element: style="font-size: 33px; position: absolute; left: 0%; top: 15%; height: 80%; width: 50%; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" align="left" -->
+```python
+# 1) a time series as a pandas DataFrame (small: one value per date)
+ts = s2.map(add_ndvi).select('NDVI').map(lambda i: ee.Feature(None, {
+        'date': i.date().format('YYYY-MM-dd'),
+        'ndvi': i.reduceRegion(ee.Reducer.mean(), roi, 10).get('NDVI')}))
+df = geemap.ee_to_df(ee.FeatureCollection(ts))      # -> pandas
+df.plot(x='date', y='ndvi')
+
+# 2) a raster to Google Drive (big: runs in the background, Tasks tab / task.status())
+task = ee.batch.Export.image.toDrive(image=ndvi.clip(roi), description='ndvi_poznan',
+         folder='gee', scale=10, region=roi, crs='EPSG:2180', maxPixels=1e10)
+task.start()
+
+# 3) a small raster straight to the notebook / disk
+geemap.ee_export_image(ndvi.clip(roi), filename='ndvi.tif', scale=10, region=roi)
+
+# 4) a vector table to Drive
+ee.batch.Export.table.toDrive(collection=table, description='areas', fileFormat='CSV').start()
+```
+</div>
+
+
+
+<div class="block">
+
+<!-- .element: style="font-size: 35px; background-color: #e8f4f8; padding: 15px; box-sizing: border-box; position: absolute; left: 53%; top: 15%; height: 80%; width: 45%; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" class="has-light-background" align="left" -->
+Rules:
+- `getInfo` / `ee_to_df` for **small** results (< a few thousand rows); exports for rasters
+- always set `scale` and `region`; set `crs` (EPSG:2180 for Poland) if the GeoTIFF goes to QGIS with other national data
+- `maxPixels` default is 1e8 – a 10 m export of a district exceeds it
+- exports are asynchronous: start them, continue working, check `task.status()['state']`
+- naming: `description` becomes the file name – include the date and the parameter
+</div>
+
+
+
+
+
+
+</div>
+
+<style>
+.horizontal_dotted_line{
+  border-bottom: 2px dotted gray;
+} 
+</style>
+
+<div class="horizontal_dotted_line" style="position: absolute; left: 3%; top: 94%; height: 0%; width: 94%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+</div>
+
+<div class="" style="padding: 0 30px; box-sizing: border-box; position: absolute; left: 0%; top: 64%; height: 30%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-end" align="left">
+
+<div class="block">
+
+source: [Exporting data](https://developers.google.com/earth-engine/guides/exporting_images); [geemap – export](https://geemap.org/notebooks/11_export_image/)
+</div>
+
+
+
+</div>
+
+<div class="" style="padding: 0 30px; box-sizing: border-box; position: absolute; left: 0%; top: 58%; height: 30%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-end" align="left">
+
+
+</div>
+
+<div class="" style="position: absolute; left: 0%; top: 94%; height: 6%; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+© 2026 Pracownia Meteorologii<!-- .element: style="font-weight: 300" -->
+</div>
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1920px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+<div class="has-light-background" style="background-color: white; padding: 0 20px; box-sizing: border-box; position: absolute; left: 0%; top: 0%; height: 10%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" align="left">
+
+ <div class="block">
+
+## rgee – Google [Earth Engine with R](https://r-spatial.github.io/rgee/)
+</div>
+
+
+</div>
+
+<div class="" style="position: absolute; left: 5%; top: 17%; height: 66%; width: 90%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-start" align="left">
+
+
+
+<div class="has-light-background" style="background-color: #ffB73F; position: absolute; left: 90%; top: 3%; height: 20%; width: 9%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+</div>
+<div class="has-light-background" style="background-color: #00ced1; position: absolute; left: 97%; top: 15%; height: 20%; width: 9%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+</div>
+<div class="has-dark-background" style="background-color: #F06400; position: absolute; left: 87%; top: 18%; height: 20%; width: 9%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+</div>
+
+
+
+<img src="../assets/Kursy/prezentacje/ApplicationHazards_GEO/pliki/Pasted image 20230109204730.png" alt="" style="width: 600px; object-fit: fill">
+
+<img src="../assets/Kursy/prezentacje/ApplicationHazards_GEO/pliki/Pasted image 20230109204905.png" alt="" style="object-fit: scale-down">
+
+
+
+
+
+</div>
+
+<style>
+.horizontal_dotted_line{
+  border-bottom: 2px dotted gray;
+} 
+</style>
+
+<div class="horizontal_dotted_line" style="position: absolute; left: 3%; top: 94%; height: 0%; width: 94%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+</div>
+
+<div class="" style="padding: 0 30px; box-sizing: border-box; position: absolute; left: 0%; top: 64%; height: 30%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-end" align="left">
+
+<div class="block">
+
+source: https://github.com/r-spatial/rgee (CRAN 1.1.8, 2025; maintainer M. Stigler)
+</div>
+
+
+
+</div>
+
+<div class="" style="padding: 0 30px; box-sizing: border-box; position: absolute; left: 0%; top: 58%; height: 30%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-end" align="left">
+
+
+</div>
+
+<div class="" style="position: absolute; left: 0%; top: 94%; height: 6%; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+© 2026 Pracownia Meteorologii<!-- .element: style="font-weight: 300" -->
+</div>
+</div>
+
+<aside class="notes"><p>rgee is a translator: R calls the Python <code>ee</code> API through reticulate. Same objects, <code>&#36;</code> instead of <code>.</code>: <code>ee&#36;ImageCollection('COPERNICUS/S2_SR_HARMONIZED')&#36;filterDate(...)</code>. The benefit: results go straight into <code>sf</code>, <code>terra</code>, <code>ggplot2</code>, <code>tmap</code>, Shiny.</p>
+</aside></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1920px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+<div class="has-light-background" style="background-color: white; padding: 0 20px; box-sizing: border-box; position: absolute; left: 0%; top: 0%; height: 10%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" align="left">
+
+ <div class="block">
+
+## rgee: install once, authenticate, run
+</div>
+
+
+</div>
+
+<div class="" style="position: absolute; left: 5%; top: 17%; height: 66%; width: 90%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-start" align="left">
+
+
+
+
+<div class="has-light-background" style="background-color: #00ced1; transform: rotate(-15deg); position: absolute; left: 87%; top: 75%; height: 26%; width: 13%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+</div>
+
+<div class="block">
+
+<!-- .element: style="font-size: 24px; position: absolute; left: 0%; top: 15%; height: 82%; width: 52%; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" align="left" -->
+<pre><code class="language-r">install.packages(&quot;rgee&quot;)      # once
+library(rgee)
+ee_install(py_env = &quot;rgee&quot;)   # once: conda env + earthengine-api; answer Y, restart R
+ee_check()                    # python? earthengine-api? credentials?
+ee_Initialize(project = &quot;your-project-id&quot;, drive = TRUE)   # each session
+
+roi &lt;- ee&#36;Geometry&#36;Point(16.93, 52.41)&#36;buffer(5000)
+s2  &lt;- ee&#36;ImageCollection(&quot;COPERNICUS/S2_SR_HARMONIZED&quot;)&#36;
+         filterDate(&quot;2025-05-01&quot;, &quot;2025-09-30&quot;)&#36;filterBounds(roi)&#36;
+         filter(ee&#36;Filter&#36;lt(&quot;CLOUDY_PIXEL_PERCENTAGE&quot;, 30))
+ndvi &lt;- s2&#36;map(function(i) i&#36;normalizedDifference(c(&quot;B8&quot;,&quot;B4&quot;)))&#36;median()
+
+Map&#36;centerObject(roi, 11)
+Map&#36;addLayer(ndvi, list(min = -0.2, max = 0.8,
+             palette = c(&quot;blue&quot;,&quot;white&quot;,&quot;yellow&quot;,&quot;green&quot;,&quot;darkgreen&quot;)), &quot;NDVI&quot;)
+
+r &lt;- ee_as_rast(ndvi&#36;clip(roi), region = roi, scale = 10)  # terra SpatRaster
+</code></pre>
+</div>
+
+
+
+<div class="block">
+
+<!-- .element: style="font-size: 26px; background-color: #e8f4f8; padding: 12px; box-sizing: border-box; position: absolute; left: 54%; top: 15%; height: 82%; width: 45%; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" class="has-light-background" align="left" -->
+Known traps (Moodle lesson page 4 has the screenshots):
+- authentication needs the **gcloud SDK** on Windows – install it before the lab, run `gcloud init`
+- `ee_install` asks about Miniconda – say yes unless you manage Python yourself
+- <code>&#36;</code> replaces <code>.</code>; R functions in `map` must return an `ee` object
+- bridges to R: `ee_as_sf`, `ee_as_rast` (terra), `ee_extract` (time series → data.frame)
+- if rgee refuses to start: `ee_clean_pyenv(); ee_install()` and read the error
+
+When R? When the rest of your thesis is in R (statistics, ggplot, sf). Otherwise Python + geemap has more users and tutorials in 2026.
+</div>
+
+
+
+
+
+
+</div>
+
+<style>
+.horizontal_dotted_line{
+  border-bottom: 2px dotted gray;
+} 
+</style>
+
+<div class="horizontal_dotted_line" style="position: absolute; left: 3%; top: 94%; height: 0%; width: 94%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+</div>
+
+<div class="" style="padding: 0 30px; box-sizing: border-box; position: absolute; left: 0%; top: 64%; height: 30%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-end" align="left">
+
+<div class="block">
+
+source: [rgee installation vignette](https://r-spatial.github.io/rgee/articles/rgee01.html); Moodle lesson page 4
+</div>
+
+
+
+</div>
+
+<div class="" style="padding: 0 30px; box-sizing: border-box; position: absolute; left: 0%; top: 58%; height: 30%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-end" align="left">
+
+
+</div>
+
+<div class="" style="position: absolute; left: 0%; top: 94%; height: 6%; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+© 2026 Pracownia Meteorologii<!-- .element: style="font-weight: 300" -->
+</div>
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1920px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+<div class="has-light-background" style="background-color: white; padding: 0 20px; box-sizing: border-box; position: absolute; left: 0%; top: 0%; height: 10%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" align="left">
+
+ <div class="block">
+
+## Which client, when?
+</div>
+
+
+</div>
+
+<div class="" style="position: absolute; left: 5%; top: 17%; height: 66%; width: 90%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-start" align="left">
+
+
+
+
+
+<div class="block">
+
+<!-- .element: style="font-size: 26px; position: absolute; left: 0%; top: 15%; height: 78%; width: 95%; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" align="left" -->
+| Need | Code Editor | Python + geemap | rgee |
+|---|---|---|---|
+| explore a dataset, test an idea | **best** | ok | ok |
+| interactive map with layers | built in | `geemap.Map()` | <code>Map&#36;addLayer</code> |
+| repeat for many areas / dates | scripting with lists | **best** (loops, functions, parameters) | good |
+| join with field data, statistics, ML outside GEE | no | pandas, scikit-learn, xarray | sf, terra, tidymodels |
+| report / thesis with code | copy-paste | Jupyter, Quarto | R Markdown, Quarto |
+| share with a non-programmer | Earth Engine **Apps** (`ui.*`) | Streamlit, Solara (geemap) | Shiny |
+| setup effort | zero | low (Colab) / medium (local) | medium–high |
+
+Everything in this course can be done in all three – choose the one your thesis needs.
+</div>
+
+
+
+
+</div>
+
+<style>
+.horizontal_dotted_line{
+  border-bottom: 2px dotted gray;
+} 
+</style>
+
+<div class="horizontal_dotted_line" style="position: absolute; left: 3%; top: 94%; height: 0%; width: 94%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+</div>
+
+<div class="" style="padding: 0 30px; box-sizing: border-box; position: absolute; left: 0%; top: 64%; height: 30%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-end" align="left">
+
+
+</div>
+
+<div class="" style="padding: 0 30px; box-sizing: border-box; position: absolute; left: 0%; top: 58%; height: 30%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-end" align="left">
+
+
+</div>
+
+<div class="" style="position: absolute; left: 0%; top: 94%; height: 6%; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+© 2026 Pracownia Meteorologii<!-- .element: style="font-weight: 300" -->
+</div>
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1920px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+<div class="has-light-background" style="background-color: white; padding: 0 20px; box-sizing: border-box; position: absolute; left: 0%; top: 0%; height: 10%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" align="left">
+
+ <div class="block">
+
+## In the lab (11.01, 4 h)
+</div>
+
+
+</div>
+
+<div class="" style="position: absolute; left: 5%; top: 17%; height: 66%; width: 90%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-start" align="left">
+
+
+
+
+<div class="has-light-background" style="background-color: #ffB73F; position: absolute; left: 80%; top: 53%; height: 26%; width: 13%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+</div>
+
+<div class="block">
+
+<!-- .element: style="font-size: 40px; position: absolute; left: 0%; top: 15%; height: 78%; width: 95%; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" align="left" -->
+1. **Colab** (60 min): new notebook, `ee.Authenticate()` with your project; translate your lab 2 script with `geemap.js_snippet_to_py`; fix what the translator missed; the map appears
+2. **Bitmasks** (45 min): add the `QA60` mask and the `SCL` mask, compare composites with and without; count masked pixels per month (`ui.Chart` → `geemap.ee_to_df` + pandas plot)
+3. **Export** (30 min): NDVI median to Drive in EPSG:2180 and open it in QGIS; time series to CSV
+4. **rgee** (60 min, those with R): `ee_check()`, the NDVI example, `ee_extract` of NDVI for 5 points into a data.frame, a ggplot
+5. **Capstone** (rest): pick one of labs 4–6 (flood, landslide, fire) and rerun it in Python or R as a notebook with text cells – this is the final deliverable of the course
+6. API quiz in the Moodle lesson
+</div>
+
+
+
+
+</div>
+
+<style>
+.horizontal_dotted_line{
+  border-bottom: 2px dotted gray;
+} 
+</style>
+
+<div class="horizontal_dotted_line" style="position: absolute; left: 3%; top: 94%; height: 0%; width: 94%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+</div>
+
+<div class="" style="padding: 0 30px; box-sizing: border-box; position: absolute; left: 0%; top: 64%; height: 30%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-end" align="left">
+
+
+</div>
+
+<div class="" style="padding: 0 30px; box-sizing: border-box; position: absolute; left: 0%; top: 58%; height: 30%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-end" align="left">
+
+
+</div>
+
+<div class="" style="position: absolute; left: 0%; top: 94%; height: 6%; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+© 2026 Pracownia Meteorologii<!-- .element: style="font-weight: 300" -->
+</div>
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1920px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+<div class="has-light-background" style="background-color: white; padding: 0 20px; box-sizing: border-box; position: absolute; left: 0%; top: 0%; height: 10%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" align="left">
+
+ <div class="block">
+
+## Before the last class
+</div>
+
+
+</div>
+
+<div class="" style="position: absolute; left: 5%; top: 17%; height: 66%; width: 90%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-start" align="left">
+
+
+
+
+<div class="has-light-background" style="background-color: #00ced1; transform: rotate(-15deg); position: absolute; left: 87%; top: 75%; height: 26%; width: 13%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+</div>
+
+<div class="block">
+
+<!-- .element: style="font-size: 42px; position: absolute; left: 0%; top: 15%; height: 75%; width: 95%; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" align="left" -->
+- [ ] Make sure `ee.Initialize(project=...)` works in Colab **before** 11.01 (two minutes at home saves twenty in the lab)
+- [ ] R users: `install.packages("rgee")`, gcloud SDK, `ee_install()` at home; bring the output of `ee_check()`
+- [ ] Decide which hazard your capstone notebook will reproduce; have the AOI and dates ready
+- [ ] Optional reading: [End-to-End GEE – Python module](https://courses.spatialthoughts.com/end-to-end-gee.html#python-api); [geemap tutorials](https://geemap.org/tutorials/); [Geocomputation with R](https://r.geocompx.org/) ch. 1–2 for R users
+</div>
+
+
+
+
+</div>
+
+<style>
+.horizontal_dotted_line{
+  border-bottom: 2px dotted gray;
+} 
+</style>
+
+<div class="horizontal_dotted_line" style="position: absolute; left: 3%; top: 94%; height: 0%; width: 94%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+</div>
+
+<div class="" style="padding: 0 30px; box-sizing: border-box; position: absolute; left: 0%; top: 64%; height: 30%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-end" align="left">
+
+
+</div>
+
+<div class="" style="padding: 0 30px; box-sizing: border-box; position: absolute; left: 0%; top: 58%; height: 30%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-end" align="left">
+
+
+</div>
+
+<div class="" style="position: absolute; left: 0%; top: 94%; height: 6%; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+© 2026 Pracownia Meteorologii<!-- .element: style="font-weight: 300" -->
+</div>
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1920px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+<div class="block">
+
+# Thank you 😄
+</div>
+</div></script></section></div>
+    </div>
+
+    <script src="../lib/dist/reveal.js"></script>
+
+    <script src="../lib/plugin/markdown/markdown.js"></script>
+    <script src="../lib/plugin/highlight/highlight.js"></script>
+    <script src="../lib/plugin/zoom/zoom.js"></script>
+    <script src="../lib/plugin/notes/notes.js"></script>
+    <script src="../lib/plugin/math/math.js"></script>
+	<script src="../lib/plugin/mermaid/mermaid.js"></script>
+	<script src="../lib/plugin/chart/chart.min.js"></script>
+	<script src="../lib/plugin/chart/plugin.js"></script>
+	<script src="../lib/plugin/menu/menu.js"></script>
+	<script src="../lib/plugin/customcontrols/plugin.js"></script>
+	<script src="../lib/plugin/chalkboard/plugin.js"></script>
+	<script src="../lib/plugin/reveal-pointer/pointer.js"></script>
+	<script src="../lib/plugin/elapsed-time-bar/elapsed-time-bar.js"></script>
+
+    <script>
+      function extend() {
+        var target = {};
+        for (var i = 0; i < arguments.length; i++) {
+          var source = arguments[i];
+          for (var key in source) {
+            if (source.hasOwnProperty(key)) {
+              target[key] = source[key];
+            }
+          }
+        }
+        return target;
+      }
+
+	  function isLight(color) {
+		let hex = color.replace('#', '');
+
+		// convert #fff => #ffffff
+		if(hex.length == 3){
+			hex = `${hex[0]}${hex[0]}${hex[1]}${hex[1]}${hex[2]}${hex[2]}`;
+		}
+
+		const c_r = parseInt(hex.substr(0, 2), 16);
+		const c_g = parseInt(hex.substr(2, 2), 16);
+		const c_b = parseInt(hex.substr(4, 2), 16);
+		const brightness = ((c_r * 299) + (c_g * 587) + (c_b * 114)) / 1000;
+		return brightness > 155;
+	}
+
+	var bgColor = getComputedStyle(document.documentElement).getPropertyValue('--r-background-color').trim();
+	var isLight = isLight(bgColor);
+
+	if(isLight){
+		document.body.classList.add('has-light-background');
+	} else {
+		document.body.classList.add('has-dark-background');
+	}
+
+      // default options to init reveal.js
+      var defaultOptions = {
+        controls: true,
+        progress: true,
+        history: true,
+        center: true,
+        transition: 'default', // none/fade/slide/convex/concave/zoom
+        plugins: [
+          RevealMarkdown,
+          RevealHighlight,
+          RevealZoom,
+          RevealNotes,
+          RevealMath.MathJax3,
+		  RevealMermaid,
+		  RevealChart,
+		  RevealCustomControls,
+		  RevealMenu,
+	      RevealPointer,
+		  RevealChalkboard, 
+		  ElapsedTimeBar
+        ],
+
+
+    	allottedTime: 5400 * 1000,
+
+		mathjax3: {
+			mathjax: '../lib/plugin/math/mathjax/tex-mml-chtml.js',
+		},
+		markdown: {
+		  gfm: true,
+		  mangle: true,
+		  pedantic: false,
+		  smartLists: false,
+		  smartypants: false,
+		},
+
+		mermaid: {
+			theme: isLight ? 'default' : 'dark',
+		},
+
+		customcontrols: {
+			controls: [
+				{id: 'toggle-overview',
+				title: 'Toggle overview (O)',
+				icon: '<i class="fa fa-th"></i>',
+				action: 'Reveal.toggleOverview();'
+				},
+				{ icon: '<i class="fa fa-pen-square"></i>',
+				title: 'Toggle chalkboard (B)',
+				action: 'RevealChalkboard.toggleChalkboard();'
+				},
+				{ icon: '<i class="fa fa-pen"></i>',
+				title: 'Toggle notes canvas (C)',
+				action: 'RevealChalkboard.toggleNotesCanvas();'
+				},
+			]
+		},
+		menu: {
+			loadIcons: false
+		}
+      };
+
+      // options from URL query string
+      var queryOptions = Reveal().getQueryHash() || {};
+
+      var options = extend(defaultOptions, {"width":1920,"height":1200,"margin":0,"maxScale":4,"controls":true,"progress":true,"slideNumber":true,"transition":"zoom","transitionSpeed":"slow"}, queryOptions);
+    </script>
+
+    <script>
+      Reveal.initialize(options);
+    </script>
+  </body>
+
+  <!-- created with Advanced Slides -->
+</html>

@@ -1,0 +1,165 @@
+<p style="background-color:#adff0f; padding:20px;color:magenta;font-size:160%;border-radius:30px;text-align:center">`<b>rgee</b>` library is a kind of "translator" between R and python API for GEE.</p>
+<h4>1. Why `rgee` instead of code editor (Javascript)?</h4>
+<p>
+</p>
+<div>
+    <p>A short comparison based on <strong><a href="https://docs.google.com/presentation/d/1MVVeyCdm-FrMVRPop6wB3iyd85TAlwB-F9ygTQZ8S1w/pub?slide=id.g1e419debf0_1_205/">Tyler Erickson presentation</a></strong>.</p>
+    <center>
+        <table border:="" 1px="" solid="" black;border-collapse:="" collapse;="">
+            <thead>
+                <tr>
+                    <th>
+                        Code Editor
+                    </th>
+                    <th>
+                        R
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>
+                        Easy to get started
+                    </td>
+                    <td>
+                        Easy to share code between scripts.
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        Trivial to share scripts
+                    </td>
+                    <td>
+                        Easier transition to a web application (Shiny).
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        Built in authentication
+                    </td>
+                    <td>
+                        An I/O API more friendly with R users.
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <strong style="color:red">Limited input/output functionality</strong>
+                    </td>
+                    <td>
+                        Many, many plotting options
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <strong style="color:red">Integration with other JS libraries is not possible</strong>
+                    </td>
+                    <td>
+                        <strong style="color:red">Some assembly (&amp; maintenance) required!.</strong>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </center>
+</div>
+<p>
+</p>
+<h4>2. Installation</h4>
+<p></p>
+<div><strong>rgee</strong> depends on <strong><a href="https://cran.r-project.org/package=reticulate">reticulate</a></strong>, <strong><a href="https://cran.r-project.org/package=R6">R6</a></strong> and <strong><a href="https://cran.r-project.org/package=processx">processx</a></strong>.
+    To install <strong>rgee</strong> run:</div>
+<div>```</div>
+<div>install.packages("rgee")<br></div>
+<div>```</div>
+<div>R will download quite a lot of software. After installation source library:<br></div>
+<div>```</div>
+<div>library(rgee)<br></div>
+<div>```</div>
+<div>
+    <p><strong>rgee</strong> has two types of dependencies: <strong style="color:firebrick">strict dependencies</strong> that must be present before <strong>rgee</strong> initialization (i.e.&nbsp;<strong><a href="https://r-spatial.github.io/rgee/reference/ee_Initialize.html">ee_Initialize()</a></strong>)
+        and the <b style="color:goldenrod">credentials dependencies</b> that unlock all <strong>rgee</strong> I/0 functionality with Google Drive (GD) and Google Cloud Storage (GCS).</p>
+    <p>If the strict dependencies are not installed, <strong>rgee just will not work</strong>. These dependencies are:</p>
+    <ul>
+        <li>
+            <p style="color:firebrick"><b> Google account with Earth Engine activated </b></p>
+        </li>
+        <li>
+            <p style="color:firebrick"><b> Python &gt;= v3.5 </b></p>
+        </li>
+        <li>
+            <p style="color:firebrick"><b> EarthEngine Python API (Python package) </b></p>
+        </li>
+    </ul>
+    <p>
+    </p>
+    <p>The <b style="color:goldenrod">credentials dependencies</b> are only needed to move data from Google Drive and Google Cloud Storage to your local environment. These dependencies are not mandatory. However, they will help you to create a seamless connection
+        between R and Earth Engine. These dependencies are:</p>
+    <ul>
+        <li>
+            <p style="color:goldenrod">Google Cloud Storage credential</p>
+        </li>
+        <li>
+            <p style="color:goldenrod">Google Drive credential</p>
+        </li>
+    </ul>The activation of an <strong>Earth Engine account</strong> depends on each user, check the official website of <a href="https://earthengine.google.com/">Google Earth Engine</a> for more details.<br>You can check <strong style="color:firebrick">strict dependencies:</strong><br></div>
+<div>```</div>
+<div>ee_check() <br></div>
+<div>```</div>
+<div>In my case results looked like:</div>
+<div><img src="@@PLUGINFILE@@/ee_check.png" alt="ee_check" class="img-responsive atto_image_button_middle" width="600" height="111"><br></div><br>
+<div style="background-color:#87CEFA; padding:20px;color:navy;font-size:105%;border-radius:5px;text-align:left">If you have already python on your system you can use them. But if not or you wish use specific isolated python environment and you have enough space (~200 MB) at hard drive, RUN:</div>
+<div>```</div>
+<div>library(rgee)<br>ee_install(py_env = "rgee") # It is just necessary once!<br></div>
+<div>```<br></div>
+<div style="background-color:coral; padding:10px;color:white;font-size:108%;border-radius:5px;text-align:left">For questions:</div><br>
+<div style="background-color:black; padding:3px;color:white;font-size:100%;border-radius:5px;text-align:left">rgee::ee_install want to store the environment variables: EARTHENGINE_PYTHON <br>and EARTHENGINE_ENV in your .Renviron file to use the Python path:<br>C:\Users\user\Documents\.conda\envs\rgee/python.exe in future sessions.<br><strong style="color:goldenrod">Would you like to continues?
+    [Y/n]:</strong>
+</div><br>
+<p style="background-color:black; padding:3px;color:white;font-size:100%;border-radius:5px;text-align:left">No non-system installation of Python could be found.<br>Would you like to download and install Miniconda?<br>Miniconda is an open source environment management system for Python.<br>See https://docs.conda.io/en/latest/miniconda.html for more details.
+    <br><strong style="color:goldenrod">Would you like to install Miniconda? [Y/n]: </strong><br>
+</p>
+<div style="background-color:coral; padding:10px;color:white;font-size:108%;border-radius:5px;text-align:left">answer <b>Y</b></div><br>
+<div style="background-color:coral; padding:10px;color:white;font-size:108%;border-radius:5px;text-align:left">and at the end<b> reset R </b>(<b>choose 1</b>)<b><br></b></div>
+<h4>3. Authentication</h4>
+<div><strong style="color:red">This part is not mentioned in the official manual.</strong> You have to download<a href="https://cloud.google.com/sdk/docs/downloads-interactive#windows" target="_blank"> <b>gcloud</b> (<b>SDK</b>)</a></div><br>
+<p><strong style="background-color:#adff0f; padding:5px;color:magenta;font-size:105%;border-radius:5px;text-align:center">Please follow the manual. It can take a few minutes<br></strong></p>
+
+<div>
+    <p>Download&nbsp;</p>
+    <div>```</div>.zip
+    <div>```</div>&nbsp;file:
+    <p></p>
+    <ol>
+        <li>
+            <p>Download&nbsp;<a href="https://dl.google.com/dl/cloudsdk/channels/rapid/google-cloud-sdk.zip" track-type="cloudSdk" track-name="download" track-metadata-os="Windows" track-metadata-ext="zip">google-cloud-sdk.zip</a>&nbsp;and extract its contents.
+                (Right click on the downloaded file and select&nbsp;<strong>Extract All</strong>.)</p>
+        </li>
+        <li>
+            <p>Launch the&nbsp;</p>
+            <div>```</div>google-cloud-sdk\install.bat
+            <div>```</div>&nbsp;script and follow the installation prompts.
+            <p></p>
+        </li>
+        <li>
+            <p>When the installation finishes, restart the command prompt (</p>
+            <div>```</div>cmd.exe
+            <div>```</div>).
+        </li>
+        <li>
+            <p>Run&nbsp;<a href="https://cloud.google.com/sdk/gcloud/reference/init"></a></p>
+            <div><a href="https://cloud.google.com/sdk/gcloud/reference/init">```</a></div><a href="https://cloud.google.com/sdk/gcloud/reference/init">gcloud init<div>```</div></a>:
+            <p></p>
+            <div>```</div>
+            C:\&gt; gcloud init
+            <div>```</div>
+            <div><br></div>
+            <div>Now check <strong style="color:firebrick">strict dependencies</strong> again<br></div>
+            <div>```</div>
+            <div>ee_check() <br></div>
+            <div>```</div>
+            <div><br></div>
+            <div><br></div>
+            <div>source: <a href="https://r-spatial.github.io/rgee/articles/rgee01.html" target="_blank">https://r-spatial.github.io/rgee/articles/rgee01.html</a><br></div>
+            <p></p>
+        </li>
+    </ol>
+</div>

@@ -1,0 +1,31 @@
+<h4>In this page we will try calculate areas inside "roi" covered by life, green vegetation<br></h4>
+<p style="color:white;background:navy;padding:20px;font-family:pt mono bold;font-size:160%;border-radius:30px;text-align:center">First import collection and create "<b>roi</b>"<br></p>
+<p>```</p>
+<p>// Function to calculate and add an NDVI band<br>var addNDVI = function(image) {<br>return image.addBands(image.normalizedDifference(['B8', 'B4']).rename('NDVI'));<br>};<br><br>// Add NDVI band to image collection<br>var S2a = S2a.map(addNDVI);<br><br>var
+    NDVI = S2a.select(['NDVI']);<br>var NDVImed = NDVI.median();<br></p>
+<p>```</p>
+<p>Manual classification. We create separate layer for each class, and than a specific values are assigned to particular class.</p>
+<ul>
+    <li>"water" = -1</li>
+    <li>"rocks" = 2<br></li>
+    <li>"shrub" = 3</li>
+    <li>"vegetation" = 4<br></li>
+</ul>
+<p style="color:coral;background:AntiqueWhite;padding:20px;font-family:pt mono bold;font-size:160%;border-radius:30px;text-align:center">This solution is not efficient - just for exercise - do not use in real calculations<br>```</p>
+<p>// Manual classification combining bands and defining values in GEE<br>var water = NDVImed.lte(-0.1).rename('Water').multiply(-1); // water is '-1' <br>// print(water)<br>var rock = NDVImed.gt(-0.1).and(NDVImed.lte(0.3)).rename('Rock').multiply(2);&nbsp;
+    // rocks is '2' <br>// print(rock)<br>var shrub = NDVImed.gt(0.3).and(NDVImed.lte(0.4)).rename('Shrub').multiply(3); <br>// print(shrub)<br>var vegetation = NDVImed.gt(0.4).rename('Green').multiply(4); <br>// print(vegetation)<br>```</p>
+<p>Now we can add new bands to image<br></p>
+<p>```<br>var classimage = NDVImed.addBands(water)<br>var classimage = classimage.addBands(rock)<br>var classimage = classimage.addBands(shrub)<br>var classimage = classimage.addBands(vegetation)<br>```</p>
+<p>and finally compute area (try change "Green" to "Rock" or "Shrub")<br></p>
+<p>```<br>// Lets compute the Green area<br>var classareas = ee.Image.pixelArea().addBands(classimage.select('Green'))<br>&nbsp; .reduceRegion({<br>&nbsp;&nbsp;&nbsp; reducer: ee.Reducer.sum().group({<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; groupField: 1,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    groupName: 'code',<br>&nbsp;&nbsp;&nbsp; }),<br>&nbsp;&nbsp;&nbsp; geometry: roi,<br>&nbsp;&nbsp;&nbsp; scale: 1,&nbsp; // sample the geometry at 1m intervals<br>&nbsp;&nbsp;&nbsp; maxPixels: 3e10<br>&nbsp; }).get('groups');<br>&nbsp;<br>&nbsp; //
+    Print the list of dictionaries.<br>print(classareas);<br>```</p>
+
+<h4>Let's try make it better</h4>We can visualize mosaic first:
+<p>```<br>var thresholds = ee.Image([0, 0.1, 0.2, 0.3, 0.4, 0.5, 1]); //Define the thresholds<br>var classified = NDVImed.gt(thresholds).reduce('sum').toInt(); //Create the classified Image<br>print(classified, 'Classified');</p>
+<p>//Define new visualization parameters<br>// for the classification: The values are now ranging from 0 to 7, one for each class<br>var classifiedParams = {min: 0, max: 7, palette: ['blue', 'white', 'brown', 'burlywood', 'LimeGreen', 'ForestGreen', 'DarkGreen']};<br>Map.addLayer(classified.clip(roi),
+    classifiedParams, 'Classified');<br>```</p>
+<br>
+<p>```</p><p>var class_areas2 = ee.Image.pixelArea().addBands(classified)</p><p>&nbsp; .reduceRegion({</p><p>&nbsp; &nbsp; reducer: ee.Reducer.sum().group({</p><p>&nbsp; &nbsp; &nbsp; groupField: 1,</p><p>&nbsp; &nbsp; &nbsp; groupName: 'code',</p><p>&nbsp; &nbsp; }),</p><p>&nbsp; &nbsp; geometry: roi,</p><p>&nbsp; &nbsp; scale: 1, &nbsp;// sample the geometry at 1m intervals</p><p>&nbsp; &nbsp; maxPixels: 3e10</p><p>&nbsp; }).get('groups');</p><p>```</p><p>```</p><p>// Print the list of dictionaries.<br>
+print('areas of classes:')<br>
+print(class_areas);<br>```</p><p>Here is an example GEE script:&nbsp;<a href="https://code.earthengine.google.com/64e5f1a2e4b02c77668146e463db6c72" target="_blank">https://code.earthengine.google.com/64e5f1a2e4b02c77668146e463db6c72</a></p>

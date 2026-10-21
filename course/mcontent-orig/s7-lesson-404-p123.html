@@ -1,0 +1,15 @@
+<h5>Useful links: </h5>
+<ol>
+    <li><span style="font-size: 0.9375rem;">google colab&nbsp;</span><span style="font-size: 0.9375rem;">notebook with </span><a href="https://colab.research.google.com/#create=true" target="_blank" style="font-size: 0.9375rem; background-color: rgb(255, 255, 255);">python 3 karnel</a><br></li>
+    <li><span style="font-size: 0.9375rem;">google colab notebook with a </span><a href="https://colab.research.google.com/#create=true&amp;language=r" target="_blank" style="font-size: 0.9375rem; background-color: rgb(255, 255, 255);">predefined R kernel</a><br></li>
+</ol><br>
+<h5>We can also run <b>R</b> code in python kernel:</h5>```<br>%load_ext rpy2.ipython<br>```
+<p>Then use&nbsp;<span style="color:white;background-color:black;padding:2px;border-radius:3px"><b>%%R</b></span>&nbsp;to execute&nbsp;<strong>cell magic</strong>. Use this if you want all syntax in a cell to be executed in <b>R</b>. Note that this must
+    be placed at the beginning of the cell.
+    <br>```<br>%%R<br>a&lt;-seq(1,10)<br>set.seed(1313) #for reproductive results<br>b&lt;-runif(10)*a<br>#plot(b~a)<br>df&lt;-data.frame('x'=a,'y'=b)<br>ggplot(df,aes(x,y))+theme_bw() + geom_point() + geom_smooth(method='lm')<br>```</p>
+<p style="color:white;background-color:#f06455;padding:5px;border-radius:3px 15px 15px 3px">?In case of an error, please downgrade "rpy2" library</p>
+<p>```<br>!pip uninstall rpy2 -y<br>!pip install rpy2==3.5.1<br>```</p>
+<p>And try again to load <b>rpy2</b> library<br>```<br>%load_ext rpy2.ipython<br>```</p>
+<p>Use&nbsp;<span style="color:white;background-color:black;padding:2px;border-radius:3px"><b>%R</b></span>&nbsp;to execute&nbsp;<strong>line magic</strong>. Use this if you want a single line in a cell to be executed in <b>R</b>.</p>
+<p>Here is how you could use this line magic to copy <b>R</b> variable to <b>Python</b>:</p>
+<p>```<br># py_df - python variable<br># df - R variable<br>py_df=%R df<br>print(py_df)<br>```</p>

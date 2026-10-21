@@ -1,0 +1,1099 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+
+    <title></title>
+    <link rel="stylesheet" href="../lib/dist/reveal.css" />
+    <link rel="stylesheet" href="../lib/dist/theme/beige.css" id="theme" />
+    <link rel="stylesheet" href="../lib/plugin/highlight/zenburn.css" />
+	<link rel="stylesheet" href="../lib/css/layout.css" />
+	<link rel="stylesheet" href="../lib/plugin/customcontrols/style.css">
+	<link rel="stylesheet" href="../lib/plugin/chalkboard/style.css">
+
+	<link rel="stylesheet" href="../lib/plugin/reveal-pointer/pointer.css" />
+
+
+    <script defer src="../lib/dist/fontawesome/all.min.js"></script>
+
+	<script type="text/javascript">
+		var forgetPop = true;
+		function onPopState(event) {
+			if(forgetPop){
+				forgetPop = false;
+			} else {
+				parent.postMessage(event.target.location.href, "app://obsidian.md");
+			}
+        }
+		window.onpopstate = onPopState;
+		window.onmessage = event => {
+			if(event.data == "reload"){
+				window.document.location.reload();
+			}
+			forgetPop = true;
+		}
+
+		function fitElements(){
+			const itemsToFit = document.getElementsByClassName('fitText');
+			for (const item in itemsToFit) {
+				if (Object.hasOwnProperty.call(itemsToFit, item)) {
+					var element = itemsToFit[item];
+					fitElement(element,1, 1000);
+					element.classList.remove('fitText');
+				}
+			}
+		}
+
+		function fitElement(element, start, end){
+
+			let size = (end + start) / 2;
+			element.style.fontSize = `${size}px`;
+
+			if(Math.abs(start - end) < 1){
+				while(element.scrollHeight > element.offsetHeight){
+					size--;
+					element.style.fontSize = `${size}px`;
+				}
+				return;
+			}
+
+			if(element.scrollHeight > element.offsetHeight){
+				fitElement(element, start, size);
+			} else {
+				fitElement(element, size, end);
+			}		
+		}
+
+
+		document.onreadystatechange = () => {
+			fitElements();
+			if (document.readyState === 'complete') {
+				if (window.location.href.indexOf("?export") != -1){
+					parent.postMessage(event.target.location.href, "app://obsidian.md");
+				}
+				if (window.location.href.indexOf("print-pdf") != -1){
+					let stateCheck = setInterval(() => {
+						clearInterval(stateCheck);
+						window.print();
+					}, 250);
+				}
+			}
+	};
+
+
+        </script>
+  </head>
+  <body>
+    <div class="reveal">
+      <div class="slides"><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1920px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+<img src="../assets/Kursy/prezentacje/IOK/pliki/sateliteGEEbanner.png" alt="" style="width: 1920px; object-fit: fill">
+
+<div class="has-light-background" style="background-color: #EEB73F; padding: 250px 0  250px 300px; box-sizing: border-box; position: absolute; left: 0%; top: 33%; height: 34%; width: 60%; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" align="left">
+
+
+### Lecture 6<!-- .element: style="letter-spacing: 1.5rem" -->
+## Wildfire detection and burn severity
+#### active fires, burned area, dNBR
+
+#### Marek Urbaniak
+
+</div>
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1920px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+<div class="has-light-background" style="background-color: white; padding: 0 20px; box-sizing: border-box; position: absolute; left: 0%; top: 0%; height: 10%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" align="left">
+
+ <div class="block">
+
+## Today (90 min)
+</div>
+
+
+</div>
+
+<div class="" style="position: absolute; left: 5%; top: 17%; height: 66%; width: 90%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-start" align="left">
+
+
+
+
+<div class="has-light-background" style="background-color: #ffB73F; position: absolute; left: 92%; top: 55%; height: 26%; width: 13%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+</div>
+<div class="has-light-background" style="background-color: #00ced1; position: absolute; left: 87%; top: 75%; height: 26%; width: 13%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+</div>
+
+<div class="block">
+
+<!-- .element: style="font-size: 44px; position: absolute; left: 0%; top: 15%; height: 80%; width: 80%; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" align="left" -->
+1. Vocabulary: fire intensity, burn severity, soil burn severity
+2. Three satellite products: **active fire**, **burned area**, **burn severity**
+3. Active fire detection: thermal bands, MODIS / VIIRS, FIRMS
+4. Spectral response of burned vegetation → NBR
+5. dNBR, RdNBR and the USGS severity classes
+6. Choosing pre- and post-fire images (the step where most reports go wrong)
+7. Validation: CBI field plots, EFFIS, EMS
+8. **In the lab**: the UN-SPIDER burn severity script
+</div>
+
+
+
+<style>.reveal table{max-width:100%;border-collapse:collapse}.reveal table th,.reveal table td{padding:3px 8px;line-height:1.25}</style>
+
+
+</div>
+
+<style>
+.horizontal_dotted_line{
+  border-bottom: 2px dotted gray;
+} 
+</style>
+
+<div class="horizontal_dotted_line" style="position: absolute; left: 3%; top: 94%; height: 0%; width: 94%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+</div>
+
+<div class="" style="padding: 0 30px; box-sizing: border-box; position: absolute; left: 0%; top: 64%; height: 30%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-end" align="left">
+
+
+</div>
+
+<div class="" style="padding: 0 30px; box-sizing: border-box; position: absolute; left: 0%; top: 58%; height: 30%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-end" align="left">
+
+
+</div>
+
+<div class="" style="position: absolute; left: 0%; top: 94%; height: 6%; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+© 2026 Pracownia Meteorologii<!-- .element: style="font-weight: 300" -->
+</div>
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1920px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+<div class="has-light-background" style="background-color: white; padding: 0 20px; box-sizing: border-box; position: absolute; left: 0%; top: 0%; height: 10%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" align="left">
+
+ <div class="block">
+
+## Vocabulary first
+</div>
+
+
+</div>
+
+<div class="" style="position: absolute; left: 5%; top: 17%; height: 66%; width: 90%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-start" align="left">
+
+
+
+
+<div class="has-light-background" style="background-color: #ffB73F; position: absolute; left: 80%; top: 53%; height: 26%; width: 13%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+</div>
+
+<div class="block">
+
+<!-- .element: style="font-size: 44px; position: absolute; left: 0%; top: 15%; height: 78%; width: 95%; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" align="left" -->
+- **Fire intensity** – energy released per unit time and length of fire front (Byram 1959); physics of the flames, measured *during* the fire (kW/m); from satellites: **Fire Radiative Power** (FRP, MW)
+- **Burn (fire) severity** – the effect of the fire on the ecosystem: degree of vegetation mortality, consumption of organic matter; measured *after* the fire – **this is what dNBR maps**
+- **Soil burn severity** – fire-induced change in soil physical, chemical and biological properties; drives erosion and post-fire floods / debris flows (link to lecture 5!)
+- **Burned area** – the perimeter / pixels that burned, regardless of severity
+</div>
+
+
+
+
+
+
+</div>
+
+<style>
+.horizontal_dotted_line{
+  border-bottom: 2px dotted gray;
+} 
+</style>
+
+<div class="horizontal_dotted_line" style="position: absolute; left: 3%; top: 94%; height: 0%; width: 94%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+</div>
+
+<div class="" style="padding: 0 30px; box-sizing: border-box; position: absolute; left: 0%; top: 64%; height: 30%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-end" align="left">
+
+<div class="block">
+
+source: Keeley, J.E. (2009). Fire intensity, fire severity and burn severity: a brief review and suggested usage. *Int. J. Wildland Fire* 18, 116–126; Moodle lesson page 1
+</div>
+
+
+
+</div>
+
+<div class="" style="padding: 0 30px; box-sizing: border-box; position: absolute; left: 0%; top: 58%; height: 30%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-end" align="left">
+
+
+</div>
+
+<div class="" style="position: absolute; left: 0%; top: 94%; height: 6%; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+© 2026 Pracownia Meteorologii<!-- .element: style="font-weight: 300" -->
+</div>
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1920px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+<div class="has-light-background" style="background-color: white; padding: 0 20px; box-sizing: border-box; position: absolute; left: 0%; top: 0%; height: 10%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" align="left">
+
+ <div class="block">
+
+## Three products, three sensors
+</div>
+
+
+</div>
+
+<div class="" style="position: absolute; left: 5%; top: 17%; height: 66%; width: 90%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-start" align="left">
+
+
+
+
+
+<div class="block">
+
+<!-- .element: style="font-size: 32px; position: absolute; left: 0%; top: 15%; height: 78%; width: 95%; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" align="left" -->
+| Product | When | Physical basis | Sensors | Resolution | GEE / source |
+|---|---|---|---|---|---|
+| **Active fire** (hotspots) | during the fire, several times a day | thermal emission at 4 µm (MWIR) and 11 µm | MODIS, **VIIRS**, Sentinel-3 SLSTR, GOES | 1 km / 375 m | `FIRMS` (NASA), `NASA/VIIRS/002/VNP14A1` |
+| **Burned area** | after, monthly | reflectance change + hotspots | MODIS, Sentinel-2/3 | 500 m / 20 m | `MODIS/061/MCD64A1`, EFFIS |
+| **Burn severity** | after, per event | NIR drop + SWIR rise → dNBR | Sentinel-2, Landsat | 10–30 m | **your lab** script; MTBS (USA) |
+
+Active fire tells *where it burns now*; burned area tells *how much*; severity tells *how badly* – and only the last one needs the before/after pair.
+</div>
+
+
+
+
+
+
+</div>
+
+<style>
+.horizontal_dotted_line{
+  border-bottom: 2px dotted gray;
+} 
+</style>
+
+<div class="horizontal_dotted_line" style="position: absolute; left: 3%; top: 94%; height: 0%; width: 94%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+</div>
+
+<div class="" style="padding: 0 30px; box-sizing: border-box; position: absolute; left: 0%; top: 64%; height: 30%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-end" align="left">
+
+<div class="block">
+
+source: [NASA FIRMS](https://firms.modaps.eosdis.nasa.gov/); [EFFIS](https://forest-fire.emergency.copernicus.eu/)
+</div>
+
+
+
+</div>
+
+<div class="" style="padding: 0 30px; box-sizing: border-box; position: absolute; left: 0%; top: 58%; height: 30%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-end" align="left">
+
+
+</div>
+
+<div class="" style="position: absolute; left: 0%; top: 94%; height: 6%; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+© 2026 Pracownia Meteorologii<!-- .element: style="font-weight: 300" -->
+</div>
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1920px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+<div class="has-light-background" style="background-color: white; padding: 0 20px; box-sizing: border-box; position: absolute; left: 0%; top: 0%; height: 10%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" align="left">
+
+ <div class="block">
+
+## Active fire detection: hot pixels
+</div>
+
+
+</div>
+
+<div class="" style="position: absolute; left: 5%; top: 17%; height: 66%; width: 90%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-start" align="left">
+
+
+
+
+<div class="has-light-background" style="background-color: #00ced1; transform: rotate(-15deg); position: absolute; left: 87%; top: 75%; height: 26%; width: 13%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+</div>
+
+<div class="block">
+
+<!-- .element: style="font-size: 32px; position: absolute; left: 0%; top: 15%; height: 78%; width: 50%; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" align="left" -->
+- A fire at 600–1000 K radiates most in the **mid-wave infrared (4 µm)**; the background at 300 K radiates most at 11 µm (Wien's law)
+- Algorithm: a pixel is a fire if its 4 µm brightness temperature is far above its neighbours (contextual test) and above 11 µm – day and night, through smoke, **not through clouds**
+- **VIIRS** (Suomi-NPP, NOAA-20/21): 375 m, twice a day each; **MODIS** (Terra/Aqua): 1 km, archive since 2000 (Terra ending)
+- **FIRMS** delivers hotspots within 3 h; CSV / KML / WMS; in GEE as `FIRMS` collection (daily, 1 km) and VIIRS products
+- Use in the lab: hotspot dates = **when** the fire burned → choose the post-fire window
+</div>
+
+
+
+<div class="block">
+
+<!-- .element: style="font-size: 27px; background-color: #e8f4f8; padding: 15px; box-sizing: border-box; position: absolute; left: 53%; top: 15%; height: 78%; width: 45%; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" class="has-light-background" align="left" -->
+```javascript
+var firms = ee.ImageCollection('FIRMS')
+  .filterDate('2025-07-01', '2025-08-31')
+  .filterBounds(roi)
+  .select('T21');                       // brightness temperature, K
+var hot = firms.max().gt(300);          // any detection in the window
+Map.addLayer(hot.selfMask(), {palette: ['red']}, 'FIRMS hotspots');
+// a chart of detections per day gives the fire timeline
+print(ui.Chart.image.series(firms.map(function(i){return i.gt(0);}),
+      roi, ee.Reducer.sum(), 1000));
+```
+<!-- TODO image: Planck curves at 300 K and 800 K with MWIR/TIR bands marked (public-domain figure, e.g. from NASA ARSET or draw in Excalidraw). -->
+</div>
+
+
+
+
+
+
+</div>
+
+<style>
+.horizontal_dotted_line{
+  border-bottom: 2px dotted gray;
+} 
+</style>
+
+<div class="horizontal_dotted_line" style="position: absolute; left: 3%; top: 94%; height: 0%; width: 94%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+</div>
+
+<div class="" style="padding: 0 30px; box-sizing: border-box; position: absolute; left: 0%; top: 64%; height: 30%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-end" align="left">
+
+<div class="block">
+
+source: Giglio, L. et al. (2016). The collection 6 MODIS active fire detection algorithm. *RSE* 178, 31–41; Schroeder, W. et al. (2014). The new VIIRS 375 m active fire product. *RSE* 143, 85–96
+</div>
+
+
+
+</div>
+
+<div class="" style="padding: 0 30px; box-sizing: border-box; position: absolute; left: 0%; top: 58%; height: 30%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-end" align="left">
+
+
+</div>
+
+<div class="" style="position: absolute; left: 0%; top: 94%; height: 6%; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+© 2026 Pracownia Meteorologii<!-- .element: style="font-weight: 300" -->
+</div>
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1920px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+<div class="has-light-background" style="background-color: white; padding: 0 20px; box-sizing: border-box; position: absolute; left: 0%; top: 0%; height: 10%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" align="left">
+
+ <div class="block">
+
+## Spectral response of burned vegetation
+</div>
+
+
+</div>
+
+<div class="" style="position: absolute; left: 5%; top: 17%; height: 66%; width: 90%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-start" align="left">
+
+
+
+
+<div class="has-light-background" style="background-color: #ffB73F; position: absolute; left: 80%; top: 53%; height: 26%; width: 13%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+</div>
+
+<div class="block">
+
+<!-- .element: style="font-size: 42px; position: absolute; left: 0%; top: 15%; height: 78%; width: 50%; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" align="left" -->
+Healthy vegetation: high **NIR** (leaf structure), low **SWIR** (water in leaves).
+After a fire: leaves gone, char and ash, dry soil → **NIR drops**, **SWIR rises**.
+
+`$ NBR = \frac{NIR - SWIR_2}{NIR + SWIR_2} = \frac{B8 - B12}{B8 + B12} $` (Sentinel-2) `$ = \frac{SR\_B5 - SR\_B7}{SR\_B5 + SR\_B7} $` (Landsat 8/9)
+
+NBR is high for green forest (0.3–0.7), near zero for bare soil, strongly negative for freshly burned (−0.2 … −0.5).
+</div>
+
+
+
+<!-- TODO image: reflectance curves healthy vs burned vegetation with S2 bands B8 and B12 marked – exists in Moodle lesson page 2 ("Healthy and burned areas", source USGS/UN-SPIDER) – paste into pliki/. -->
+
+<div class="block">
+
+<!-- .element: style="font-size: 38px; background-color: #e8f4f8; padding: 15px; box-sizing: border-box; position: absolute; left: 53%; top: 15%; height: 78%; width: 45%; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" class="has-light-background" align="left" -->
+Why NBR and not NDVI?
+- NDVI saturates in dense forest and recovers fast with grass; the **SWIR₂** band (2.2 µm) reacts to char and soil moisture – it stays changed for months
+- NBR was designed for severity (Key & Benson 2006) and correlates with field CBI (Composite Burn Index)
+- Still: both are used; NDVI difference is a useful second opinion in grassland
+
+Important: SWIR₂ is a **20 m** band on Sentinel-2 – the result is effectively 20 m, not 10 m.
+</div>
+
+
+
+
+
+
+</div>
+
+<style>
+.horizontal_dotted_line{
+  border-bottom: 2px dotted gray;
+} 
+</style>
+
+<div class="horizontal_dotted_line" style="position: absolute; left: 3%; top: 94%; height: 0%; width: 94%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+</div>
+
+<div class="" style="padding: 0 30px; box-sizing: border-box; position: absolute; left: 0%; top: 64%; height: 30%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-end" align="left">
+
+<div class="block">
+
+source: Key, C.H., Benson, N.C. (2006). Landscape Assessment (LA): sampling and analysis methods. USDA FS RMRS-GTR-164-CD; Moodle lesson pages 2–3
+</div>
+
+
+
+</div>
+
+<div class="" style="padding: 0 30px; box-sizing: border-box; position: absolute; left: 0%; top: 58%; height: 30%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-end" align="left">
+
+
+</div>
+
+<div class="" style="position: absolute; left: 0%; top: 94%; height: 6%; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+© 2026 Pracownia Meteorologii<!-- .element: style="font-weight: 300" -->
+</div>
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1920px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+<div class="has-light-background" style="background-color: white; padding: 0 20px; box-sizing: border-box; position: absolute; left: 0%; top: 0%; height: 10%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" align="left">
+
+ <div class="block">
+
+## dNBR and the USGS severity classes
+</div>
+
+
+</div>
+
+<div class="" style="position: absolute; left: 5%; top: 17%; height: 66%; width: 90%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-start" align="left">
+
+
+
+
+<div class="has-light-background" style="background-color: #00ced1; transform: rotate(-15deg); position: absolute; left: 87%; top: 75%; height: 26%; width: 13%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+</div>
+
+<div class="block">
+
+<!-- .element: style="font-size: 25px; position: absolute; left: 0%; top: 15%; height: 78%; width: 48%; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" align="left" -->
+`$ dNBR = NBR_{pre} - NBR_{post} $`
+
+Convention: often scaled × 1000. Positive = loss of vegetation; negative = regrowth.
+
+| dNBR (scaled) | dNBR | Burn severity |
+|---|---|---|
+| < −250 | < −0.25 | enhanced regrowth, high |
+| −250 … −100 | −0.25 … −0.10 | enhanced regrowth, low |
+| −100 … +100 | −0.10 … 0.10 | **unburned** |
+| 100 … 270 | 0.10 … 0.27 | **low severity** |
+| 270 … 440 | 0.27 … 0.44 | **moderate–low** |
+| 440 … 660 | 0.44 … 0.66 | **moderate–high** |
+| > 660 | > 0.66 | **high severity** |
+</div>
+
+
+
+<div class="block">
+
+<!-- .element: style="font-size: 22px; background-color: #e8f4f8; padding: 15px; box-sizing: border-box; position: absolute; left: 52%; top: 15%; height: 78%; width: 48%; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" class="has-light-background" align="left" -->
+```javascript
+var nbrPre  = pre.normalizedDifference(['B8','B12']);
+var nbrPost = post.normalizedDifference(['B8','B12']);
+var dNBR = nbrPre.subtract(nbrPost).multiply(1000).rename('dNBR');
+
+var thresholds = ee.Image([-250, -100, 100, 270, 440, 660]);
+var severity = dNBR.gt(thresholds).reduce('sum').toInt();   // 0..6
+var sevVis = {min: 0, max: 6, palette:
+  ['7a8737','acbe4d','0ae042','fff70b','ffaf38','ff641b','a41fd6']};
+Map.addLayer(severity.clip(roi), sevVis, 'burn severity');
+```
+Caveats:
+- thresholds were derived for US forests; in Mediterranean shrub or Polish pine they shift – **calibrate** with field data or at least report them as "USGS proposed"
+- **RdNBR** = dNBR / √|NBR_pre| normalises for pre-fire vegetation amount – fairer when comparing forest with grassland (Miller & Thode 2007)
+</div>
+
+
+
+
+
+
+</div>
+
+<style>
+.horizontal_dotted_line{
+  border-bottom: 2px dotted gray;
+} 
+</style>
+
+<div class="horizontal_dotted_line" style="position: absolute; left: 3%; top: 94%; height: 0%; width: 94%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+</div>
+
+<div class="" style="padding: 0 30px; box-sizing: border-box; position: absolute; left: 0%; top: 64%; height: 30%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-end" align="left">
+
+<div class="block">
+
+source: [UN-SPIDER burn severity – In detail](https://un-spider.org/advisory-support/recommended-practices/recommended-practice-burn-severity/in-detail); [USGS FIREMON](https://www.usgs.gov/landsat-missions/landsat-normalized-burn-ratio)
+</div>
+
+
+
+</div>
+
+<div class="" style="padding: 0 30px; box-sizing: border-box; position: absolute; left: 0%; top: 58%; height: 30%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-end" align="left">
+
+
+</div>
+
+<div class="" style="position: absolute; left: 0%; top: 94%; height: 6%; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+© 2026 Pracownia Meteorologii<!-- .element: style="font-weight: 300" -->
+</div>
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1920px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+<div class="has-light-background" style="background-color: white; padding: 0 20px; box-sizing: border-box; position: absolute; left: 0%; top: 0%; height: 10%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" align="left">
+
+ <div class="block">
+
+## Choosing the pre- and post-fire images
+</div>
+
+
+</div>
+
+<div class="" style="position: absolute; left: 5%; top: 17%; height: 66%; width: 90%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-start" align="left">
+
+
+
+
+<div class="has-light-background" style="background-color: #ffB73F; position: absolute; left: 80%; top: 53%; height: 26%; width: 13%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+</div>
+
+<div class="block">
+
+<!-- .element: style="font-size: 36px; position: absolute; left: 0%; top: 15%; height: 78%; width: 50%; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" align="left" -->
+The most common source of a wrong severity map is not the formula – it is the **dates**:
+- **pre**: as close as possible before ignition, same season, cloud-free; a median of 2–4 weeks works
+- **post** (*initial assessment*): 1–4 weeks after containment – smoke gone, ash still there
+- **extended assessment**: next growing season, same phenology as pre – measures mortality, not char
+- same sensor, same processing level (L2A), same band set; never mix Landsat pre with Sentinel post without harmonisation
+- mask clouds **per pixel** (`SCL` / `QA60`) – a cloud in *pre* looks like high severity
+</div>
+
+
+
+<div class="block">
+
+<!-- .element: style="font-size: 34px; background-color: #e8f4f8; padding: 15px; box-sizing: border-box; position: absolute; left: 53%; top: 15%; height: 78%; width: 45%; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" class="has-light-background" align="left" -->
+Checklist before you trust the map:
+1. FIRMS timeline: when did it start, when did it end?
+2. Pre and post composites: look at them in true colour – clouds? snow? harvested fields?
+3. dNBR histogram over the perimeter: bimodal? where is the unburned peak (should be ~0)?
+4. Compare the "unburned" class outside the perimeter: if it shows "low severity" everywhere, your dates differ in phenology
+5. Area per class in hectares (lecture 2 code) – the number for the report
+</div>
+
+
+
+
+
+
+</div>
+
+<style>
+.horizontal_dotted_line{
+  border-bottom: 2px dotted gray;
+} 
+</style>
+
+<div class="horizontal_dotted_line" style="position: absolute; left: 3%; top: 94%; height: 0%; width: 94%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+</div>
+
+<div class="" style="padding: 0 30px; box-sizing: border-box; position: absolute; left: 0%; top: 64%; height: 30%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-end" align="left">
+
+<div class="block">
+
+source: [UN-SPIDER burn severity recommended practice (GEE)](https://un-spider.org/advisory-support/recommended-practices/recommended-practice-burn-severity/burn-severity-earth-engine)
+</div>
+
+
+
+</div>
+
+<div class="" style="padding: 0 30px; box-sizing: border-box; position: absolute; left: 0%; top: 58%; height: 30%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-end" align="left">
+
+
+</div>
+
+<div class="" style="position: absolute; left: 0%; top: 94%; height: 6%; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+© 2026 Pracownia Meteorologii<!-- .element: style="font-weight: 300" -->
+</div>
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1920px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+<div class="has-light-background" style="background-color: white; padding: 0 20px; box-sizing: border-box; position: absolute; left: 0%; top: 0%; height: 10%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" align="left">
+
+ <div class="block">
+
+## Results: recovery after the fire
+</div>
+
+
+</div>
+
+<div class="" style="position: absolute; left: 5%; top: 17%; height: 66%; width: 90%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-start" align="left">
+
+
+
+
+
+<img src="../assets/Kursy/prezentacje/ApplicationHazards_GEO/pliki/Pasted image 20230107004533.png" alt="" style="position: absolute; left: 0%; top: -10%; height: 100%; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; object-fit: fill">
+
+
+
+
+
+</div>
+
+<style>
+.horizontal_dotted_line{
+  border-bottom: 2px dotted gray;
+} 
+</style>
+
+<div class="horizontal_dotted_line" style="position: absolute; left: 3%; top: 94%; height: 0%; width: 94%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+</div>
+
+<div class="" style="padding: 0 30px; box-sizing: border-box; position: absolute; left: 0%; top: 64%; height: 30%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-end" align="left">
+
+<div class="block">
+
+source: Petropoulos, G.P., Griffiths, H.M., Kalivas, D.P. (2014). [Quantifying spatial and temporal vegetation recovery dynamics following a wildfire event in a Mediterranean landscape using EO data and GIS](https://www.researchgate.net/publication/261183988_Quantifying_Spatial_and_Temporal_Vegetation_Recovery_Dynamics_Following_a_Wildfire_Event_in_a_Mediterranean_Landscape_using_EO_Data_and_GIS). *Applied Geography* 50, 120–131
+</div>
+
+
+
+</div>
+
+<div class="" style="padding: 0 30px; box-sizing: border-box; position: absolute; left: 0%; top: 58%; height: 30%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-end" align="left">
+
+
+</div>
+
+<div class="" style="position: absolute; left: 0%; top: 94%; height: 6%; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+© 2026 Pracownia Meteorologii<!-- .element: style="font-weight: 300" -->
+</div>
+</div>
+
+<aside class="notes"><p>A time series of NBR or NDVI over the burned perimeter for several years after the fire shows the recovery – with <code>ui.Chart.image.series</code> this is five lines of code and a very good figure for the report.</p>
+</aside></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1920px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+<div class="has-light-background" style="background-color: white; padding: 0 20px; box-sizing: border-box; position: absolute; left: 0%; top: 0%; height: 10%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" align="left">
+
+ <div class="block">
+
+## Validation and reference data
+</div>
+
+
+</div>
+
+<div class="" style="position: absolute; left: 5%; top: 17%; height: 66%; width: 90%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-start" align="left">
+
+
+
+
+<div class="has-light-background" style="background-color: #00ced1; transform: rotate(-15deg); position: absolute; left: 87%; top: 75%; height: 26%; width: 13%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+</div>
+
+<div class="block">
+
+<!-- .element: style="font-size: 42px; position: absolute; left: 0%; top: 15%; height: 78%; width: 95%; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" align="left" -->
+- **Field**: Composite Burn Index (CBI) plots – the standard against which dNBR thresholds were calibrated; you will not have them, say so
+- **EFFIS** (Copernicus) – burned-area perimeters for Europe from MODIS/Sentinel-2 since 2000, fire danger forecast, [forest-fire.emergency.copernicus.eu](https://forest-fire.emergency.copernicus.eu/) – your perimeter reference in Europe
+- **Copernicus EMS** grading maps after activations (Greece 2023, Portugal 2025…)
+- **MTBS** (USA) – Monitoring Trends in Burn Severity, dNBR maps for all large US fires since 1984 – a benchmark to test your script on a known fire
+- **Global Fire Atlas / GFED** – fire size, spread, emissions, from MODIS burned area
+- In Poland: Lasy Państwowe fire database (Instytut Badawczy Leśnictwa), the April 2020 Biebrza fire (~5 300 ha) is a good Sentinel-2 case
+</div>
+
+
+
+
+</div>
+
+<style>
+.horizontal_dotted_line{
+  border-bottom: 2px dotted gray;
+} 
+</style>
+
+<div class="horizontal_dotted_line" style="position: absolute; left: 3%; top: 94%; height: 0%; width: 94%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+</div>
+
+<div class="" style="padding: 0 30px; box-sizing: border-box; position: absolute; left: 0%; top: 64%; height: 30%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-end" align="left">
+
+
+</div>
+
+<div class="" style="padding: 0 30px; box-sizing: border-box; position: absolute; left: 0%; top: 58%; height: 30%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-end" align="left">
+
+
+</div>
+
+<div class="" style="position: absolute; left: 0%; top: 94%; height: 6%; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+© 2026 Pracownia Meteorologii<!-- .element: style="font-weight: 300" -->
+</div>
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1920px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+<div class="has-light-background" style="background-color: white; padding: 0 20px; box-sizing: border-box; position: absolute; left: 0%; top: 0%; height: 10%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" align="left">
+
+ <div class="block">
+
+## From maps to decisions
+</div>
+
+
+</div>
+
+<div class="" style="position: absolute; left: 5%; top: 17%; height: 66%; width: 90%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-start" align="left">
+
+
+
+
+<div class="has-light-background" style="background-color: #ffB73F; position: absolute; left: 80%; top: 53%; height: 26%; width: 13%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+</div>
+
+<div class="block">
+
+<!-- .element: style="font-size: 44px; position: absolute; left: 0%; top: 15%; height: 78%; width: 95%; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" align="left" -->
+- **Burned Area Emergency Response**: soil burn severity → where erosion and debris flows will hit after the first rain (lecture 5 again)
+- **Salvage logging and regeneration planning**: high severity = planting; low = natural regeneration
+- **Carbon and emissions**: burned area × fuel load × combustion completeness
+- **Insurance and legal**: a reproducible map with stated dates, thresholds and accuracy is evidence; a pretty picture is not
+- **Fire danger**: EFFIS Fire Weather Index forecasts – prevention, not mapping
+
+That is why every lab report in this course has: data, dates, method, thresholds, validation, limitations.
+</div>
+
+
+
+
+</div>
+
+<style>
+.horizontal_dotted_line{
+  border-bottom: 2px dotted gray;
+} 
+</style>
+
+<div class="horizontal_dotted_line" style="position: absolute; left: 3%; top: 94%; height: 0%; width: 94%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+</div>
+
+<div class="" style="padding: 0 30px; box-sizing: border-box; position: absolute; left: 0%; top: 64%; height: 30%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-end" align="left">
+
+
+</div>
+
+<div class="" style="padding: 0 30px; box-sizing: border-box; position: absolute; left: 0%; top: 58%; height: 30%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-end" align="left">
+
+
+</div>
+
+<div class="" style="position: absolute; left: 0%; top: 94%; height: 6%; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+© 2026 Pracownia Meteorologii<!-- .element: style="font-weight: 300" -->
+</div>
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1920px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+<div class="has-light-background" style="background-color: white; padding: 0 20px; box-sizing: border-box; position: absolute; left: 0%; top: 0%; height: 10%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" align="left">
+
+ <div class="block">
+
+## In the lab (21.12, 3 h)
+</div>
+
+
+</div>
+
+<div class="" style="position: absolute; left: 5%; top: 17%; height: 66%; width: 90%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-start" align="left">
+
+
+
+
+<div class="has-light-background" style="background-color: #00ced1; transform: rotate(-15deg); position: absolute; left: 87%; top: 75%; height: 26%; width: 13%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+</div>
+
+<div class="block">
+
+<!-- .element: style="font-size: 40px; position: absolute; left: 0%; top: 15%; height: 78%; width: 95%; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" align="left" -->
+1. Your fire (from last week's homework): FIRMS hotspots → start/end dates; Copernicus Browser → cloud-free pre and post Sentinel-2 dates
+2. Open the GEE script (Moodle *Fire detection…* lesson, page 4): set `geometry`, `prefire_start/end`, `postfire_start/end`; run
+3. Inspect: NBR pre, NBR post, dNBR – Inspector over unburned forest, a field, the fire core
+4. Severity classes with the USGS thresholds; area per class in hectares; a legend
+5. Compare the perimeter with EFFIS (or EMS); where do they disagree and why (clouds? phenology? agricultural fields?)
+6. Optional: NDVI time series chart over the perimeter for 2 years after the fire
+7. Export the severity GeoTIFF; a short report with the checklist from slide 8
+</div>
+
+
+
+
+</div>
+
+<style>
+.horizontal_dotted_line{
+  border-bottom: 2px dotted gray;
+} 
+</style>
+
+<div class="horizontal_dotted_line" style="position: absolute; left: 3%; top: 94%; height: 0%; width: 94%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+</div>
+
+<div class="" style="padding: 0 30px; box-sizing: border-box; position: absolute; left: 0%; top: 64%; height: 30%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-end" align="left">
+
+
+</div>
+
+<div class="" style="padding: 0 30px; box-sizing: border-box; position: absolute; left: 0%; top: 58%; height: 30%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-end" align="left">
+
+
+</div>
+
+<div class="" style="position: absolute; left: 0%; top: 94%; height: 6%; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+© 2026 Pracownia Meteorologii<!-- .element: style="font-weight: 300" -->
+</div>
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1920px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+<div class="has-light-background" style="background-color: white; padding: 0 20px; box-sizing: border-box; position: absolute; left: 0%; top: 0%; height: 10%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" align="left">
+
+ <div class="block">
+
+## Before next class (after the break)
+</div>
+
+
+</div>
+
+<div class="" style="position: absolute; left: 5%; top: 17%; height: 66%; width: 90%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-start" align="left">
+
+
+
+
+<div class="has-light-background" style="background-color: #ffB73F; position: absolute; left: 80%; top: 53%; height: 26%; width: 13%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+</div>
+
+<div class="block">
+
+<!-- .element: style="font-size: 42px; position: absolute; left: 0%; top: 15%; height: 75%; width: 95%; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" align="left" -->
+- [ ] Submit the burn severity report
+- [ ] Next lecture: Earth Engine from **Python and R**. Install nothing yet – we start in Google Colab (only a browser)
+- [ ] Read the Moodle lesson *Application Programming Interfaces (API) for GEE*, page 1 (Colab basics) – 10 min
+- [ ] If you use R: install R ≥ 4.3 and RStudio / Positron on your laptop; `install.packages("rgee")` will download ~200 MB – do it at home, not on the university Wi-Fi during the lab
+- [ ] Literature (optional): [How to generate wildfire boundary maps with Earth Engine](https://medium.com/google-earth/how-to-generate-wildfire-boundary-maps-with-earth-engine-b38eadc97a38); Journal of Forest Science [2022/03](https://jfs.agriculturejournals.cz/pdfs/jfs/2022/03/02.pdf)
+</div>
+
+
+
+
+</div>
+
+<style>
+.horizontal_dotted_line{
+  border-bottom: 2px dotted gray;
+} 
+</style>
+
+<div class="horizontal_dotted_line" style="position: absolute; left: 3%; top: 94%; height: 0%; width: 94%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+</div>
+
+<div class="" style="padding: 0 30px; box-sizing: border-box; position: absolute; left: 0%; top: 64%; height: 30%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-end" align="left">
+
+
+</div>
+
+<div class="" style="padding: 0 30px; box-sizing: border-box; position: absolute; left: 0%; top: 58%; height: 30%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-end" align="left">
+
+
+</div>
+
+<div class="" style="position: absolute; left: 0%; top: 94%; height: 6%; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+© 2026 Pracownia Meteorologii<!-- .element: style="font-weight: 300" -->
+</div>
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1920px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+<div class="block">
+
+# Thank you 😄
+</div>
+</div></script></section></div>
+    </div>
+
+    <script src="../lib/dist/reveal.js"></script>
+
+    <script src="../lib/plugin/markdown/markdown.js"></script>
+    <script src="../lib/plugin/highlight/highlight.js"></script>
+    <script src="../lib/plugin/zoom/zoom.js"></script>
+    <script src="../lib/plugin/notes/notes.js"></script>
+    <script src="../lib/plugin/math/math.js"></script>
+	<script src="../lib/plugin/mermaid/mermaid.js"></script>
+	<script src="../lib/plugin/chart/chart.min.js"></script>
+	<script src="../lib/plugin/chart/plugin.js"></script>
+	<script src="../lib/plugin/menu/menu.js"></script>
+	<script src="../lib/plugin/customcontrols/plugin.js"></script>
+	<script src="../lib/plugin/chalkboard/plugin.js"></script>
+	<script src="../lib/plugin/reveal-pointer/pointer.js"></script>
+	<script src="../lib/plugin/elapsed-time-bar/elapsed-time-bar.js"></script>
+
+    <script>
+      function extend() {
+        var target = {};
+        for (var i = 0; i < arguments.length; i++) {
+          var source = arguments[i];
+          for (var key in source) {
+            if (source.hasOwnProperty(key)) {
+              target[key] = source[key];
+            }
+          }
+        }
+        return target;
+      }
+
+	  function isLight(color) {
+		let hex = color.replace('#', '');
+
+		// convert #fff => #ffffff
+		if(hex.length == 3){
+			hex = `${hex[0]}${hex[0]}${hex[1]}${hex[1]}${hex[2]}${hex[2]}`;
+		}
+
+		const c_r = parseInt(hex.substr(0, 2), 16);
+		const c_g = parseInt(hex.substr(2, 2), 16);
+		const c_b = parseInt(hex.substr(4, 2), 16);
+		const brightness = ((c_r * 299) + (c_g * 587) + (c_b * 114)) / 1000;
+		return brightness > 155;
+	}
+
+	var bgColor = getComputedStyle(document.documentElement).getPropertyValue('--r-background-color').trim();
+	var isLight = isLight(bgColor);
+
+	if(isLight){
+		document.body.classList.add('has-light-background');
+	} else {
+		document.body.classList.add('has-dark-background');
+	}
+
+      // default options to init reveal.js
+      var defaultOptions = {
+        controls: true,
+        progress: true,
+        history: true,
+        center: true,
+        transition: 'default', // none/fade/slide/convex/concave/zoom
+        plugins: [
+          RevealMarkdown,
+          RevealHighlight,
+          RevealZoom,
+          RevealNotes,
+          RevealMath.MathJax3,
+		  RevealMermaid,
+		  RevealChart,
+		  RevealCustomControls,
+		  RevealMenu,
+	      RevealPointer,
+		  RevealChalkboard, 
+		  ElapsedTimeBar
+        ],
+
+
+    	allottedTime: 5400 * 1000,
+
+		mathjax3: {
+			mathjax: '../lib/plugin/math/mathjax/tex-mml-chtml.js',
+		},
+		markdown: {
+		  gfm: true,
+		  mangle: true,
+		  pedantic: false,
+		  smartLists: false,
+		  smartypants: false,
+		},
+
+		mermaid: {
+			theme: isLight ? 'default' : 'dark',
+		},
+
+		customcontrols: {
+			controls: [
+				{id: 'toggle-overview',
+				title: 'Toggle overview (O)',
+				icon: '<i class="fa fa-th"></i>',
+				action: 'Reveal.toggleOverview();'
+				},
+				{ icon: '<i class="fa fa-pen-square"></i>',
+				title: 'Toggle chalkboard (B)',
+				action: 'RevealChalkboard.toggleChalkboard();'
+				},
+				{ icon: '<i class="fa fa-pen"></i>',
+				title: 'Toggle notes canvas (C)',
+				action: 'RevealChalkboard.toggleNotesCanvas();'
+				},
+			]
+		},
+		menu: {
+			loadIcons: false
+		}
+      };
+
+      // options from URL query string
+      var queryOptions = Reveal().getQueryHash() || {};
+
+      var options = extend(defaultOptions, {"width":1920,"height":1200,"margin":0,"maxScale":4,"controls":true,"progress":true,"slideNumber":true,"transition":"zoom","transitionSpeed":"slow"}, queryOptions);
+    </script>
+
+    <script>
+      Reveal.initialize(options);
+    </script>
+  </body>
+
+  <!-- created with Advanced Slides -->
+</html>
