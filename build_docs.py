@@ -23,6 +23,8 @@ DECKS = [  # zip stem, slug, title, date
     ('ApplicationHazards_GEO_2026_extended_08_Wrapup', '08-wrapup', 'Lecture 8 · From pixels to hazard maps: wrap-up', '11.01.2027'),
 ]
 LIB_DIRS = ('css/', 'dist/', 'plugin/')
+# links that changed after the decks were exported (applied to every deck)
+LINK_FIXES = {'https://emergency.copernicus.eu/': 'https://mapping.emergency.copernicus.eu/'}
 # strings that must not be published (course enrolment key)
 STRIP = [re.compile(r'<blockquote class="notification">\s*<p>pass to moodle: <code>geo</code></p>\s*</blockquote>', re.I),
          re.compile(r'> \[!notification\] pass to moodle: `geo`\s*', re.I)]
@@ -42,6 +44,8 @@ for stem, slug, title, date in DECKS:
     if n:
         print(f'  {slug}: stripped enrolment key callout ({n})')
     assert 'pass to moodle' not in index.lower(), slug
+    for a, b in LINK_FIXES.items():
+        index = index.replace(a, b)
     # rewrite asset references
     for d in LIB_DIRS:
         index = re.sub(r'(["\'(])' + re.escape(d), r'\1../lib/' + d, index)

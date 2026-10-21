@@ -19,36 +19,36 @@ var NDVImed = NDVI.median();
 </code></pre>
 
 <h3 class="iot-material-divider">2. Manual classification</h3>
-<p>We create a separate layer for each class, and then a specific value is assigned to each class:</p>
+<p>We create a separate layer for each class, and then a code is assigned to each class. The NDVI boundaries below are examples from Lecture 2 – in your homework you must justify your own with Inspector values and the literature:</p>
 <ul class="iot-material-list">
-<li>"water" = -1</li>
-<li>"rocks" = 2</li>
-<li>"shrub" = 3</li>
-<li>"vegetation" = 4</li>
+<li>"water": NDVI ≤ 0 → code 1</li>
+<li>"bare": 0 &lt; NDVI ≤ 0.2 → code 2</li>
+<li>"shrub": 0.2 &lt; NDVI ≤ 0.4 → code 3</li>
+<li>"green": NDVI &gt; 0.4 → code 4</li>
 </ul>
 <div class="iot-material-callout iot-material-callout--warn">
 <p class="iot-material-callout-title">For the exercise only</p>
 <p>This solution is not efficient – it is here to show how comparisons work. Do not use it in real calculations; use the threshold version in part 4.</p>
 </div>
 <pre><code class="language-javascript">// Manual classification combining bands and defining values in GEE
-var water = NDVImed.lte(-0.1).rename('Water').multiply(-1); // water is '-1'
+var water = NDVImed.lte(0.0).rename('Water').multiply(1); // water is '1'
 // print(water)
-var rock = NDVImed.gt(-0.1).and(NDVImed.lte(0.3)).rename('Rock').multiply(2); // rocks is '2'
-// print(rock)
-var shrub = NDVImed.gt(0.3).and(NDVImed.lte(0.4)).rename('Shrub').multiply(3);
+var bare = NDVImed.gt(0.0).and(NDVImed.lte(0.2)).rename('Bare').multiply(2); // bare is '2'
+// print(bare)
+var shrub = NDVImed.gt(0.2).and(NDVImed.lte(0.4)).rename('Shrub').multiply(3); // shrub is '3'
 // print(shrub)
-var vegetation = NDVImed.gt(0.4).rename('Green').multiply(4);
+var vegetation = NDVImed.gt(0.4).rename('Green').multiply(4); // green is '4'
 // print(vegetation)
 </code></pre>
 <p>Now we can add the new bands to the image:</p>
 <pre><code class="language-javascript">var classimage = NDVImed.addBands(water);
-var classimage = classimage.addBands(rock);
+var classimage = classimage.addBands(bare);
 var classimage = classimage.addBands(shrub);
 var classimage = classimage.addBands(vegetation);
 </code></pre>
 
 <h3 class="iot-material-divider">3. Compute the area</h3>
-<p>Finally compute the area (try changing "Green" to "Rock" or "Shrub"):</p>
+<p>Finally compute the area (try changing "Green" to "Bare" or "Shrub"):</p>
 <pre><code class="language-javascript">// Let's compute the Green area
 var classareas = ee.Image.pixelArea().addBands(classimage.select('Green'))
   .reduceRegion({
@@ -71,14 +71,14 @@ print(classareas);
 </div>
 
 <h3 class="iot-material-divider">4. Let's make it better – thresholds</h3>
-<p>We can visualize the classified mosaic first. One line counts how many thresholds each pixel exceeds:</p>
-<pre><code class="language-javascript">var thresholds = ee.Image([0, 0.1, 0.2, 0.3, 0.4, 0.5, 1]); // define the thresholds
-var classified = NDVImed.gt(thresholds).reduce('sum').toInt(); // create the classified image
+<p>The same four classes in one line: count how many thresholds each pixel exceeds and add 1, so the codes are again 1–4. This is the version to use in the homework – change the list of thresholds, nothing else:</p>
+<pre><code class="language-javascript">var thresholds = ee.Image([0, 0.2, 0.4]); // define the thresholds (class boundaries)
+var classified = NDVImed.gt(thresholds).reduce(ee.Reducer.sum()).add(1).toInt(); // codes 1-4
 print(classified, 'Classified');
 
 // Define new visualization parameters
-// for the classification: the values now range from 0 to 7, one for each class
-var classifiedParams = {min: 0, max: 7, palette: ['blue', 'white', 'brown', 'burlywood', 'LimeGreen', 'ForestGreen', 'DarkGreen']};
+// for the classification: the values range from 1 to 4, one for each class
+var classifiedParams = {min: 1, max: 4, palette: ['blue', 'burlywood', 'yellowgreen', 'darkgreen']};
 Map.addLayer(classified.clip(roi), classifiedParams, 'Classified');
 </code></pre>
 <pre><code class="language-javascript">var class_areas2 = ee.Image.pixelArea().addBands(classified)
@@ -108,7 +108,7 @@ print('area per class [ha]:', table);
 <p>Here is an example GEE script: <a href="https://code.earthengine.google.com/64e5f1a2e4b02c77668146e463db6c72" target="_blank" rel="noopener">https://code.earthengine.google.com/64e5f1a2e4b02c77668146e463db6c72</a></p>
 
 <div class="iot-material-callout iot-material-callout--task">
-<p class="iot-material-callout-title">Deliverable (Milestone M2, 23.11)</p>
+<p class="iot-material-callout-title">Deliverable (Milestone M2, due 30.11 at the start of Lab 3)</p>
 <p>Click <strong>Save</strong>, then <strong>Get Link</strong>, and paste the link of your working script in the quiz pages that follow and in the assignment <em>Homework – index areas</em>. For the homework repeat the workflow with a different index and your own region of interest; justify your thresholds in a short note with the area table.</p>
 </div>
 

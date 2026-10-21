@@ -102,7 +102,7 @@ $$ MNDWI = \frac{Green - SWIR}{Green + SWIR} = \frac{B3 - B11}{B3 + B11} $$ (Xu 
 |---|---|---|---|
 | NDWI | B3, B8 | open water, 10 m | built-up, shadows |
 | MNDWI | B3, B11 | water vs. urban | 20 m (SWIR) |
-| AWEI_nsh / AWEI_sh | B3, B8, B11, B12 | shadow, dark surfaces | needs scaling 0–1 |
+| AWEI_nsh / AWEI_sh | B3, B8, B11, B12 (+ B2 for AWEI_sh) | shadow, dark surfaces | needs scaling 0–1 |
 | NDVI < 0 | B4, B8 | quick check | turbid water |
 | Scene classification `SCL` = 6 | – | ready water mask | coarse, clouds |
 
@@ -154,9 +154,9 @@ source: [NASA EarthData – What is SAR?](https://www.earthdata.nasa.gov/learn/e
 :::
 <grid drag="13 26" drop="87 75" bg="#00ced1" rotate="-15"/>
 
-::: block <!-- element style="font-size:40px" align="left" drag="50 78" drop="0 15"-->
+::: block <!-- element style="font-size:34px" align="left" drag="50 78" drop="0 15"-->
 - Copernicus C-band SAR mission; **1A** (2014, end of operations June 2026), 1B lost in 2021, **1C** (launched Dec 2024), **1D** (launched Nov 2025) → 6-day repeat over Europe again
-- Main mode over land: **IW** (Interferometric Wide), 250 km swath, 10 m **GRD** pixels (Ground Range Detected = amplitude only, terrain-corrected)
+- Main mode over land: **IW** (Interferometric Wide), 250 km swath, 10 m **GRD** pixel spacing (≈ 20 m resolution, amplitude only); the GEE collection is calibrated and terrain-corrected (σ⁰ in dB), the raw ESA GRD is not
 - Ascending (evening) and descending (morning) orbits – do not mix them in change detection
 - Free, open, in Copernicus Browser and in Earth Engine: `COPERNICUS/S1_GRD`, bands `VV`, `VH`, `angle`, values already in dB
 :::
@@ -211,7 +211,7 @@ Two strategies: (a) **single image** – everything darker than a threshold is w
 ::: block <!-- element style="font-size:30px" align="left" drag="50 78" drop="0 15"-->
 - Backscatter histogram over a flooded area is **bimodal**: a water peak around −22 dB and a land peak around −12 dB
 - **Manual**: read values with the Inspector over known water and land, pick the valley (e.g. −18 dB)
-- **Ratio / difference**: `after.divide(before)` in linear units or `after.subtract(before)` in dB; UN-SPIDER default: difference ratio **1.25** (≈ +1 dB)
+- **Ratio / difference**: the UN-SPIDER script divides the **dB images**, `after.divide(before)`, and flags ratio > **1.25** – the after value is ≥ 25 % more negative (≈ 3 dB darker around −12 dB); a ratio of dB values is not a physical ratio, so the cleaner equivalent is the difference in dB: `after.subtract(before).lt(-3)`
 - **Otsu**: automatic threshold that maximises the separation of two classes in the histogram – objective, reproducible, used by the Global Flood Monitoring service
 - Report which one you used and why – it is the main uncertainty of the map
 :::
@@ -221,7 +221,8 @@ Two strategies: (a) **single image** – everything darker than a threshold is w
 // difference in dB and the UN-SPIDER style ratio
 var diff = afterF.subtract(beforeF);          // dB
 var flooded = diff.lt(-3);                    // became ≥ 3 dB darker
-// or: var ratio = afterF.divide(beforeF); var flooded = ratio.gt(1.25);
+// UN-SPIDER style (ratio of dB images):
+// var ratio = afterF.divide(beforeF); var flooded = ratio.gt(1.25);
 
 // masks
 var jrc = ee.Image('JRC/GSW1_4/GlobalSurfaceWater').select('seasonality');
@@ -230,7 +231,7 @@ var dem = ee.Image('WWF/HydroSHEDS/03VFDEM');
 var slope = ee.Terrain.slope(dem);
 flooded = flooded.updateMask(permanent.not())
                  .updateMask(slope.lt(5))
-                 .updateMask(flooded.connectedPixelCount(8).gte(8)); // remove specks
+                 .updateMask(flooded.connectedPixelCount(25).gte(8)); // specks, as UN-SPIDER
 
 var area_ha = flooded.multiply(ee.Image.pixelArea()).divide(1e4)
   .reduceRegion({reducer: ee.Reducer.sum(), geometry: roi, scale: 10, maxPixels: 1e10});
@@ -267,22 +268,22 @@ Validation: Copernicus Browser true-colour of the first clear day after the even
 :::
 <grid drag="13 26" drop="80 53" bg="#ffB73F"/>
 
-::: block <!-- element style="font-size:42px" align="left" drag="52 75" drop="0 15"-->
+::: block <!-- element style="font-size:34px" align="left" drag="52 75" drop="0 15"-->
 - Amplitude (what we used) tells *how much* echo; **phase** tells *how far*
 - **InSAR** = interferometry of two SAR images → ground elevation (SRTM 2000, TanDEM-X / Copernicus DEM 30 m) or millimetre **displacement** between dates (subsidence, landslides – lecture 5, earthquakes, dams)
 - For floods a DEM gives: slope masks, flow accumulation, **flood depth** (water surface minus terrain), HAND (height above nearest drainage) for exposure
-- In GEE: `COPERNICUS/DEM/GLO30`, `NASA/NASADEM_HGT/001`, `MERIT/Hydro/v1_0_1` (HAND)
+- In GEE: `COPERNICUS/DEM/GLO30_2024_1` (an ImageCollection – `.select('DEM').mosaic()`), `NASA/NASADEM_HGT/001`, `MERIT/Hydro/v1_0_1` (HAND)
 :::
 
-::: block <!-- element style="font-size:40px" align="left" drag="43 75" drop="55 15" bg="#e8f4f8" pad="15px"-->
+::: block <!-- element style="font-size:32px" align="left" drag="43 78" drop="55 15" bg="#e8f4f8" pad="15px"-->
 **Commercial high-resolution SAR**
-- **ICEYE** (Finland/Poland): constellation of > 50 small X-band satellites, 25 cm–1 m, revisit of hours; sells flood depth and extent products to insurers and governments; used in Polish 2024 flood response
+- **ICEYE** (Finland, large office in Warsaw): more than 70 small X-band satellites launched by 2026, 25 cm–1 m, revisit of hours; sells flood depth and extent products to insurers and governments; used in Polish 2024 flood response
 - Capella, Umbra (USA), TerraSAR-X / PAZ (DE/ES), COSMO-SkyMed (IT)
 - Free for research under proposals; in emergencies through the **International Charter Space and Major Disasters**
 :::
 
 ::: source
-source: Moodle lesson pages 6–7 (InSAR, ICEYE); [ICEYE flood solutions](https://www.iceye.com/solutions/government/flood-insights)
+source: [ICEYE flood insights](https://www.iceye.com/solutions/government/flood-insights)
 :::
 
 ---
@@ -295,13 +296,13 @@ source: Moodle lesson pages 6–7 (InSAR, ICEYE); [ICEYE flood solutions](https:
 ::: block <!-- element style="font-size:22px" align="left" drag="95 78" drop="0 15"-->
 | Service | What | Latency | Link |
 |---|---|---|---|
-| **Copernicus EMS Rapid Mapping** | flood/fire/landslide delineation and grading maps on activation by a national authority | hours–days | [rapidmapping.emergency.copernicus.eu](https://rapidmapping.emergency.copernicus.eu/) |
-| **Global Flood Monitoring (GFM)** | automatic Sentinel-1 flood extent for the whole world, every S1 scene, Otsu + ensemble of 3 algorithms | ~8 h | [global-flood.emergency.copernicus.eu](https://global-flood.emergency.copernicus.eu/) |
+| **Copernicus EMS Rapid Mapping** | flood/fire/landslide delineation and grading maps on activation by a national authority | hours–days | [mapping.emergency.copernicus.eu/activations](https://mapping.emergency.copernicus.eu/activations) |
+| **Global Flood Monitoring (GFM)** | automatic Sentinel-1 flood extent for the whole world, every S1 scene, three independent classifiers (DLR, LIST, TU Wien) combined by majority vote | ~8 h | [global-flood.emergency.copernicus.eu](https://global-flood.emergency.copernicus.eu/) |
 | **GloFAS / EFAS** | hydrological *forecasts* of river floods (30 days / 10 days) | daily | [global-flood.emergency.copernicus.eu/glofas-forecasting](https://global-flood.emergency.copernicus.eu/glofas-forecasting/) |
 | **International Charter** | free satellite tasking (all agencies) for major disasters | hours | [disasterscharter.org](https://disasterscharter.org/) |
 | **JRC Global Surface Water** | 1984–2021 Landsat water occurrence, seasonality | archive | `JRC/GSW1_4/GlobalSurfaceWater` |
 
-Use them as **reference data** for your own map in the report – and know that the method inside GFM is the one you run in the lab.
+Use them as **reference data** for your own map in the report – and know that the lab script (before/after ratio) is a simplified cousin of the change-detection methods inside GFM, not the same method.
 :::
 
 ---

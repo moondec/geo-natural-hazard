@@ -17,9 +17,9 @@
 <p>When R? When the rest of your thesis is in R (statistics, ggplot2, sf, terra). Otherwise Python + geemap has more users and tutorials in 2026. In rgee <code>$</code> replaces <code>.</code>: <code>ee$ImageCollection("COPERNICUS/S2_SR_HARMONIZED")$filterDate(...)</code>.</p>
 
 <h3 class="iot-material-divider">2. Installation (at home, once)</h3>
-<p>rgee depends on <a href="https://cran.r-project.org/package=reticulate" target="_blank" rel="noopener">reticulate</a>, <a href="https://cran.r-project.org/package=R6" target="_blank" rel="noopener">R6</a> and <a href="https://cran.r-project.org/package=processx" target="_blank" rel="noopener">processx</a>. It has two types of dependencies: <strong>strict dependencies</strong> that must be present before <code>ee_Initialize()</code> (a Google account with Earth Engine access, Python ≥ 3.5, the <code>earthengine-api</code> Python package) – without them rgee will not work; and <strong>credential dependencies</strong> (Google Drive and Google Cloud Storage credentials) that unlock the I/O functions moving data from Drive or GCS to your computer – optional, but they make the connection seamless.</p>
+<p>rgee depends on <a href="https://cran.r-project.org/package=reticulate" target="_blank" rel="noopener">reticulate</a>, <a href="https://cran.r-project.org/package=R6" target="_blank" rel="noopener">R6</a> and <a href="https://cran.r-project.org/package=processx" target="_blank" rel="noopener">processx</a>. It has two types of dependencies: <strong>strict dependencies</strong> that must be present before <code>ee_Initialize()</code> (a Google account with Earth Engine access, Python ≥ 3.11 – the requirement of the current <code>earthengine-api</code> Python package) – without them rgee will not work; and <strong>credential dependencies</strong> (Google Drive and Google Cloud Storage credentials) that unlock the I/O functions moving data from Drive or GCS to your computer – optional, but they make the connection seamless.</p>
 <ol class="iot-material-steps">
-<li><strong>Install the package.</strong> R will download quite a lot of software (about 200 MB) – do it at home, not on the university Wi-Fi during the lab:
+<li><strong>Install the package.</strong> The R package itself is small and installs quickly; the big download (about 200 MB) comes in step 3 – do that at home, not on the university Wi-Fi during the lab:
 <pre class="iot-material-code"><code class="language-r">install.packages("rgee")
 library(rgee)
 </code></pre></li>
@@ -36,8 +36,8 @@ rgee asks two questions. First: <em>"rgee::ee_install wants to store the environ
 
 <h3 class="iot-material-divider">3. Authentication</h3>
 <div class="iot-material-callout iot-material-callout--warn">
-<p class="iot-material-callout-title">Not mentioned in the official manual</p>
-<p>On Windows the authentication needs the <strong>gcloud SDK</strong> (Google Cloud CLI). Install it before the lab and run <code>gcloud init</code>; it can take a few minutes.</p>
+<p class="iot-material-callout-title">Easy to miss in the installation vignette</p>
+<p>The <strong>first</strong> authentication of a new user needs the <strong>gcloud CLI</strong> (Google Cloud SDK) on every operating system, as the rgee README states; afterwards the credentials are cached. Install it before the lab and run <code>gcloud init</code>; it can take a few minutes. The steps below show the Windows installer.</p>
 </div>
 <ol class="iot-material-steps">
 <li><strong>Download</strong> <a href="https://dl.google.com/dl/cloudsdk/channels/rapid/google-cloud-sdk.zip" target="_blank" rel="noopener">google-cloud-sdk.zip</a> (or the installer from <a href="https://cloud.google.com/sdk/docs/downloads-interactive#windows" target="_blank" rel="noopener">Google Cloud SDK downloads</a> / <a href="https://docs.cloud.google.com/sdk/docs/install" target="_blank" rel="noopener">Install the Google Cloud CLI</a>) and extract its contents (right-click the downloaded file and select <strong>Extract All</strong>).</li>

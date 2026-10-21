@@ -10,7 +10,7 @@
 
 <h3 class="iot-material-divider">From the curves to an index</h3>
 <p>The <strong>Normalized Burn Ratio</strong> uses exactly the two bands that move in opposite directions:</p>
-<p><code>NBR = (NIR − SWIR2) / (NIR + SWIR2) = (B8 − B12) / (B8 + B12)</code> for Sentinel-2, <code>(SR_B5 − SR_B7) / (SR_B5 + SR_B7)</code> for Landsat 8/9.</p>
+<p><code>NBR = (NIR − SWIR2) / (NIR + SWIR2) = (B8 − B12) / (B8 + B12)</code> for Sentinel-2, <code>(SR_B5 − SR_B7) / (SR_B5 + SR_B7)</code> for Landsat 8/9. The lab script uses B8 (10 m, broad NIR); the UN-SPIDER "In detail" page uses B8A (20 m, narrow NIR), which is the closer analogue of Landsat B5 and matches the 20 m B12 without resampling – both are acceptable, state which one you used.</p>
 <ul class="iot-material-list">
 <li>NBR is high for green forest (0.3–0.7), near zero for bare soil and strongly negative for freshly burned areas (−0.2 … −0.5).</li>
 <li>Why NBR and not NDVI? NDVI saturates in dense forest and recovers quickly with grass; the SWIR2 band (2.2 µm) reacts to char and soil moisture and stays changed for months. NDVI difference is still a useful second opinion in grassland.</li>

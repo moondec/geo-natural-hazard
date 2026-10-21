@@ -48,13 +48,18 @@
 </code></pre>
 <p>Note the two differences: <code>.And()</code> with a capital letter (<code>and</code> is a Python keyword) and the backslash for line continuation.</p>
 
+<div class="iot-material-callout iot-material-callout--warn">
+<p class="iot-material-callout-title">QA60 is empty for 25 Jan 2022 – 28 Feb 2024</p>
+<p>For scenes acquired in that period the <code>QA60</code> band is fully masked (it was rebuilt from <code>MSK_CLASSI</code> only afterwards). <code>updateMask()</code> with an empty QA60 masks every pixel and your composite comes out empty. For those dates use the <code>SCL</code> mask or Cloud Score+ instead.</p>
+</div>
+
 <h3 class="iot-material-divider">Steps</h3>
 <ol class="iot-material-steps">
 <li><strong>Add the QA60 mask</strong> to your translated notebook from page 2 (<code>s2.map(maskS2clouds)</code>) and build a median composite with and without the mask. Compare them on the map.</li>
-<li><strong>Add the SCL mask.</strong> The L2A <code>SCL</code> band (20 m) classifies each pixel: 3 = cloud shadow, 8–9 = cloud, 10 = cirrus, 11 = snow. Keep vegetation, bare soil, water, unclassified and snow:
+<li><strong>Add the SCL mask.</strong> The L2A <code>SCL</code> band (20 m) classifies each pixel: 3 = cloud shadow, 7 = low-probability cloud / unclassified, 8–9 = cloud, 10 = cirrus, 11 = snow. Keep vegetation, bare soil, water and snow (add class 7 to the list if you prefer more pixels over a stricter mask):
 <pre class="iot-material-code"><code class="language-python">def mask_scl(image):
     scl = image.select('SCL')
-    keep = scl.remap([4, 5, 6, 7, 11], [1, 1, 1, 1, 1], 0)
+    keep = scl.remap([4, 5, 6, 11], [1, 1, 1, 1], 0)   # add 7 for a looser mask
     return image.updateMask(keep)
 </code></pre></li>
 <li><strong>Count masked pixels per month</strong>: reduce the mask with <code>ee.Reducer.count()</code> over your AOI for each image, collect the results with <code>geemap.ee_to_df</code> and plot them with pandas (the Python equivalent of <code>ui.Chart</code>).</li>

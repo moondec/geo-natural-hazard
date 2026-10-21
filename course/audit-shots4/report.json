@@ -1,0 +1,357 @@
+{
+ "01-kickoff": {
+  "slides": 16,
+  "steps": 37,
+  "issues": [
+   {
+    "slide": 3,
+    "step": 0,
+    "kind": "outside-top",
+    "text": "Natural Hazards following UN",
+    "px": 2
+   },
+   {
+    "slide": 3,
+    "step": 1,
+    "kind": "outside-top",
+    "text": "Natural Hazards following UN",
+    "px": 3
+   },
+   {
+    "slide": 3,
+    "step": 2,
+    "kind": "outside-top",
+    "text": "Natural Hazards following UN",
+    "px": 3
+   },
+   {
+    "slide": 3,
+    "step": 3,
+    "kind": "outside-top",
+    "text": "Natural Hazards following UN",
+    "px": 3
+   },
+   {
+    "slide": 3,
+    "step": 4,
+    "kind": "outside-top",
+    "text": "Natural Hazards following UN",
+    "px": 3
+   },
+   {
+    "slide": 3,
+    "step": 5,
+    "kind": "outside-top",
+    "text": "Natural Hazards following UN",
+    "px": 3
+   },
+   {
+    "slide": 8,
+    "step": 0,
+    "kind": "below-footer",
+    "text": "how fine are the values?",
+    "px": 18
+   },
+   {
+    "slide": 12,
+    "step": 0,
+    "kind": "outside-top",
+    "text": "How to find a study example?",
+    "px": 2
+   },
+   {
+    "slide": 15,
+    "step": 0,
+    "kind": "text-over-text",
+    "text": "A short guide to Copernicus Browser",
+    "other": "Introduction to CDSE"
+   }
+  ],
+  "errors": []
+ },
+ "03-ml-classification": {
+  "slides": 17,
+  "steps": 21,
+  "issues": [
+   {
+    "slide": 7,
+    "step": 0,
+    "kind": "outside-right",
+    "text": "// composite: median of B.* bands",
+    "px": 135
+   },
+   {
+    "slide": 14,
+    "step": 0,
+    "kind": "text-over-text",
+    "text": "Generating landslide density heatmaps for rapid de",
+    "other": "NHESS 22, 753–773"
+   },
+   {
+    "slide": 16,
+    "step": 0,
+    "kind": "text-over-text",
+    "text": "In detail",
+    "other": "Sentinel-1 for flood mapping, UN-SPIDER"
+   }
+  ],
+  "errors": []
+ },
+ "04-floods": {
+  "slides": 14,
+  "steps": 14,
+  "issues": [
+   {
+    "slide": 8,
+    "step": 0,
+    "kind": "text-over-text",
+    "text": "Ratio / difference",
+    "other": "dB images"
+   },
+   {
+    "slide": 8,
+    "step": 0,
+    "kind": "text-over-text",
+    "text": "after.divide(before)",
+    "other": "dB images"
+   },
+   {
+    "slide": 8,
+    "step": 0,
+    "kind": "text-over-text",
+    "text": "1.25",
+    "other": "dB images"
+   }
+  ],
+  "errors": []
+ },
+ "05-landslides": {
+  "slides": 14,
+  "steps": 14,
+  "issues": [
+   {
+    "slide": 3,
+    "step": 0,
+    "kind": "text-over-text",
+    "text": "material",
+    "other": "type of movement"
+   },
+   {
+    "slide": 6,
+    "step": 0,
+    "kind": "text-over-text",
+    "text": "NDVI drops",
+    "other": "dNDVI = NDVI_before − NDVI_after > 0.2–0.3"
+   },
+   {
+    "slide": 6,
+    "step": 0,
+    "kind": "text-over-text",
+    "text": "(> 10–15°) → area",
+    "other": "Landslide mapping and monitoring with remote sensi"
+   },
+   {
+    "slide": 6,
+    "step": 0,
+    "kind": "text-over-text",
+    "text": "Landslide mapping and monitoring with remote sensi",
+    "other": "Use it: as validation of the SAR map on the first "
+   },
+   {
+    "slide": 7,
+    "step": 0,
+    "kind": "text-over-text",
+    "text": "I",
+    "other": "Landslide candidates = pixels with"
+   },
+   {
+    "slide": 7,
+    "step": 0,
+    "kind": "text-over-text",
+    "text": "=",
+    "other": "Landslide candidates = pixels with"
+   },
+   {
+    "slide": 7,
+    "step": 0,
+    "kind": "text-over-text",
+    "text": "=",
+    "other": "of the AOI (vegetation removed → VH drops)"
+   },
+   {
+    "slide": 7,
+    "step": 0,
+    "kind": "text-over-text",
+    "text": "10",
+    "other": "Landslide candidates = pixels with"
+   },
+   {
+    "slide": 7,
+    "step": 0,
+    "kind": "text-over-text",
+    "text": "10",
+    "other": "99th percentile"
+   },
+   {
+    "slide": 7,
+    "step": 0,
+    "kind": "text-over-text",
+    "text": "10",
+    "other": "of the AOI (vegetation removed → VH drops)"
+   },
+   {
+    "slide": 7,
+    "step": 0,
+    "kind": "text-over-text",
+    "text": "log",
+    "other": "of the AOI (vegetation removed → VH drops)"
+   },
+   {
+    "slide": 7,
+    "step": 0,
+    "kind": "text-over-text",
+    "text": "10",
+    "other": "99th percentile"
+   },
+   {
+    "slide": 7,
+    "step": 0,
+    "kind": "text-over-text",
+    "text": "10",
+    "other": "of the AOI (vegetation removed → VH drops)"
+   },
+   {
+    "slide": 7,
+    "step": 0,
+    "kind": "text-over-text",
+    "text": "10",
+    "other": "Masks: slope < 5–10° (flat areas, floods), curvatu"
+   },
+   {
+    "slide": 7,
+    "step": 0,
+    "kind": "text-over-text",
+    "text": "¯",
+    "other": "σ"
+   },
+   {
+    "slide": 7,
+    "step": 0,
+    "kind": "text-over-text",
+    "text": "¯",
+    "other": "σ"
+   },
+   {
+    "slide": 7,
+    "step": 0,
+    "kind": "text-over-text",
+    "text": "I",
+    "other": "of mean backscatter:"
+   },
+   {
+    "slide": 9,
+    "step": 0,
+    "kind": "text-over-text",
+    "text": "EGMS product description",
+    "other": "Not in GEE (needs the SLC product and phase proces"
+   },
+   {
+    "slide": 9,
+    "step": 0,
+    "kind": "text-over-text",
+    "text": "; Moodle lesson",
+    "other": "Not in GEE (needs the SLC product and phase proces"
+   }
+  ],
+  "errors": []
+ },
+ "06-wildfires": {
+  "slides": 14,
+  "steps": 14,
+  "issues": [
+   {
+    "slide": 3,
+    "step": 0,
+    "kind": "text-over-text",
+    "text": "after",
+    "other": "this is what dNBR maps"
+   },
+   {
+    "slide": 6,
+    "step": 0,
+    "kind": "text-over-text",
+    "text": "NIR drops",
+    "other": "SWIR rises"
+   },
+   {
+    "slide": 6,
+    "step": 0,
+    "kind": "text-over-text",
+    "text": "=",
+    "other": "B"
+   },
+   {
+    "slide": 6,
+    "step": 0,
+    "kind": "text-over-text",
+    "text": "N",
+    "other": "−"
+   },
+   {
+    "slide": 6,
+    "step": 0,
+    "kind": "text-over-text",
+    "text": "R",
+    "other": "S"
+   },
+   {
+    "slide": 6,
+    "step": 0,
+    "kind": "text-over-text",
+    "text": "+",
+    "other": "_"
+   },
+   {
+    "slide": 6,
+    "step": 0,
+    "kind": "text-over-text",
+    "text": "=",
+    "other": "N"
+   },
+   {
+    "slide": 6,
+    "step": 0,
+    "kind": "text-over-text",
+    "text": "B",
+    "other": "S"
+   },
+   {
+    "slide": 6,
+    "step": 0,
+    "kind": "text-over-text",
+    "text": "7",
+    "other": "W"
+   },
+   {
+    "slide": 9,
+    "step": 0,
+    "kind": "text-over-text",
+    "text": "Applied Geography",
+    "other": "Quantifying spatial and temporal vegetation recove"
+   }
+  ],
+  "errors": []
+ },
+ "07-apis": {
+  "slides": 14,
+  "steps": 14,
+  "issues": [],
+  "errors": []
+ },
+ "08-wrapup": {
+  "slides": 10,
+  "steps": 10,
+  "issues": [],
+  "errors": []
+ }
+}

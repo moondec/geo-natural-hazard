@@ -126,7 +126,7 @@ source: [Earth Engine guides – client vs. server](https://developers.google.co
 | `ee.ImageCollection` | a stack of images (time series) | `ee.ImageCollection('COPERNICUS/S2_SR_HARMONIZED')` |
 | `ee.Geometry` | point, line, polygon | `ee.Geometry.Point(16.93, 52.41)` – Poznań |
 | `ee.Feature` | geometry + properties (attributes) | a district with `name`, `population` |
-| `ee.FeatureCollection` | a table of features (vector layer) | `ee.FeatureCollection('FAO/GAUL/2015/level2')` – admin borders |
+| `ee.FeatureCollection` | a table of features (vector layer) | `ee.FeatureCollection('FAO/GAUL/2025/level2')` – admin borders |
 :::
 
 ::: block <!-- element style="font-size:23px" drag="95 12" drop="0 88" bg="#fff3cd" pad="10px 20px"-->
@@ -293,7 +293,7 @@ var classes = water.add(bare).add(shrub).add(green).rename('class');
 
 // 2) the same in one line: count how many thresholds the pixel exceeds
 var thresholds = ee.Image([0.0, 0.2, 0.4]);
-var classes2 = ndviMed.gt(thresholds).reduce('sum').add(1).toInt();
+var classes2 = ndviMed.gt(thresholds).reduce(ee.Reducer.sum()).add(1).toInt();
 
 Map.addLayer(classes2.clip(roi),
   {min: 1, max: 4, palette: ['blue', 'burlywood', 'yellowgreen', 'darkgreen']},
@@ -359,8 +359,8 @@ source: [End-to-End GEE – computing area](https://courses.spatialthoughts.com/
 ::: block <!-- element style="font-size:34px" align="left" drag="55 75" drop="0 15"-->
 ```javascript
 // administrative units from FAO GAUL (level 0 = country, 1 = region, 2 = district)
-var admin2 = ee.FeatureCollection('FAO/GAUL_SIMPLIFIED_500m/2015/level2');
-var poznan = admin2.filter(ee.Filter.eq('ADM2_NAME', 'Poznański'));
+var admin2 = ee.FeatureCollection('FAO/GAUL/2025/level2');   // the 2015 assets are deprecated
+var poznan = admin2.filter(ee.Filter.eq('GAUL2_NAME', 'Poznański'));
 Map.addLayer(poznan, {color: 'red'}, 'Poznań district');
 
 var roi = poznan.geometry();   // use it exactly like the buffer before
@@ -368,7 +368,7 @@ var roi = poznan.geometry();   // use it exactly like the buffer before
 :::
 
 ::: block <!-- element style="font-size:36px" align="left" drag="42 75" drop="58 15" bg="#e8f4f8" pad="15px"-->
-- GAUL names are in the local language, sometimes without diacritics – filter level 1 by `ADM1_NAME` and print `aggregate_array('ADM2_NAME')` to see which district names exist
+- GAUL names are in the local language, sometimes without diacritics – filter level 1 by `GAUL1_NAME` and print `aggregate_array('GAUL2_NAME')` to see which district names exist
 - Your own borders: download from [GADM](https://gadm.org/data.html), upload the shapefile in **Assets** and load it with `ee.FeatureCollection` (the asset path is shown in the Assets panel)
 - A drawn polygon is fine for the homework, but a named unit makes the report reproducible
 :::
@@ -414,9 +414,9 @@ var roi = poznan.geometry();   // use it exactly like the buffer before
 
 ::: block <!-- element style="font-size:42px" align="left" drag="95 75" drop="0 15"-->
 - [ ] Finish and submit the "index areas" homework (script link)
-- [ ] Read End-to-End GEE, module 1 ("Earth Engine basics") – sections *Image collections*, *Filtering*, *Computation on image collections* (30 min, skim the code, you have already written it)
+- [ ] Read End-to-End GEE, module 1 (*Working with Image Collections*, *Filtering Image Collections*) and module 2, section 03 (*Computation on ImageCollections*) (30 min, skim the code, you have already written it)
 - [ ] Think of an area 60–100 km² with **at least four clearly different surface types** (water, forest, crops, built-up) – you will classify it next week
-- [ ] Optional: [Earth Engine 101](https://www.youtube.com/watch?v=wn6p9KcOIOI) video
+- [ ] Optional video: [Module 1: Earth Engine Basics – End-to-End GEE](https://www.youtube.com/watch?v=daYhxVVIpJU) (Spatial Thoughts)
 :::
 
 ---

@@ -72,10 +72,9 @@ Classified by **material** (rock, debris, earth) and **type of movement**:
 ::: block <!-- element style="font-size:35px" align="left" drag="45 75" drop="55 15" bg="#e8f4f8" pad="15px"-->
 From orbit you see the **scar** (bare, bright, steep source area), the **track** and the **deposit** (fan, dammed river). Size: from 10 m (one Sentinel pixel) to km². Most rain-triggered landslides are **small** – resolution matters more than for floods.
 
-In Poland: Carpathian flysch (Beskidy, Pogórze) – ~95 % of Polish landslides; the SOPO inventory by PGI-NRI holds > 60 000 of them ([geoportal SOPO](https://geoportal.pgi.gov.pl/portal/page/portal/SOPO)).
+In Poland: Carpathian flysch (Beskidy, Pogórze) – ~95 % of Polish landslides; the SOPO inventory by PGI-NRI holds > 70 000 of them (2023) ([geoportal SOPO](https://geoportal.pgi.gov.pl/portal/page/portal/SOPO)).
 :::
 
-![[Pasted image 20230109111224.png|500]]<!-- element drag="25 25" drop="73 72"-->
 
 ::: source
 source: Hungr, O., Leroueil, S., Picarelli, L. (2014). The Varnes classification of landslide types, an update. *Landslides* 11, 167–194; [USGS Landslide Handbook](https://pubs.usgs.gov/circ/1325/)
@@ -164,16 +163,15 @@ source: Belgeo (2015) [Landslide mapping and monitoring with remote sensing](htt
 ::: title
 ## SAR amplitude change: the method of lab 5
 :::
-<grid drag="13 26" drop="87 75" bg="#00ced1" rotate="-15"/>
 
 ::: block <!-- element style="font-size:30px" align="left" drag="50 78" drop="0 15"-->
 Handwerger et al. (2022): **landslide density heatmaps** from Sentinel-1, fully in GEE, no training data.
 
-1. Stack of S1 GRD images **before** (months) and **after** (weeks) the event, same orbit
-2. Pixel-wise **log-ratio** of mean backscatter: $I_{ratio} = 10\log_{10}\frac{\bar\sigma_{after}}{\bar\sigma_{before}}$
-3. Landslide = large |change| (vegetation removed → VH drops; bare deposit, rough → may rise) – they use **absolute change** in both polarisations
-4. Mask: slope < 5° (floods, flat areas), permanent water, built-up
-5. Aggregate to a coarse grid → **density heatmap** (number / percent of changed pixels per 100 m cell)
+1. Stacks of S1 GRD **VH** images **before** (months) and **after** (weeks) the event, same orbit; temporal **median** of each stack (pixels ≤ −30 dB removed)
+2. Pixel-wise **log-ratio**: $I_{ratio} = 10\log_{10}\frac{I_{pre}}{I_{post}} = I_{pre} - I_{post}$ [dB] – positive where backscatter decreased
+3. Landslide candidates = pixels with $I_{ratio}$ above the **99th percentile** of the AOI (vegetation removed → VH drops)
+4. Masks: slope < 5–10° (flat areas, floods), curvature, water (NASADEM) – no built-up mask
+5. Kernel **density heatmap** of the candidate pixels (100 m cells, 1–3 km radius) → which valleys were hit
 :::
 
 ::: block <!-- element style="font-size:29px" align="left" drag="45 78" drop="53 15" bg="#e8f4f8" pad="15px"-->
@@ -182,7 +180,7 @@ Why a heatmap and not single landslides?
 - emergency managers need to know *which valleys* were hit within a day – not polygons
 - the heatmap is then validated against mapped inventories (Hokkaido 2018 earthquake, Hiroshima 2018 rain, Haiti 2021 – all in the paper)
 
-Script: [code.earthengine.google.com/341d37e9…](https://code.earthengine.google.com/341d37e9277edce71a3e720bc6e3bf07) (Moodle, *Landslides* lesson, page 2); authors' repository on GitHub.
+Script: [code.earthengine.google.com/341d37e9…](https://code.earthengine.google.com/341d37e9277edce71a3e720bc6e3bf07) (Moodle, *Landslides* lesson, page 2); the authors' GitHub repository has 30 figure scripts with Code Editor links (start with a Hokkaido figure).
 :::
 
 ::: source
@@ -200,7 +198,7 @@ source: Handwerger, A.L. et al. (2022). Generating landslide density heatmaps fo
 :::
 
 ::: block <!-- element style="font-size:36px" drag="95 14" drop="0 86" bg="#fff3cd" pad="10px 20px"-->
-The parameters you will change: AOI geometry, `eventDate`, length of the pre-event stack (longer = less noise), the change threshold, the grid size. Everything else you have already seen in labs 2 and 4 (filter, mean, ratio, mask, reduce).
+The parameters you will change: AOI geometry, `eventDate`, length of the pre-event stack (longer = less noise), the change threshold, the grid size. Everything else you have already seen in labs 2 and 4 (filter, median – the course copy may use mean –, ratio, percentile, mask, reduce).
 :::
 
 ---
@@ -213,7 +211,7 @@ The parameters you will change: AOI geometry, `eventDate`, length of the pre-eve
 ::: block <!-- element style="font-size:39px" align="left" drag="52 75" drop="0 15"-->
 - The **phase** difference between two SAR acquisitions = ground motion in the line of sight (+ topography + atmosphere + noise)
 - Time-series methods (PS-InSAR, SBAS) on dozens of Sentinel-1 scenes → velocity maps, mm/yr precision, over cities, dams, slow-moving slopes
-- **European Ground Motion Service** (Copernicus Land): free velocity map of all of Europe 2015 → ([egms.land.copernicus.eu](https://egms.land.copernicus.eu/))
+- **European Ground Motion Service** (Copernicus Land): free velocity maps of Europe: baseline 2015–2021 plus annual 5-year updates, latest 2020–2024; EU Login needed ([egms.land.copernicus.eu](https://egms.land.copernicus.eu/))
 - Not in GEE (needs the SLC product and phase processing): SNAP (ESA, free), LiCSAR / LiCSBAS (COMET, free, pre-processed interferograms), commercial platforms
 :::
 
@@ -239,7 +237,7 @@ source: [EGMS product description](https://land.copernicus.eu/en/products/europe
 
 ::: block <!-- element style="font-size:26px" align="left" drag="50 78" drop="0 15"-->
 ```javascript
-var dem = ee.Image('COPERNICUS/DEM/GLO30').select('DEM');     // 30 m, 2011–2015 TanDEM-X
+var dem = ee.ImageCollection('COPERNICUS/DEM/GLO30_2024_1').select('DEM').mosaic();  // 30 m, TanDEM-X 2010–2015
 // or NASA/NASADEM_HGT/001 (SRTM reprocessed), or your LiDAR DTM uploaded as an Asset
 var terrain = ee.Terrain.products(dem);   // elevation, slope, aspect, hillshade
 var slope = terrain.select('slope');
@@ -268,10 +266,10 @@ Combine with lecture 3: inventory points (label 1) + random non-landslide points
 <grid drag="13 26" drop="80 53" bg="#ffB73F"/>
 
 ::: block <!-- element style="font-size:42px" align="left" drag="95 75" drop="0 15"-->
-- **Copernicus EMS** – grading maps after major landslide events (activations list, free GIS layers): [emergency.copernicus.eu](https://emergency.copernicus.eu/)
+- **Copernicus EMS** – grading maps after major landslide events (activations list, free GIS layers): [emergency.copernicus.eu](https://mapping.emergency.copernicus.eu/)
 - **International Charter Space and Major Disasters** – [disasterscharter.org](https://disasterscharter.org/) (activations with maps)
 - **Sentinel Asia** – Asia-Pacific disaster support: [sentinel-asia.org](https://sentinel-asia.org/)
-- **NASA Global Landslide Catalog** (points, 2007 →) and **LHASA** nowcast: [gpm.nasa.gov/landslides](https://gpm.nasa.gov/landslides/)
+- **NASA Global Landslide Catalog** (points 2007–~2020, continued as COOLR) and **LHASA 2.0** nowcast: [gpm.nasa.gov/landslides](https://gpm.nasa.gov/landslides/)
 - **SOPO** (PGI-NRI) – Polish landslide inventory, the validation layer if you choose a Carpathian case
 - **UN-SPIDER** – [landslide knowledge portal](https://www.un-spider.org/disaster-type/landslide)
 :::

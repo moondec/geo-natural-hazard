@@ -123,7 +123,7 @@ source: [UN-SPIDER recommended practices](https://un-spider.org/advisory-support
 ## One method for all hazards: before / after
 :::
 
-::: block <!-- element style="font-size:44px" align="left" drag="45 70" drop="0 15"-->
+::: block <!-- element style="font-size:34px" align="left" drag="52 70" drop="0 15"-->
 + Step 1 – select satellite images for the period **before** the event
 + Step 2 – select images for the period **after** the event
 + Step 3 – compute the same quantity for both (an index, backscatter, a class)
@@ -190,13 +190,13 @@ Floods and landslides happen in bad weather – that is why lab 4 and 5 use SAR.
 <grid drag="13 26" drop="80 53" bg="#ffB73F"/>
 <grid drag="13 26" drop="87 75" bg="#00ced1" rotate="-15"/>
 
-::: block <!-- element style="font-size:34px" align="left" drag="55 75" drop="0 15"-->
+::: block <!-- element style="font-size:30px" align="left" drag="55 78" drop="0 15"-->
 | Resolution | Question | Sentinel-2 | Landsat 8/9 | Sentinel-1 | MODIS |
 |---|---|---|---|---|---|
 | **spatial** | how big is a pixel? | 10 / 20 / 60 m | 30 m (15 m pan) | 10 m (GRD) | 250–1000 m |
-| **temporal** | how often does it come back? | 5 days (2A+2B+2C) | 8 days (8+9) | 6–12 days | daily |
+| **temporal** | how often does it come back? | 5 days (2B+2C in opposite phase; 2A on an extended campaign to end 2026) | 8 days (8+9) | 6–12 days | daily |
 | **spectral** | which bands? | 13 | 11 | C-band radar | 36 |
-| **radiometric** | how fine are the values? | 12 bit | 12 bit | 16 bit | 12 bit |
+| **radiometric** | how fine are the values? | 12 bit | 12 / 14 bit | 16 bit | 12 bit |
 :::
 
 ::: block <!-- element style="font-size:32px" align="left" drag="40 75" drop="60 15" bg="#e8f4f8" pad="15px"-->
@@ -207,7 +207,6 @@ Rule of thumb for hazards:
 - a cloudy season → radar
 :::
 
-![[Pasted image 20230109220407.png|700]]<!-- element drag="45 25" drop="55 72"-->
 
 ---
 <!-- slide template="[[tpl-geo-default-slide]]" -->
@@ -218,7 +217,7 @@ Rule of thumb for hazards:
 ![[Pasted image 20230106213729.png|1050]]
 
 ::: block <!-- element style="font-size: 28px;" class="fragment fade-up" -->
-Landsat 8 and **Landsat 9** (2021) carry the same bands (OLI-2 / TIRS-2); Landsat 7 was decommissioned in June 2025. Sentinel-2 now flies as a triplet: **2A, 2B and 2C** (2C operational since January 2025). Band names in Earth Engine: Sentinel-2 `B4` = red, `B8` = NIR, `B11/B12` = SWIR; Landsat 8/9 `SR_B4` = red, `SR_B5` = NIR, `SR_B6/SR_B7` = SWIR. Write them down – every index in this course uses them.
+Landsat 8 and **Landsat 9** (2021) carry the same bands (OLI-2 / TIRS-2); Landsat 7 was decommissioned in June 2025. Sentinel-2 now flies as a triplet: **2A, 2B and 2C** (2C operational since January 2025; 2A on an extended campaign until the end of 2026). Band names in Earth Engine: Sentinel-2 `B4` = red, `B8` = NIR, `B11/B12` = SWIR; Landsat 8/9 `SR_B4` = red, `SR_B5` = NIR, `SR_B6/SR_B7` = SWIR. Write them down – every index in this course uses them.
 :::
 
 ---
@@ -311,12 +310,10 @@ A custom script is a few lines of JavaScript that tells the browser how to combi
 ::: title 
 ## Before next class – do it now, it takes time
 :::
-<grid drag="13 26" drop="80 53" bg="#ffB73F"/>
-<grid drag="13 26" drop="87 75" bg="#00ced1"/>
 
 ::: block <!-- element style="font-size:42px" align="left" drag="95 75" drop="0 15"-->
 - [ ] Create a free account at [dataspace.copernicus.eu](https://dataspace.copernicus.eu/) and log in to [Copernicus Browser](https://browser.dataspace.copernicus.eu/)
-- [ ] Register for Google Earth Engine with your Google account: [how to get access](https://developers.google.com/earth-engine/guides/access) → create a Cloud project → register it for **noncommercial (education)** use. Approval may take a day – **do not leave it for Monday morning**
+- [ ] Register for Google Earth Engine with your Google account: [how to get access](https://developers.google.com/earth-engine/guides/access) → create a Cloud project → register it for **noncommercial (education)** use. Access is enabled immediately, but the Cloud project, the Earth Engine API and the eligibility questionnaire take 20–30 min and sometimes fail – **do it before Friday**
 - [ ] Watch: [A short guide to Copernicus Browser](https://www.youtube.com/watch?v=F0lIn5r6ZWk) (10 min) and, optionally, [Introduction to CDSE](https://www.youtube.com/watch?v=GecNCdilbig)
 - [ ] Bring to the lab: one hazard event you are curious about (place + approximate date)
 :::

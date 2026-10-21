@@ -1,0 +1,491 @@
+{
+ "01-kickoff": {
+  "slides": 16,
+  "steps": 37,
+  "issues": [
+   {
+    "slide": 3,
+    "step": 0,
+    "kind": "outside-top",
+    "text": "Natural Hazards following UN",
+    "px": 2
+   },
+   {
+    "slide": 3,
+    "step": 1,
+    "kind": "outside-top",
+    "text": "Natural Hazards following UN",
+    "px": 3
+   },
+   {
+    "slide": 3,
+    "step": 2,
+    "kind": "outside-top",
+    "text": "Natural Hazards following UN",
+    "px": 3
+   },
+   {
+    "slide": 3,
+    "step": 3,
+    "kind": "outside-top",
+    "text": "Natural Hazards following UN",
+    "px": 3
+   },
+   {
+    "slide": 3,
+    "step": 4,
+    "kind": "outside-top",
+    "text": "Natural Hazards following UN",
+    "px": 3
+   },
+   {
+    "slide": 3,
+    "step": 5,
+    "kind": "outside-top",
+    "text": "Natural Hazards following UN",
+    "px": 3
+   },
+   {
+    "slide": 8,
+    "step": 0,
+    "kind": "below-footer",
+    "text": "how fine are the values?",
+    "px": 18
+   },
+   {
+    "slide": 8,
+    "step": 0,
+    "kind": "below-footer",
+    "text": "12 bit (L8) / 14 bit (L9)",
+    "px": 18
+   },
+   {
+    "slide": 12,
+    "step": 0,
+    "kind": "outside-top",
+    "text": "How to find a study example?",
+    "px": 2
+   },
+   {
+    "slide": 15,
+    "step": 0,
+    "kind": "text-over-text",
+    "text": "A short guide to Copernicus Browser",
+    "other": "Introduction to CDSE"
+   }
+  ],
+  "errors": []
+ },
+ "02-gee-code-editor": {
+  "slides": 18,
+  "steps": 22,
+  "issues": [
+   {
+    "slide": 7,
+    "step": 0,
+    "kind": "text-over-text",
+    "text": "COPERNICUS/S2_SR_HARMONIZED",
+    "other": "use this one"
+   },
+   {
+    "slide": 7,
+    "step": 0,
+    "kind": "text-over-text",
+    "text": "Sentinel-2 in the Earth Engine catalogue",
+    "other": "use this one"
+   },
+   {
+    "slide": 7,
+    "step": 0,
+    "kind": "text-over-text",
+    "text": "Sentinel-2 in the Earth Engine catalogue",
+    "other": "for indices and classification"
+   },
+   {
+    "slide": 10,
+    "step": 0,
+    "kind": "covered-by-box",
+    "text": "=",
+    "frac": 100
+   },
+   {
+    "slide": 10,
+    "step": 0,
+    "kind": "covered-by-box",
+    "text": "B",
+    "frac": 100
+   },
+   {
+    "slide": 10,
+    "step": 0,
+    "kind": "text-over-text",
+    "text": "B",
+    "other": "['B3','B8']"
+   },
+   {
+    "slide": 10,
+    "step": 0,
+    "kind": "text-over-text",
+    "text": "B",
+    "other": "['B3','B11']"
+   },
+   {
+    "slide": 10,
+    "step": 0,
+    "kind": "covered-by-box",
+    "text": "8",
+    "frac": 100
+   },
+   {
+    "slide": 10,
+    "step": 0,
+    "kind": "text-over-text",
+    "text": "8",
+    "other": "['B3','B8']"
+   },
+   {
+    "slide": 10,
+    "step": 0,
+    "kind": "text-over-text",
+    "text": "8",
+    "other": "['B3','B11']"
+   },
+   {
+    "slide": 10,
+    "step": 0,
+    "kind": "covered-by-box",
+    "text": "−",
+    "frac": 100
+   },
+   {
+    "slide": 10,
+    "step": 0,
+    "kind": "covered-by-box",
+    "text": "B",
+    "frac": 100
+   },
+   {
+    "slide": 10,
+    "step": 0,
+    "kind": "text-over-text",
+    "text": "B",
+    "other": "→ NDWI (water, lecture 4)"
+   },
+   {
+    "slide": 10,
+    "step": 0,
+    "kind": "text-over-text",
+    "text": "B",
+    "other": "→ MNDWI (water vs. built-up)"
+   },
+   {
+    "slide": 10,
+    "step": 0,
+    "kind": "covered-by-box",
+    "text": "4",
+    "frac": 100
+   },
+   {
+    "slide": 10,
+    "step": 0,
+    "kind": "text-over-text",
+    "text": "4",
+    "other": "→ NDWI (water, lecture 4)"
+   },
+   {
+    "slide": 10,
+    "step": 0,
+    "kind": "text-over-text",
+    "text": "4",
+    "other": "→ MNDWI (water vs. built-up)"
+   },
+   {
+    "slide": 10,
+    "step": 0,
+    "kind": "covered-by-box",
+    "text": "B",
+    "frac": 100
+   },
+   {
+    "slide": 10,
+    "step": 0,
+    "kind": "text-over-text",
+    "text": "B",
+    "other": "['B8','B12']"
+   },
+   {
+    "slide": 10,
+    "step": 0,
+    "kind": "text-over-text",
+    "text": "B",
+    "other": "['B8','B11']"
+   },
+   {
+    "slide": 10,
+    "step": 0,
+    "kind": "covered-by-box",
+    "text": "8",
+    "frac": 100
+   },
+   {
+    "slide": 10,
+    "step": 0,
+    "kind": "text-over-text",
+    "text": "8",
+    "other": "['B8','B12']"
+   },
+   {
+    "slide": 10,
+    "step": 0,
+    "kind": "text-over-text",
+    "text": "8",
+    "other": "['B8','B11']"
+   },
+   {
+    "slide": 10,
+    "step": 0,
+    "kind": "covered-by-box",
+    "text": "+",
+    "frac": 100
+   },
+   {
+    "slide": 10,
+    "step": 0,
+    "kind": "covered-by-box",
+    "text": "B",
+    "frac": 100
+   },
+   {
+    "slide": 10,
+    "step": 0,
+    "kind": "text-over-text",
+    "text": "B",
+    "other": "→ NBR (burned area, lecture 6)"
+   },
+   {
+    "slide": 10,
+    "step": 0,
+    "kind": "text-over-text",
+    "text": "B",
+    "other": "→ NDMI (moisture)"
+   },
+   {
+    "slide": 10,
+    "step": 0,
+    "kind": "covered-by-box",
+    "text": "4",
+    "frac": 100
+   },
+   {
+    "slide": 10,
+    "step": 0,
+    "kind": "text-over-text",
+    "text": "4",
+    "other": "→ NBR (burned area, lecture 6)"
+   },
+   {
+    "slide": 10,
+    "step": 0,
+    "kind": "text-over-text",
+    "text": "4",
+    "other": "→ NDMI (moisture)"
+   },
+   {
+    "slide": 10,
+    "step": 0,
+    "kind": "text-over-text",
+    "text": "Surface",
+    "other": "V"
+   },
+   {
+    "slide": 10,
+    "step": 0,
+    "kind": "text-over-text",
+    "text": "NDVI",
+    "other": "R"
+   },
+   {
+    "slide": 10,
+    "step": 0,
+    "kind": "text-over-text",
+    "text": "Awesome spectral indices",
+    "other": "Sentinel Hub custom scripts"
+   },
+   {
+    "slide": 17,
+    "step": 0,
+    "kind": "text-over-text",
+    "text": "Computation on ImageCollections",
+    "other": "Filtering Image Collections"
+   }
+  ],
+  "errors": []
+ },
+ "03-ml-classification": {
+  "slides": 17,
+  "steps": 21,
+  "issues": [
+   {
+    "slide": 7,
+    "step": 0,
+    "kind": "outside-right",
+    "text": "// composite = median of .select('B.*')",
+    "px": 196
+   },
+   {
+    "slide": 9,
+    "step": 0,
+    "kind": "outside-right",
+    "text": "// sample RF inputs and the k-means cluster at onc",
+    "px": 195
+   },
+   {
+    "slide": 14,
+    "step": 0,
+    "kind": "text-over-text",
+    "text": "Generating landslide density heatmaps for rapid de",
+    "other": "NHESS 22, 753–773"
+   },
+   {
+    "slide": 16,
+    "step": 0,
+    "kind": "text-over-text",
+    "text": "In detail",
+    "other": "Sentinel-1 for flood mapping, UN-SPIDER"
+   }
+  ],
+  "errors": []
+ },
+ "04-floods": {
+  "slides": 14,
+  "steps": 14,
+  "issues": [
+   {
+    "slide": 6,
+    "step": 0,
+    "kind": "below-footer",
+    "text": "Free, open, in Copernicus Browser and in Earth Eng",
+    "px": 12
+   },
+   {
+    "slide": 6,
+    "step": 0,
+    "kind": "text-over-text",
+    "text": "Free, open, in Copernicus Browser and in Earth Eng",
+    "other": "Sentinel-1 GRD in Earth Engine"
+   },
+   {
+    "slide": 6,
+    "step": 0,
+    "kind": "below-footer",
+    "text": "COPERNICUS/S1_GRD",
+    "px": 13
+   },
+   {
+    "slide": 6,
+    "step": 0,
+    "kind": "below-footer",
+    "text": ", bands",
+    "px": 12
+   },
+   {
+    "slide": 6,
+    "step": 0,
+    "kind": "below-footer",
+    "text": "VV",
+    "px": 56
+   },
+   {
+    "slide": 6,
+    "step": 0,
+    "kind": "below-footer",
+    "text": ",",
+    "px": 56
+   },
+   {
+    "slide": 6,
+    "step": 0,
+    "kind": "below-footer",
+    "text": "VH",
+    "px": 56
+   },
+   {
+    "slide": 6,
+    "step": 0,
+    "kind": "below-footer",
+    "text": ",",
+    "px": 56
+   },
+   {
+    "slide": 6,
+    "step": 0,
+    "kind": "below-footer",
+    "text": "angle",
+    "px": 56
+   },
+   {
+    "slide": 6,
+    "step": 0,
+    "kind": "below-footer",
+    "text": ", values already in dB",
+    "px": 56
+   },
+   {
+    "slide": 6,
+    "step": 0,
+    "kind": "text-over-text",
+    "text": ";",
+    "other": "Free, open, in Copernicus Browser and in Earth Eng"
+   },
+   {
+    "slide": 6,
+    "step": 0,
+    "kind": "text-over-text",
+    "text": "ESA Sentinel-1 mission",
+    "other": "Free, open, in Copernicus Browser and in Earth Eng"
+   },
+   {
+    "slide": 8,
+    "step": 0,
+    "kind": "text-over-text",
+    "text": "Ratio / difference",
+    "other": "dB images"
+   },
+   {
+    "slide": 8,
+    "step": 0,
+    "kind": "text-over-text",
+    "text": "after.divide(before)",
+    "other": "dB images"
+   },
+   {
+    "slide": 8,
+    "step": 0,
+    "kind": "text-over-text",
+    "text": "1.25",
+    "other": "dB images"
+   },
+   {
+    "slide": 8,
+    "step": 0,
+    "kind": "outside-right",
+    "text": "// UN-SPIDER style (ratio of the dB images): var r",
+    "px": 11
+   },
+   {
+    "slide": 8,
+    "step": 0,
+    "kind": "outside-right",
+    "text": "// remove specks (as in the UN-SPIDER script)",
+    "px": 43
+   }
+  ],
+  "errors": []
+ },
+ "07-apis": {
+  "slides": 14,
+  "steps": 14,
+  "issues": [],
+  "errors": []
+ }
+}

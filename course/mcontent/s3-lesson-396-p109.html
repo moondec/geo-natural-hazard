@@ -11,14 +11,14 @@
 <h3 class="iot-material-divider">2. Wildfire – burn severity (lab 6)</h3>
 <ul class="iot-material-list">
 <li>GEE script: <a href="https://code.earthengine.google.co.in/399574ee99121535df415aa7e5f05153" target="_blank" rel="noopener">Wildfire</a></li>
-<li>Scientific article: <a href="https://jfs.agriculturejournals.cz/pdfs/jfs/2022/03/02.pdf" target="_blank" rel="noopener">Journal of Forest Science, 2022</a> – burn severity from dNBR with Random Forest classification of damage classes.</li>
+<li>Scientific article: Al-hasn, R. &amp; Almuhammad, R. (2022). <a href="https://jfs.agriculturejournals.cz/pdfs/jfs/2022/03/02.pdf" target="_blank" rel="noopener">Burned area determination using Sentinel-2 satellite images and the impact of fire on the availability of soil nutrients in Syria</a>. <em>J. For. Sci.</em> 68(3), 96–106, doi:10.17221/122/2021-JFS – dNBR / BAIS2 thresholds, no machine learning; the Random Forest classification of damage classes is the lab's own extension.</li>
 <li>Webinar: <a href="https://www.geo.fu-berlin.de/en/v/geo-it/webinar/webinar-1" target="_blank" rel="noopener">FU Berlin GEO-IT webinar</a></li>
 <li>Public alternative: <a href="https://un-spider.org/advisory-support/recommended-practices/recommended-practice-burn-severity/burn-severity-earth-engine" target="_blank" rel="noopener">UN-SPIDER recommended practice – burn severity in GEE</a> (importable script with line-by-line comments; used in lab 6)</li>
 </ul>
 <h3 class="iot-material-divider">A ready reference layer</h3>
-<p>The method of this week – Random Forest on a band stack – is also how Dynamic World (Google / WRI) produces a near-real-time 10 m land cover map. It is in the catalogue as <code>GOOGLE/DYNAMICWORLD/V1</code> and is a convenient reference layer to compare your classification against in the report.</p>
+<p>Dynamic World (Google / WRI) does the same task as this week's exercise – per-pixel land cover from Sentinel-2 – but with a convolutional neural network instead of a Random Forest (Brown et al. 2022, <em>Scientific Data</em> 9, 251). It is in the catalogue as <code>GOOGLE/DYNAMICWORLD/V1</code> and is a convenient reference layer to compare your classification against in the report.</p>
 <div class="iot-material-callout iot-material-callout--check">
 <p class="iot-material-callout-title">You are done with the lesson when…</p>
-<p>…both of your scripts run, both confusion matrices are printed and you have started the report. Submit it in the <em>Homework</em> assignment below this lesson (milestone M3, 30.11).</p>
+<p>…both of your scripts run, both confusion matrices are printed and you have started the report. Submit it in the <em>Homework</em> assignment below this lesson (milestone M3, due before lab 4 on 7.12).</p>
 </div>
 </div>

@@ -42,14 +42,13 @@ print(py_df)
 
 <div class="iot-material-callout iot-material-callout--warn">
 <p class="iot-material-callout-title">If rpy2 throws an error</p>
-<p>Downgrade the library and load the extension again:</p>
-<pre class="iot-material-code"><code class="language-python">!pip uninstall rpy2 -y
-!pip install rpy2==3.5.1
+<p>Current Colab ships a working <code>rpy2</code>, so <code>%load_ext rpy2.ipython</code> normally works out of the box. As a last resort, reinstall the library and load the extension again:</p>
+<pre class="iot-material-code"><code class="language-python">!pip install -U rpy2
 %load_ext rpy2.ipython
 </code></pre>
 </div>
 <div class="iot-material-callout iot-material-callout--check">
 <p class="iot-material-callout-title">You are done when</p>
-<p><code>ee.Initialize(project=...)</code> runs without an error in a fresh Colab session. Do this at home before 11.01 – two minutes at home save twenty in the lab. Press <strong>Next</strong> for the Colab exercise.</p>
+<p><code>ee.Initialize(project=...)</code> runs without an error in a fresh Colab session. Do this at home before lab 7 (11.01) – two minutes at home save twenty in the lab. Press <strong>Next</strong> for the Colab exercise.</p>
 </div>
 </div>

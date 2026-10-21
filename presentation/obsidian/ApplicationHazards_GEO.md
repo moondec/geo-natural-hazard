@@ -82,10 +82,9 @@ source: [https://www.un-spider.org](https://www.un-spider.org/risks-and-disaster
 :::
 
 ::: block <!-- element style="font-size:45px"-->
-- Wildfires (e.g. [Forest Fires](https://www.un-spider.org/category/disaster-type/forest-fire))
-+ [Landslides](https://www.un-spider.org/category/disaster-type/landslide) or Mass Movement
-+ [Droughts](https://www.un-spider.org/category/disaster-type/drought)
-+ And maybe [air pollution](https://bookdown.org/david_carslaw/openair/)
+- [Floods](https://www.un-spider.org/category/disaster-type/flood) (lab 4)
++ [Landslides](https://www.un-spider.org/category/disaster-type/landslide) or mass movement (lab 5)
++ Wildfires (e.g. [Forest Fires](https://www.un-spider.org/category/disaster-type/forest-fire)) (lab 6)
 :::
 
 ### General methodology template:<!-- element class="fragment fade-up" data-fragment-index="3" style= "color:darkgreen"-->
@@ -267,7 +266,7 @@ Approximate max resolution: 25cm
 ![[Pasted image 20230106213729.png|1050]]
 
 ::: block <!-- element style="font-size: 30px;" class="fragment fade-up" -->
-Landsat 8 and **Landsat 9** (2021) carry the same bands (OLI-2 / TIRS-2); Landsat 7 was decommissioned in June 2025. Sentinel-2 now flies as a triplet: **2A, 2B and 2C** (2C operational since January 2025). Next generation: Landsat Next (26 bands, launch planned for the early 2030s).
+Landsat 8 and **Landsat 9** (2021) carry the same bands (OLI-2 / TIRS-2); Landsat 7 was decommissioned in June 2025. Sentinel-2 now flies as a triplet: **2A, 2B and 2C** (2C operational since January 2025). Next generation: Landsat 10 (ex-Landsat Next: 26 bands, 10–20 m, launch 2031).
 :::
 
 
@@ -455,7 +454,7 @@ Landslides:<!-- element style="font-size: 60px; color:brown" align="left"  -->
 Wildfires:<!-- element style="font-size: 60px;color:red"  -->
 
 1. https://medium.com/google-earth/how-to-generate-wildfire-boundary-maps-with-earth-engine-b38eadc97a38
-2. https://jfs.agriculturejournals.cz/pdfs/jfs/2022/03/02.pdf
+2. Al-hasn & Almuhammad (2022), Burned area determination using Sentinel-2 … J. For. Sci. 68(3) – https://jfs.agriculturejournals.cz/pdfs/jfs/2022/03/02.pdf
 3. https://un-spider.org/advisory-support/recommended-practices/recommended-practice-burn-severity/burn-severity-earth-engine
 
 ---

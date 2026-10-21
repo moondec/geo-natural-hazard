@@ -12,7 +12,15 @@
 </ul>
 <h3 class="iot-material-divider">Step by step</h3>
 <ol class="iot-material-steps">
-<li><strong>Build the composite.</strong> Filter <code>COPERNICUS/S2_SR_HARMONIZED</code> to your AOI and one season, keep scenes with little cloud, take the median. Name the result <code>composite</code> and show it in true colour.</li>
+<li><strong>Build the composite.</strong> Filter <code>COPERNICUS/S2_SR_HARMONIZED</code> to your AOI and one season, keep scenes with little cloud, select the reflectance bands only and take the median – then <code>composite.bandNames()</code> is clean (no <code>SCL</code>, <code>AOT</code>, <code>QA</code> bands):
+<pre><code class="language-javascript">var composite = ee.ImageCollection('COPERNICUS/S2_SR_HARMONIZED')
+  .filterBounds(roi)
+  .filterDate('2025-05-01', '2025-09-30')
+  .filter(ee.Filter.lt('CLOUDY_PIXEL_PERCENTAGE', 20))
+  .select(['B2', 'B3', 'B4', 'B8', 'B11', 'B12'])   // or .select('B.*')
+  .median()
+  .clip(roi);
+Map.addLayer(composite, {bands: ['B4', 'B3', 'B2'], min: 0, max: 3000}, 'composite');</code></pre></li>
 <li><strong>Create one layer per class.</strong> In the Code Editor open the geometry tools, add a new layer for each class (e.g. <code>water</code>, <code>urban</code>, <code>crops</code>, <code>forest</code>). In <em>Geometry Imports</em> change <em>Import as</em> from <code>Geometry</code> to <code>FeatureCollection</code> and add the property <code>landcover</code> with the values 0, 1, 2, 3.</li>
 <li><strong>Draw the samples.</strong> Draw polygons (or points) inside pure patches: inside a lake, inside a forest – not on edges. Spread them over the whole area and give every class a similar total area.</li>
 <li><strong>Merge and sample.</strong> Merge the four collections into <code>gcps</code> and extract the band values of the pixels:
@@ -20,8 +28,10 @@
 var training = composite.sampleRegions({
   collection: gcps,          // your 4 merged FeatureCollections
   properties: ['landcover'],
-  scale: 10
-});</code></pre></li>
+  scale: 10,
+  geometries: true           // keep the point geometry – needed again for k-means
+});</code></pre>
+<code>sampleRegions</code> drops the geometries by default; <code>geometries: true</code> keeps them, so the same test points can be used to check the k-means map on the next page.</li>
 <li><strong>Split 70 / 30.</strong> Keep 30 % of the samples aside for validation – the model must never see them during training:
 <pre><code class="language-javascript">var withRandom = training.randomColumn('random');
 var trainSet = withRandom.filter(ee.Filter.lt('random', 0.7));
@@ -60,7 +70,7 @@ Copy the matrix and the two numbers into your report.</li>
 <li><strong>Overall accuracy</strong> = diagonal / total = 176 / 200 = 88 % in this example.</li>
 <li><strong>Producer's accuracy</strong> (recall): of the real crop pixels, how many did we find?</li>
 <li><strong>User's accuracy</strong> (precision): of the pixels we called crops, how many are crops?</li>
-<li><strong>Kappa</strong>: agreement corrected for chance (0 = random, 1 = perfect); above 0.8 is "strong".</li>
+<li><strong>Kappa</strong>: agreement corrected for chance (0 = random, 1 = perfect); the usual scale – 0.81–1.00 "almost perfect" – is from Landis &amp; Koch (1977), <em>Biometrics</em> 33, 159–174. Report overall, producer's and user's accuracy; kappa is optional and has been criticised for map accuracy (Foody 2020, <em>Remote Sensing of Environment</em> 239, 111630).</li>
 </ul>
 <div class="iot-material-callout iot-material-callout--task">
 <p class="iot-material-callout-title">Keep for the report</p>

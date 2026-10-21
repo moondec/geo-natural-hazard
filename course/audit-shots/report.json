@@ -1,0 +1,659 @@
+{
+ "intro": {
+  "slides": 25,
+  "steps": 59,
+  "issues": [
+   {
+    "slide": 2,
+    "step": 0,
+    "kind": "outside-top",
+    "text": "Natural Hazards following UN",
+    "px": 2
+   },
+   {
+    "slide": 2,
+    "step": 1,
+    "kind": "outside-top",
+    "text": "Natural Hazards following UN",
+    "px": 3
+   },
+   {
+    "slide": 2,
+    "step": 2,
+    "kind": "outside-top",
+    "text": "Natural Hazards following UN",
+    "px": 3
+   },
+   {
+    "slide": 2,
+    "step": 3,
+    "kind": "outside-top",
+    "text": "Natural Hazards following UN",
+    "px": 3
+   },
+   {
+    "slide": 2,
+    "step": 4,
+    "kind": "outside-top",
+    "text": "Natural Hazards following UN",
+    "px": 3
+   },
+   {
+    "slide": 2,
+    "step": 5,
+    "kind": "outside-top",
+    "text": "Natural Hazards following UN",
+    "px": 3
+   },
+   {
+    "slide": 5,
+    "step": 0,
+    "kind": "text-over-text",
+    "text": "Applied Geography",
+    "other": "Quantifying spatial and temporal vegetation recove"
+   },
+   {
+    "slide": 5,
+    "step": 0,
+    "kind": "text-over-text",
+    "text": "50",
+    "other": "Quantifying spatial and temporal vegetation recove"
+   },
+   {
+    "slide": 8,
+    "step": 0,
+    "kind": "outside-top",
+    "text": "How to find a study example?",
+    "px": 2
+   },
+   {
+    "slide": 15,
+    "step": 0,
+    "kind": "outside-top",
+    "text": "RGEE - Google",
+    "px": 2
+   },
+   {
+    "slide": 15,
+    "step": 0,
+    "kind": "outside-top",
+    "text": "Earth Engine with R",
+    "px": 2
+   }
+  ],
+  "errors": []
+ },
+ "01-kickoff": {
+  "slides": 16,
+  "steps": 37,
+  "issues": [
+   {
+    "slide": 3,
+    "step": 0,
+    "kind": "outside-top",
+    "text": "Natural Hazards following UN",
+    "px": 2
+   },
+   {
+    "slide": 3,
+    "step": 1,
+    "kind": "outside-top",
+    "text": "Natural Hazards following UN",
+    "px": 3
+   },
+   {
+    "slide": 3,
+    "step": 2,
+    "kind": "outside-top",
+    "text": "Natural Hazards following UN",
+    "px": 3
+   },
+   {
+    "slide": 3,
+    "step": 3,
+    "kind": "outside-top",
+    "text": "Natural Hazards following UN",
+    "px": 3
+   },
+   {
+    "slide": 3,
+    "step": 4,
+    "kind": "outside-top",
+    "text": "Natural Hazards following UN",
+    "px": 3
+   },
+   {
+    "slide": 3,
+    "step": 5,
+    "kind": "outside-top",
+    "text": "Natural Hazards following UN",
+    "px": 3
+   },
+   {
+    "slide": 5,
+    "step": 5,
+    "kind": "covered-by-box",
+    "text": "Step 5 – threshold / classify the difference, comp",
+    "frac": 57
+   },
+   {
+    "slide": 5,
+    "step": 5,
+    "kind": "text-over-text",
+    "text": "Labs 4, 5 and 6 are three variants of exactly this",
+    "other": "Step 5 – threshold / classify the difference, comp"
+   },
+   {
+    "slide": 8,
+    "step": 0,
+    "kind": "covered-by-image",
+    "text": "a cloudy season → radar",
+    "frac": 100
+   },
+   {
+    "slide": 12,
+    "step": 0,
+    "kind": "outside-top",
+    "text": "How to find a study example?",
+    "px": 2
+   },
+   {
+    "slide": 15,
+    "step": 0,
+    "kind": "text-over-text",
+    "text": "A short guide to Copernicus Browser",
+    "other": "Introduction to CDSE"
+   }
+  ],
+  "errors": []
+ },
+ "02-gee-code-editor": {
+  "slides": 18,
+  "steps": 22,
+  "issues": [
+   {
+    "slide": 7,
+    "step": 0,
+    "kind": "text-over-text",
+    "text": "COPERNICUS/S2_SR_HARMONIZED",
+    "other": "use this one"
+   },
+   {
+    "slide": 7,
+    "step": 0,
+    "kind": "text-over-text",
+    "text": "Sentinel-2 in the Earth Engine catalogue",
+    "other": "use this one"
+   },
+   {
+    "slide": 7,
+    "step": 0,
+    "kind": "text-over-text",
+    "text": "Sentinel-2 in the Earth Engine catalogue",
+    "other": "for indices and classification"
+   },
+   {
+    "slide": 10,
+    "step": 0,
+    "kind": "covered-by-box",
+    "text": "=",
+    "frac": 100
+   },
+   {
+    "slide": 10,
+    "step": 0,
+    "kind": "covered-by-box",
+    "text": "B",
+    "frac": 100
+   },
+   {
+    "slide": 10,
+    "step": 0,
+    "kind": "text-over-text",
+    "text": "B",
+    "other": "['B3','B8']"
+   },
+   {
+    "slide": 10,
+    "step": 0,
+    "kind": "text-over-text",
+    "text": "B",
+    "other": "['B3','B11']"
+   },
+   {
+    "slide": 10,
+    "step": 0,
+    "kind": "covered-by-box",
+    "text": "8",
+    "frac": 100
+   },
+   {
+    "slide": 10,
+    "step": 0,
+    "kind": "text-over-text",
+    "text": "8",
+    "other": "['B3','B8']"
+   },
+   {
+    "slide": 10,
+    "step": 0,
+    "kind": "text-over-text",
+    "text": "8",
+    "other": "['B3','B11']"
+   },
+   {
+    "slide": 10,
+    "step": 0,
+    "kind": "covered-by-box",
+    "text": "−",
+    "frac": 100
+   },
+   {
+    "slide": 10,
+    "step": 0,
+    "kind": "covered-by-box",
+    "text": "B",
+    "frac": 100
+   },
+   {
+    "slide": 10,
+    "step": 0,
+    "kind": "text-over-text",
+    "text": "B",
+    "other": "→ NDWI (water, lecture 4)"
+   },
+   {
+    "slide": 10,
+    "step": 0,
+    "kind": "text-over-text",
+    "text": "B",
+    "other": "→ MNDWI (water vs. built-up)"
+   },
+   {
+    "slide": 10,
+    "step": 0,
+    "kind": "covered-by-box",
+    "text": "4",
+    "frac": 100
+   },
+   {
+    "slide": 10,
+    "step": 0,
+    "kind": "text-over-text",
+    "text": "4",
+    "other": "→ NDWI (water, lecture 4)"
+   },
+   {
+    "slide": 10,
+    "step": 0,
+    "kind": "text-over-text",
+    "text": "4",
+    "other": "→ MNDWI (water vs. built-up)"
+   },
+   {
+    "slide": 10,
+    "step": 0,
+    "kind": "covered-by-box",
+    "text": "B",
+    "frac": 100
+   },
+   {
+    "slide": 10,
+    "step": 0,
+    "kind": "text-over-text",
+    "text": "B",
+    "other": "['B8','B12']"
+   },
+   {
+    "slide": 10,
+    "step": 0,
+    "kind": "text-over-text",
+    "text": "B",
+    "other": "['B8','B11']"
+   },
+   {
+    "slide": 10,
+    "step": 0,
+    "kind": "covered-by-box",
+    "text": "8",
+    "frac": 100
+   },
+   {
+    "slide": 10,
+    "step": 0,
+    "kind": "text-over-text",
+    "text": "8",
+    "other": "['B8','B12']"
+   },
+   {
+    "slide": 10,
+    "step": 0,
+    "kind": "text-over-text",
+    "text": "8",
+    "other": "['B8','B11']"
+   },
+   {
+    "slide": 10,
+    "step": 0,
+    "kind": "covered-by-box",
+    "text": "+",
+    "frac": 100
+   },
+   {
+    "slide": 10,
+    "step": 0,
+    "kind": "covered-by-box",
+    "text": "B",
+    "frac": 100
+   },
+   {
+    "slide": 10,
+    "step": 0,
+    "kind": "text-over-text",
+    "text": "B",
+    "other": "→ NBR (burned area, lecture 6)"
+   },
+   {
+    "slide": 10,
+    "step": 0,
+    "kind": "text-over-text",
+    "text": "B",
+    "other": "→ NDMI (moisture)"
+   },
+   {
+    "slide": 10,
+    "step": 0,
+    "kind": "covered-by-box",
+    "text": "4",
+    "frac": 100
+   },
+   {
+    "slide": 10,
+    "step": 0,
+    "kind": "text-over-text",
+    "text": "4",
+    "other": "→ NBR (burned area, lecture 6)"
+   },
+   {
+    "slide": 10,
+    "step": 0,
+    "kind": "text-over-text",
+    "text": "4",
+    "other": "→ NDMI (moisture)"
+   },
+   {
+    "slide": 10,
+    "step": 0,
+    "kind": "text-over-text",
+    "text": "Surface",
+    "other": "V"
+   },
+   {
+    "slide": 10,
+    "step": 0,
+    "kind": "text-over-text",
+    "text": "NDVI",
+    "other": "R"
+   },
+   {
+    "slide": 10,
+    "step": 0,
+    "kind": "text-over-text",
+    "text": "Awesome spectral indices",
+    "other": "Sentinel Hub custom scripts"
+   }
+  ],
+  "errors": []
+ },
+ "03-ml-classification": {
+  "slides": 17,
+  "steps": 21,
+  "issues": [
+   {
+    "slide": 14,
+    "step": 0,
+    "kind": "text-over-text",
+    "text": "Generating landslide density heatmaps for rapid de",
+    "other": "NHESS 22, 753–773"
+   },
+   {
+    "slide": 16,
+    "step": 0,
+    "kind": "text-over-text",
+    "text": "In detail",
+    "other": "Sentinel-1 for flood mapping, UN-SPIDER"
+   }
+  ],
+  "errors": []
+ },
+ "04-floods": {
+  "slides": 14,
+  "steps": 14,
+  "issues": [
+   {
+    "slide": 6,
+    "step": 0,
+    "kind": "text-over-text",
+    "text": ",",
+    "other": "Sentinel-1 GRD in Earth Engine"
+   },
+   {
+    "slide": 6,
+    "step": 0,
+    "kind": "text-over-text",
+    "text": ",",
+    "other": "Sentinel-1 GRD in Earth Engine"
+   },
+   {
+    "slide": 6,
+    "step": 0,
+    "kind": "text-over-text",
+    "text": ", values already in dB",
+    "other": "Sentinel-1 GRD in Earth Engine"
+   },
+   {
+    "slide": 10,
+    "step": 0,
+    "kind": "text-over-text",
+    "text": "MERIT/Hydro/v1_0_1",
+    "other": "source: Moodle lesson pages 6–7 (InSAR, ICEYE);"
+   },
+   {
+    "slide": 10,
+    "step": 0,
+    "kind": "text-over-text",
+    "text": "(HAND)",
+    "other": "source: Moodle lesson pages 6–7 (InSAR, ICEYE);"
+   },
+   {
+    "slide": 10,
+    "step": 0,
+    "kind": "text-over-text",
+    "text": "ICEYE flood solutions",
+    "other": "International Charter Space and Major Disasters"
+   }
+  ],
+  "errors": []
+ },
+ "05-landslides": {
+  "slides": 14,
+  "steps": 14,
+  "issues": [
+   {
+    "slide": 3,
+    "step": 0,
+    "kind": "text-over-text",
+    "text": "material",
+    "other": "type of movement"
+   },
+   {
+    "slide": 3,
+    "step": 0,
+    "kind": "covered-by-image",
+    "text": "geoportal SOPO",
+    "frac": 40
+   },
+   {
+    "slide": 6,
+    "step": 0,
+    "kind": "text-over-text",
+    "text": "NDVI drops",
+    "other": "dNDVI = NDVI_before − NDVI_after > 0.2–0.3"
+   },
+   {
+    "slide": 6,
+    "step": 0,
+    "kind": "text-over-text",
+    "text": "(> 10–15°) → area",
+    "other": "Landslide mapping and monitoring with remote sensi"
+   },
+   {
+    "slide": 6,
+    "step": 0,
+    "kind": "text-over-text",
+    "text": "Landslide mapping and monitoring with remote sensi",
+    "other": "Use it: as validation of the SAR map on the first "
+   },
+   {
+    "slide": 7,
+    "step": 0,
+    "kind": "text-over-text",
+    "text": "I",
+    "other": "Landslide = large |change| (vegetation removed → V"
+   },
+   {
+    "slide": 7,
+    "step": 0,
+    "kind": "text-over-text",
+    "text": "=",
+    "other": "Landslide = large |change| (vegetation removed → V"
+   },
+   {
+    "slide": 7,
+    "step": 0,
+    "kind": "text-over-text",
+    "text": "10",
+    "other": "Landslide = large |change| (vegetation removed → V"
+   },
+   {
+    "slide": 7,
+    "step": 0,
+    "kind": "text-over-text",
+    "text": "10",
+    "other": "Landslide = large |change| (vegetation removed → V"
+   },
+   {
+    "slide": 7,
+    "step": 0,
+    "kind": "text-over-text",
+    "text": "¯",
+    "other": "σ"
+   },
+   {
+    "slide": 7,
+    "step": 0,
+    "kind": "text-over-text",
+    "text": "¯",
+    "other": "σ"
+   }
+  ],
+  "errors": []
+ },
+ "06-wildfires": {
+  "slides": 14,
+  "steps": 14,
+  "issues": [
+   {
+    "slide": 3,
+    "step": 0,
+    "kind": "text-over-text",
+    "text": "after",
+    "other": "this is what dNBR maps"
+   },
+   {
+    "slide": 6,
+    "step": 0,
+    "kind": "text-over-text",
+    "text": "NIR drops",
+    "other": "SWIR rises"
+   },
+   {
+    "slide": 6,
+    "step": 0,
+    "kind": "text-over-text",
+    "text": "=",
+    "other": "B"
+   },
+   {
+    "slide": 6,
+    "step": 0,
+    "kind": "text-over-text",
+    "text": "N",
+    "other": "−"
+   },
+   {
+    "slide": 6,
+    "step": 0,
+    "kind": "text-over-text",
+    "text": "R",
+    "other": "S"
+   },
+   {
+    "slide": 6,
+    "step": 0,
+    "kind": "text-over-text",
+    "text": "+",
+    "other": "_"
+   },
+   {
+    "slide": 6,
+    "step": 0,
+    "kind": "text-over-text",
+    "text": "=",
+    "other": "N"
+   },
+   {
+    "slide": 6,
+    "step": 0,
+    "kind": "text-over-text",
+    "text": "B",
+    "other": "S"
+   },
+   {
+    "slide": 6,
+    "step": 0,
+    "kind": "text-over-text",
+    "text": "7",
+    "other": "W"
+   },
+   {
+    "slide": 9,
+    "step": 0,
+    "kind": "text-over-text",
+    "text": "Applied Geography",
+    "other": "Quantifying spatial and temporal vegetation recove"
+   }
+  ],
+  "errors": []
+ },
+ "07-apis": {
+  "slides": 14,
+  "steps": 14,
+  "issues": [
+   {
+    "slide": 8,
+    "step": 0,
+    "kind": "covered-by-box",
+    "text": ").start()",
+    "frac": 78
+   }
+  ],
+  "errors": []
+ },
+ "08-wrapup": {
+  "slides": 10,
+  "steps": 10,
+  "issues": [],
+  "errors": []
+ }
+}

@@ -30,7 +30,7 @@
 <ul class="iot-material-list">
 <li><strong>Pre</strong>: as close as possible before ignition, same season, cloud-free; a median of 2–4 weeks works.</li>
 <li><strong>Post</strong> (initial assessment): 1–4 weeks after containment – smoke gone, ash still there. An <em>extended assessment</em> uses the next growing season with the same phenology as pre and measures mortality, not char.</li>
-<li>Same sensor, same processing level (L2A, <code>COPERNICUS/S2_SR_HARMONIZED</code>), same band set; never mix Landsat pre with Sentinel post without harmonisation.</li>
+<li>Same sensor, same processing level (L2A, <code>COPERNICUS/S2_SR_HARMONIZED</code>; for Landsat use Collection 2 <code>LANDSAT/LC09/C02/T1_L2</code> or <code>LC08/C02/T1_L2</code> with the scale/offset applied before NBR), same band set; never mix Landsat pre with Sentinel post without harmonisation. Note that the public UN-SPIDER original still selects <code>COPERNICUS/S2</code> (Level-1C TOA) and Landsat Collection 1 – the course copy of the script must use the collections above.</li>
 <li>Mask clouds <strong>per pixel</strong> (<code>SCL</code> or <code>QA60</code>) – a cloud in <em>pre</em> looks like high severity.</li>
 </ul>
 <div class="iot-material-callout iot-material-callout--check">

@@ -28,7 +28,7 @@
 </table>
 <p>Reasons for non-compliance with the "water is dark" rule therefore include wind, which roughens the water surface, the presence of vegetation, and surrounding walls or other man-made structures that cause double-bounce reflections and increase the backscatter.</p>
 <h3 class="iot-material-divider">Loading Sentinel-1 in GEE</h3>
-<p>Sentinel-1 (1A, 1C, 1D – 6-day repeat over Europe) is in the catalogue as <a href="https://developers.google.com/earth-engine/datasets/catalog/COPERNICUS_S1_GRD" target="_blank" rel="noopener"><code>COPERNICUS/S1_GRD</code></a>, bands <code>VV</code>, <code>VH</code>, <code>angle</code>, values already in dB. Main mode over land: IW (Interferometric Wide), 10 m GRD pixels (amplitude only, terrain-corrected).</p>
+<p>Sentinel-1 (today 1C and 1D – 1C launched Dec 2024, 1D launched Nov 2025 and operational since May 2026; 1A worked from 2014 to June 2026 – 6-day repeat with two satellites) is in the catalogue as <a href="https://developers.google.com/earth-engine/datasets/catalog/COPERNICUS_S1_GRD" target="_blank" rel="noopener"><code>COPERNICUS/S1_GRD</code></a>, bands <code>VV</code>, <code>VH</code>, <code>angle</code>, values already in dB. Main mode over land: IW (Interferometric Wide), 10 m GRD pixels (amplitude only, terrain-corrected).</p>
 <ol class="iot-material-steps">
 <li><strong>Filter the collection</strong> – one mode, one polarisation, one orbit direction (never mix ascending and descending in change detection):
 <pre><code class="language-javascript">var s1 = ee.ImageCollection('COPERNICUS/S1_GRD')

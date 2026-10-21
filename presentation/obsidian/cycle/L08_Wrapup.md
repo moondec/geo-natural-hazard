@@ -57,13 +57,13 @@ course: Application of geoinformatics to natural hazards mapping and monitoring
 ::: block <!-- element style="font-size:24px" align="left" drag="95 80" drop="0 15"-->
 | Step | Flood (lab 4) | Landslide (lab 5) | Wildfire (lab 6) |
 |---|---|---|---|
-| sensor | Sentinel-1 VH (+ S2 MNDWI) | Sentinel-1 VV+VH (+ S2 NDVI) | Sentinel-2 B8/B12 (+ FIRMS) |
+| sensor | Sentinel-1 VH (+ S2 MNDWI) | Sentinel-1 VH (+ S2 NDVI) | Sentinel-2 B8/B12 (+ FIRMS) |
 | before | 2–4 weeks, same orbit | months, same orbit | 2–4 weeks, same season |
 | after | days after peak | weeks after event | 1–4 weeks after containment |
 | quantity | backscatter dB | log-ratio of mean backscatter | NBR |
-| difference | after − before | |after/before| | pre − post (dNBR) |
+| difference | after − before | pre − post (log-ratio of medians) | pre − post (dNBR) |
 | threshold | −3 dB / ratio 1.25 / Otsu | change > t, then density grid | USGS classes (100, 270, 440, 660) |
-| masks | permanent water, slope < 5°, specks | slope > 5°, water, built-up | clouds (SCL), perimeter |
+| masks | permanent water, slope < 5°, specks | slope 5–10°, curvature, water | clouds (SCL), perimeter |
 | output | extent, ha, exposed people | density heatmap | severity classes, ha per class |
 | reference | GFM, EMS, gauges | EMS grading, inventories | EFFIS, MTBS, CBI |
 
@@ -98,7 +98,7 @@ Plus lab 2 (indices, areas), lab 3 (classification, accuracy) and lab 7 (the sam
 - reference from the same sensor is not independent
 - accuracy varies by class and by region – report per class
 
-Two papers on quality assessment in Moodle (section *Flood mapping*): Sensors 2009, 9, 3289 (high-resolution imagery QA); IJGI 2021, 10, 267 (TATSSI – quality flags of EO products).
+Two papers on quality assessment in Moodle (section *Flood mapping*): Crespi & De Vendictis 2009, Sensors 9, 3289–3313 (high-resolution imagery QA); Tecuapetla-Gómez et al. 2021, ISPRS IJGI 10, 267 (TATSSI – quality flags of EO products).
 :::
 
 ---
@@ -132,7 +132,7 @@ source: Olofsson, P. et al. (2014). Good practices for estimating area and asses
 ::: block <!-- element style="font-size:25px" align="left" drag="95 78" drop="0 15"-->
 | Service | Hazard | Method inside | You used it as |
 |---|---|---|---|
-| [Copernicus EMS Rapid Mapping](https://rapidmapping.emergency.copernicus.eu/) | all | VHR optical + SAR, analysts | reference maps |
+| [Copernicus EMS Rapid Mapping](https://mapping.emergency.copernicus.eu/activations/) | all | VHR optical + SAR, analysts | reference maps |
 | [Global Flood Monitoring](https://global-flood.emergency.copernicus.eu/) | floods | Sentinel-1, Otsu + ensemble | lab 4 reference |
 | [GloFAS / EFAS](https://global-flood.emergency.copernicus.eu/glofas-forecasting/) | floods | hydrological forecast | context |
 | [EFFIS](https://forest-fire.emergency.copernicus.eu/) | fires | MODIS/S2 burned area, FWI | lab 6 reference |
@@ -152,9 +152,9 @@ Know them, cite them, compare against them – and know that the method you ran 
 <grid drag="13 26" drop="87 75" bg="#00ced1" rotate="-15"/>
 
 ::: block <!-- element style="font-size:42px" align="left" drag="95 78" drop="0 15"-->
-- **Sentinel-1C/1D** restore the 6-day repeat; **NISAR** (NASA/ISRO, L-band, 2025) – free L-band SAR every 12 days, better under vegetation
-- **Sentinel-2C** + the expansion missions (CHIME hyperspectral, LSTM thermal, ROSE-L L-band SAR) ~2028–2030
-- **Landsat Next** (26 bands, ~2031)
+- **Sentinel-1C/1D** have restored the 6-day repeat (June 2026; 1A retired); **NISAR** (NASA/ISRO, L-band, 2025, data public since July 2026) – free L-band SAR every 12 days, better under vegetation
+- **Sentinel-2C** (+ 2D in 2028) and the expansion missions: LSTM thermal 2028, ROSE-L L-band SAR 2028/29, CHIME hyperspectral 2029
+- **Landsat 10** (ex-Landsat Next: one satellite, 26 bands, 10–20 m, launch 2031)
 - **Earth Engine**: noncommercial tiers, Cloud Score+, more AI-ready embeddings (`GOOGLE/SATELLITE_EMBEDDING/V1/ANNUAL`) – a 64-band "fingerprint" per pixel you can classify with RF directly
 - **Foundation models** (Prithvi, Clay, SatMAE) – pretrained on millions of scenes, fine-tuned for floods/fires with a few hundred labels
 - **Copernicus Data Space**: openEO and STAC APIs – the open alternative to GEE for reproducible science
@@ -186,7 +186,7 @@ Know them, cite them, compare against them – and know that the method you ran 
 ::: block <!-- element style="font-size:32px" align="left" drag="48 80" drop="0 15"-->
 **Courses (free)**
 - [End-to-End Google Earth Engine](https://courses.spatialthoughts.com/end-to-end-gee.html) – Spatial Thoughts; now you can follow it
-- [NASA ARSET](https://appliedsciences.nasa.gov/get-involved/training/english/arset-fundamentals-remote-sensing) – fundamentals, SAR, floods, fires (recorded webinars)
+- [NASA ARSET trainings](https://www.earthdata.nasa.gov/learn/trainings) – fundamentals, SAR, floods, fires (recorded webinars)
 - [Earth Engine tutorials](https://developers.google.com/earth-engine/tutorials/ttt), [geemap tutorials](https://geemap.org/tutorials/)
 - [UN-SPIDER recommended practices](https://un-spider.org/advisory-support/recommended-practices) – all hazards, step by step
 - [Copernicus Data Space videos](https://www.youtube.com/@copernicusdataspaceecosystem)

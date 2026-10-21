@@ -2,7 +2,7 @@
 <div class="iot-material iot-material--page" data-iot-material="v1">
 <p class="iot-material-lead">The last page of the lesson and the main exercise of lab 4. First a look at commercial high-resolution SAR (ICEYE), then the step-by-step run of the updated UN-SPIDER flood mapping script on a real event. At the end you have the flood extent map, the flooded area in hectares and a threshold sensitivity table – milestone M4.</p>
 <h3 class="iot-material-divider">ICEYE and commercial SAR constellations</h3>
-<p><a href="https://www.iceye.com" target="_blank" rel="noopener">ICEYE</a>, a Finnish-Polish company, builds small X-band SAR satellites and sells access to the data of a constellation of more than 50 satellites. This allows near-real-time monitoring of surface changes in all weather conditions with a spatial resolution down to 25 cm and a revisit time of a few hours. ICEYE sells ready <a href="https://www.iceye.com/solutions/government/flood-insights" target="_blank" rel="noopener">flood extent and depth products</a> to insurers and governments; they were used in the Polish flood response of September 2024. Other commercial constellations: Capella and Umbra (USA), TerraSAR-X / PAZ (Germany / Spain), COSMO-SkyMed (Italy). In major disasters all agencies task their satellites for free through the International Charter "Space and Major Disasters".</p>
+<p><a href="https://www.iceye.com" target="_blank" rel="noopener">ICEYE</a>, a Finnish company (Espoo) with a large office in Warsaw, builds small X-band SAR satellites and sells access to the data of the largest SAR constellation – more than 70 satellites launched by 2026. This allows near-real-time monitoring of surface changes in all weather conditions with a spatial resolution down to 25 cm and a revisit time of a few hours. ICEYE sells ready <a href="https://www.iceye.com/solutions/government/flood-insights" target="_blank" rel="noopener">flood extent and depth products</a> to insurers and governments; they were used in the Polish flood response of September 2024. Other commercial constellations: Capella and Umbra (USA), TerraSAR-X / PAZ (Germany / Spain), COSMO-SkyMed (Italy). In major disasters all agencies task their satellites for free through the International Charter "Space and Major Disasters".</p>
 <h3 class="iot-material-divider">Before you start</h3>
 <ul class="iot-material-list">
 <li>Script 1 – Sentinel-2 (no SAR) reference example: <a href="https://code.earthengine.google.com/180819696d0f0af751141e56b225a176?noload=true" target="_blank" rel="noopener">https://code.earthengine.google.com/180819696d0f0af751141e56b225a176</a></li>
@@ -16,18 +16,20 @@
 <li><strong>Open script 2</strong> and save a copy in your repository. Draw or import your AOI as <code>geometry</code>.</li>
 <li><strong>Set the parameters</strong> at the top of the script: before-period and after-period dates (about 2–3 weeks each, the after-period starting at the flood peak), polarisation <code>VH</code>, orbit pass <code>DESCENDING</code> (or ascending – check which one covers your area on the right days), difference threshold <code>1.25</code>.</li>
 <li><strong>Run it</strong> and inspect the layers: before, after, difference, flooded area. The script computes the change like this:
-<pre><code class="language-javascript">// difference in dB and the UN-SPIDER style ratio
-var diff = afterF.subtract(beforeF);          // dB
-var flooded = diff.lt(-3);                    // became at least 3 dB darker
-// or: var ratio = afterF.divide(beforeF); var flooded = ratio.gt(1.25);</code></pre></li>
-<li><strong>Understand the masks.</strong> Permanent water (JRC), steep slopes (radar shadow) and isolated specks are removed:
+<pre><code class="language-javascript">// UN-SPIDER: ratio of the two dB images, flood where the ratio exceeds 1.25
+var ratio = afterF.divide(beforeF);           // both images are in dB!
+var flooded = ratio.gt(1.25);                 // after value at least 25 % more negative
+// cleaner equivalent: the difference in dB
+// var flooded = afterF.subtract(beforeF).lt(-3);   // at least 3 dB darker</code></pre>
+The script divides the <em>dB</em> values, so a ratio of 1.25 means the after value is at least 25 % more negative (e.g. −12 → −15 dB, roughly 3 dB darker for a typical land pixel); it is not a physical ratio of backscatter. The difference in dB does the same more transparently.</li>
+<li><strong>Understand the masks.</strong> Permanent water (JRC), slopes steeper than 5° (radar shadow) and isolated specks (fewer than 8 connected pixels) are removed:
 <pre><code class="language-javascript">var jrc = ee.Image('JRC/GSW1_4/GlobalSurfaceWater').select('seasonality');
 var permanent = jrc.gte(10);                   // water 10 or more months a year
 var dem = ee.Image('WWF/HydroSHEDS/03VFDEM');
 var slope = ee.Terrain.slope(dem);
 flooded = flooded.updateMask(permanent.not())
                  .updateMask(slope.lt(5))
-                 .updateMask(flooded.connectedPixelCount(8).gte(8)); // remove specks</code></pre></li>
+                 .updateMask(flooded.connectedPixelCount(25).gte(8)); // remove specks</code></pre></li>
 <li><strong>Read the flooded area</strong> (and, in the script, the exposed population and cropland):
 <pre><code class="language-javascript">var area_ha = flooded.multiply(ee.Image.pixelArea()).divide(1e4)
   .reduceRegion({reducer: ee.Reducer.sum(), geometry: roi, scale: 10, maxPixels: 1e10});
@@ -37,7 +39,7 @@ print('flooded area [ha]', area_ha);</code></pre></li>
 <li><strong>Optional:</strong> run script 1 (optical, Sentinel-2) for the same event and compare the two areas.</li>
 </ol>
 <div class="iot-material-callout iot-material-callout--task">
-<p class="iot-material-callout-title">Milestone M4 – flood extent map + sensitivity table (7.12)</p>
+<p class="iot-material-callout-title">Milestone M4 – flood extent map + sensitivity table (due 14.12, before lab 5)</p>
 <ul class="iot-material-list">
 <li>link to your copy of the flood script;</li>
 <li>a map of the flood extent with the event name and dates;</li>

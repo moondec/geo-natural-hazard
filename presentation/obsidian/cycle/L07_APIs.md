@@ -186,7 +186,7 @@ source: [Earth Engine – client vs. server](https://developers.google.com/earth
 ::: block <!-- element style="font-size:26px" align="left" drag="50 78" drop="0 15"-->
 Scene-level `CLOUDY_PIXEL_PERCENTAGE` removes cloudy *scenes*. Pixel-level masking uses a **QA band** where each **bit** is a flag:
 
-Sentinel-2 `QA60` (60 m): bit 10 = opaque cloud, bit 11 = cirrus. The band value is an integer whose binary digits are the flags: 0 = clear, 1024 = cloud (2¹⁰), 2048 = cirrus (2¹¹), 3072 = both.
+Sentinel-2 `QA60` (60 m): bit 10 = opaque cloud, bit 11 = cirrus. **Empty for 25 Jan 2022 – 28 Feb 2024** – for those dates use SCL or Cloud Score+. The band value is an integer whose binary digits are the flags: 0 = clear, 1024 = cloud (2¹⁰), 2048 = cirrus (2¹¹), 3072 = both.
 
 ```python
 def mask_s2(img):
@@ -222,7 +222,7 @@ source: [Working with QA bands and bitmasks in GEE (Spatial Thoughts)](https://s
 :::
 <grid drag="13 26" drop="80 53" bg="#ffB73F"/>
 
-::: block <!-- element style="font-size:33px" align="left" drag="50 80" drop="0 15"-->
+::: block <!-- element style="font-size:26px" align="left" drag="52 82" drop="0 15"-->
 ```python
 # 1) a time series as a pandas DataFrame (small: one value per date)
 ts = s2.map(add_ndvi).select('NDVI').map(lambda i: ee.Feature(None, {
@@ -244,7 +244,7 @@ ee.batch.Export.table.toDrive(collection=table, description='areas', fileFormat=
 ```
 :::
 
-::: block <!-- element style="font-size:35px" align="left" drag="45 80" drop="53 15" bg="#e8f4f8" pad="15px"-->
+::: block <!-- element style="font-size:31px" align="left" drag="45 82" drop="53 15" bg="#e8f4f8" pad="15px"-->
 Rules:
 - `getInfo` / `ee_to_df` for **small** results (< a few thousand rows); exports for rasters
 - always set `scale` and `region`; set `crs` (EPSG:2180 for Poland) if the GeoTIFF goes to QGIS with other national data
@@ -306,7 +306,7 @@ r &lt;- ee_as_rast(ndvi&#36;clip(roi), region = roi, scale = 10)  # terra SpatRa
 
 ::: block <!-- element style="font-size:26px" align="left" drag="45 82" drop="54 15" bg="#e8f4f8" pad="12px"-->
 Known traps (Moodle lesson page 4 has the screenshots):
-- authentication needs the **gcloud SDK** on Windows – install it before the lab, run `gcloud init`
+- the first authentication needs the **gcloud CLI** (any OS, per the rgee README) – install it before the lab, run `gcloud init`
 - `ee_install` asks about Miniconda – say yes unless you manage Python yourself
 - <code>&#36;</code> replaces <code>.</code>; R functions in `map` must return an `ee` object
 - bridges to R: `ee_as_sf`, `ee_as_rast` (terra), `ee_extract` (time series → data.frame)

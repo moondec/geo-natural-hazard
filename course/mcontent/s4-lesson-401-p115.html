@@ -4,7 +4,7 @@
 <h3 class="iot-material-divider">SAR interferometry</h3>
 <p>SAR interferometry (InSAR) is a technique developed to infer 3-D information from pairs of SAR images. Unlike the backscatter analysis of the previous page, it uses the <em>phase</em> information of the SAR data. InSAR is extremely sensitive to ground features: it measures topographic height with an accuracy of a few metres and ground displacement with millimetre accuracy (subsidence, landslides – lecture 5, earthquakes, dams).</p>
 <h3 class="iot-material-divider">Elevation models from InSAR</h3>
-<p>One contribution of InSAR to flood monitoring is accurate topographic information over large areas. Digital elevation data for most of the land surface were first obtained by the NASA Shuttle Radar Topography Mission (SRTM), flown in 2000 aboard the Space Shuttle Endeavour. A second-generation global digital elevation model (DEM) was acquired by the TanDEM-X mission of the German space agency (DLR). The constellation shown below consists of the two satellites TanDEM-X and TerraSAR-X; the derived global DEM has a 12.5 m posting and is the basis of the free Copernicus DEM (30 m).</p>
+<p>One contribution of InSAR to flood monitoring is accurate topographic information over large areas. Digital elevation data for most of the land surface were first obtained by the NASA Shuttle Radar Topography Mission (SRTM), flown in 2000 aboard the Space Shuttle Endeavour. A second-generation global digital elevation model (DEM) was acquired by the TanDEM-X mission of the German space agency (DLR). The constellation shown below consists of the two satellites TanDEM-X and TerraSAR-X; the derived global DEM has a 12 m posting (0.4 arcsec) and is the basis of the free Copernicus DEM (30 m).</p>
 <figure class="iot-material-figure"><img src="@@PLUGINFILE@@/TanDEM-X_hires-730x1024.jpg" alt="TanDEM-X and TerraSAR-X constellation for DEM generation" width="600" height="900" class="img-responsive"><figcaption>TanDEM-X and TerraSAR-X constellation for DEM generation. Source: DLR 2020.</figcaption></figure>
 <h3 class="iot-material-divider">What a DEM gives a flood map</h3>
 <ul class="iot-material-list">
@@ -15,8 +15,8 @@
 <table class="iot-material-table">
 <thead><tr><th>DEM in GEE</th><th>Resolution</th><th>Use</th></tr></thead>
 <tbody>
-<tr><td><code>COPERNICUS/DEM/GLO30</code></td><td>30 m</td><td>TanDEM-X based, current global standard</td></tr>
-<tr><td><code>NASA/NASADEM_HGT/001</code></td><td>30 m</td><td>reprocessed SRTM</td></tr>
+<tr><td><code>NASA/NASADEM_HGT/001</code></td><td>30 m</td><td>reprocessed SRTM; single image – the simplest default</td></tr>
+<tr><td><code>COPERNICUS/DEM/GLO30_2024_1</code></td><td>30 m</td><td>TanDEM-X based, current global standard; an ImageCollection: <code>ee.ImageCollection('COPERNICUS/DEM/GLO30_2024_1').select('DEM').mosaic()</code> (the older <code>COPERNICUS/DEM/GLO30</code> is deprecated)</td></tr>
 <tr><td><code>WWF/HydroSHEDS/03VFDEM</code></td><td>90 m</td><td>hydrologically conditioned, used by the UN-SPIDER script for the slope mask</td></tr>
 <tr><td><code>MERIT/Hydro/v1_0_1</code></td><td>90 m</td><td>HAND and flow direction</td></tr>
 </tbody>

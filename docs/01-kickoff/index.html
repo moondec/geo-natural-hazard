@@ -392,7 +392,7 @@ source: [UN-SPIDER recommended practices](https://un-spider.org/advisory-support
 
 <div class="block">
 
-<!-- .element: style="font-size: 44px; position: absolute; left: 0%; top: 15%; height: 70%; width: 45%; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" align="left" -->
+<!-- .element: style="font-size: 34px; position: absolute; left: 0%; top: 15%; height: 70%; width: 52%; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" align="left" -->
 - &shy;<!-- .element: class="fragment" data-fragment-index="1" -->Step 1 – select satellite images for the period **before** the event
 - &shy;<!-- .element: class="fragment" data-fragment-index="2" -->Step 2 – select images for the period **after** the event
 - &shy;<!-- .element: class="fragment" data-fragment-index="3" -->Step 3 – compute the same quantity for both (an index, backscatter, a class)
@@ -618,13 +618,13 @@ Floods and landslides happen in bad weather – that is why lab 4 and 5 use SAR.
 
 <div class="block">
 
-<!-- .element: style="font-size: 34px; position: absolute; left: 0%; top: 15%; height: 75%; width: 55%; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" align="left" -->
+<!-- .element: style="font-size: 30px; position: absolute; left: 0%; top: 15%; height: 78%; width: 55%; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" align="left" -->
 | Resolution | Question | Sentinel-2 | Landsat 8/9 | Sentinel-1 | MODIS |
 |---|---|---|---|---|---|
 | **spatial** | how big is a pixel? | 10 / 20 / 60 m | 30 m (15 m pan) | 10 m (GRD) | 250–1000 m |
-| **temporal** | how often does it come back? | 5 days (2A+2B+2C) | 8 days (8+9) | 6–12 days | daily |
+| **temporal** | how often does it come back? | 5 days (2B+2C in opposite phase; 2A on an extended campaign to end 2026) | 8 days (8+9) | 6–12 days | daily |
 | **spectral** | which bands? | 13 | 11 | C-band radar | 36 |
-| **radiometric** | how fine are the values? | 12 bit | 12 bit | 16 bit | 12 bit |
+| **radiometric** | how fine are the values? | 12 bit | 12 / 14 bit | 16 bit | 12 bit |
 </div>
 
 
@@ -638,10 +638,6 @@ Rule of thumb for hazards:
 - what you want to *see* (water, burned vegetation) → spectral resolution first
 - a cloudy season → radar
 </div>
-
-
-
-<img src="../assets/Kursy/prezentacje/ApplicationHazards_GEO/pliki/Pasted image 20230109220407.png" alt="" style="position: absolute; left: 55%; top: 72%; height: 25%; width: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center; object-fit: fill">
 
 
 
@@ -696,7 +692,7 @@ Rule of thumb for hazards:
 <div class="block">
 
 <!-- .element: style="font-size: 28px" class="fragment fade-up" -->
-Landsat 8 and **Landsat 9** (2021) carry the same bands (OLI-2 / TIRS-2); Landsat 7 was decommissioned in June 2025. Sentinel-2 now flies as a triplet: **2A, 2B and 2C** (2C operational since January 2025). Band names in Earth Engine: Sentinel-2 `B4` = red, `B8` = NIR, `B11/B12` = SWIR; Landsat 8/9 `SR_B4` = red, `SR_B5` = NIR, `SR_B6/SR_B7` = SWIR. Write them down – every index in this course uses them.
+Landsat 8 and **Landsat 9** (2021) carry the same bands (OLI-2 / TIRS-2); Landsat 7 was decommissioned in June 2025. Sentinel-2 now flies as a triplet: **2A, 2B and 2C** (2C operational since January 2025; 2A on an extended campaign until the end of 2026). Band names in Earth Engine: Sentinel-2 `B4` = red, `B8` = NIR, `B11/B12` = SWIR; Landsat 8/9 `SR_B4` = red, `SR_B5` = NIR, `SR_B6/SR_B7` = SWIR. Write them down – every index in this course uses them.
 </div>
 
 
@@ -1067,16 +1063,12 @@ https://custom-scripts.sentinel-hub.com/
 
 
 
-<div class="has-light-background" style="background-color: #ffB73F; position: absolute; left: 80%; top: 53%; height: 26%; width: 13%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
-</div>
-<div class="has-light-background" style="background-color: #00ced1; position: absolute; left: 87%; top: 75%; height: 26%; width: 13%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
-</div>
 
 <div class="block">
 
 <!-- .element: style="font-size: 42px; position: absolute; left: 0%; top: 15%; height: 75%; width: 95%; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" align="left" -->
 - [ ] Create a free account at [dataspace.copernicus.eu](https://dataspace.copernicus.eu/) and log in to [Copernicus Browser](https://browser.dataspace.copernicus.eu/)
-- [ ] Register for Google Earth Engine with your Google account: [how to get access](https://developers.google.com/earth-engine/guides/access) → create a Cloud project → register it for **noncommercial (education)** use. Approval may take a day – **do not leave it for Monday morning**
+- [ ] Register for Google Earth Engine with your Google account: [how to get access](https://developers.google.com/earth-engine/guides/access) → create a Cloud project → register it for **noncommercial (education)** use. Access is enabled immediately, but the Cloud project, the Earth Engine API and the eligibility questionnaire take 20–30 min and sometimes fail – **do it before Friday**
 - [ ] Watch: [A short guide to Copernicus Browser](https://www.youtube.com/watch?v=F0lIn5r6ZWk) (10 min) and, optionally, [Introduction to CDSE](https://www.youtube.com/watch?v=GecNCdilbig)
 - [ ] Bring to the lab: one hazard event you are curious about (place + approximate date)
 </div>

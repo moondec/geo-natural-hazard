@@ -522,7 +522,7 @@ source: [Earth Engine – client vs. server](https://developers.google.com/earth
 <!-- .element: style="font-size: 26px; position: absolute; left: 0%; top: 15%; height: 78%; width: 50%; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" align="left" -->
 Scene-level `CLOUDY_PIXEL_PERCENTAGE` removes cloudy *scenes*. Pixel-level masking uses a **QA band** where each **bit** is a flag:
 
-Sentinel-2 `QA60` (60 m): bit 10 = opaque cloud, bit 11 = cirrus. The band value is an integer whose binary digits are the flags: 0 = clear, 1024 = cloud (2¹⁰), 2048 = cirrus (2¹¹), 3072 = both.
+Sentinel-2 `QA60` (60 m): bit 10 = opaque cloud, bit 11 = cirrus. **Empty for 25 Jan 2022 – 28 Feb 2024** – for those dates use SCL or Cloud Score+. The band value is an integer whose binary digits are the flags: 0 = clear, 1024 = cloud (2¹⁰), 2048 = cirrus (2¹¹), 3072 = both.
 
 ```python
 def mask_s2(img):
@@ -611,7 +611,7 @@ source: [Working with QA bands and bitmasks in GEE (Spatial Thoughts)](https://s
 
 <div class="block">
 
-<!-- .element: style="font-size: 33px; position: absolute; left: 0%; top: 15%; height: 80%; width: 50%; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" align="left" -->
+<!-- .element: style="font-size: 26px; position: absolute; left: 0%; top: 15%; height: 82%; width: 52%; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" align="left" -->
 ```python
 # 1) a time series as a pandas DataFrame (small: one value per date)
 ts = s2.map(add_ndvi).select('NDVI').map(lambda i: ee.Feature(None, {
@@ -637,7 +637,7 @@ ee.batch.Export.table.toDrive(collection=table, description='areas', fileFormat=
 
 <div class="block">
 
-<!-- .element: style="font-size: 35px; background-color: #e8f4f8; padding: 15px; box-sizing: border-box; position: absolute; left: 53%; top: 15%; height: 80%; width: 45%; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" class="has-light-background" align="left" -->
+<!-- .element: style="font-size: 31px; background-color: #e8f4f8; padding: 15px; box-sizing: border-box; position: absolute; left: 53%; top: 15%; height: 82%; width: 45%; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" class="has-light-background" align="left" -->
 Rules:
 - `getInfo` / `ee_to_df` for **small** results (< a few thousand rows); exports for rasters
 - always set `scale` and `region`; set `crs` (EPSG:2180 for Poland) if the GeoTIFF goes to QGIS with other national data
@@ -802,7 +802,7 @@ r &lt;- ee_as_rast(ndvi&#36;clip(roi), region = roi, scale = 10)  # terra SpatRa
 
 <!-- .element: style="font-size: 26px; background-color: #e8f4f8; padding: 12px; box-sizing: border-box; position: absolute; left: 54%; top: 15%; height: 82%; width: 45%; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" class="has-light-background" align="left" -->
 Known traps (Moodle lesson page 4 has the screenshots):
-- authentication needs the **gcloud SDK** on Windows – install it before the lab, run `gcloud init`
+- the first authentication needs the **gcloud CLI** (any OS, per the rgee README) – install it before the lab, run `gcloud init`
 - `ee_install` asks about Miniconda – say yes unless you manage Python yourself
 - <code>&#36;</code> replaces <code>.</code>; R functions in `map` must return an `ee` object
 - bridges to R: `ee_as_sf`, `ee_as_rast` (terra), `ee_extract` (time series → data.frame)

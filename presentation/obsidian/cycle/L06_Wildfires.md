@@ -99,7 +99,7 @@ source: [NASA FIRMS](https://firms.modaps.eosdis.nasa.gov/); [EFFIS](https://for
 ::: block <!-- element style="font-size:32px" align="left" drag="50 78" drop="0 15"-->
 - A fire at 600–1000 K radiates most in the **mid-wave infrared (4 µm)**; the background at 300 K radiates most at 11 µm (Wien's law)
 - Algorithm: a pixel is a fire if its 4 µm brightness temperature is far above its neighbours (contextual test) and above 11 µm – day and night, through smoke, **not through clouds**
-- **VIIRS** (Suomi-NPP, NOAA-20/21): 375 m, twice a day each; **MODIS** (Terra/Aqua): 1 km, archive since 2000 (Terra ending)
+- **VIIRS** (NOAA-20/21; Suomi-NPP delivery to FIRMS ends 2 Nov 2026): 375 m, twice a day each; **MODIS** (Terra/Aqua): 1 km, archive since 2000 (Terra science ends Feb 2027)
 - **FIRMS** delivers hotspots within 3 h; CSV / KML / WMS; in GEE as `FIRMS` collection (daily, 1 km) and VIIRS products
 - Use in the lab: hotspot dates = **when** the fire burned → choose the post-fire window
 :::
@@ -141,7 +141,7 @@ NBR is high for green forest (0.3–0.7), near zero for bare soil, strongly nega
 
 <!-- TODO image: reflectance curves healthy vs burned vegetation with S2 bands B8 and B12 marked – exists in Moodle lesson page 2 ("Healthy and burned areas", source USGS/UN-SPIDER) – paste into pliki/. -->
 
-::: block <!-- element style="font-size:38px" align="left" drag="45 78" drop="53 15" bg="#e8f4f8" pad="15px"-->
+::: block <!-- element style="font-size:32px" align="left" drag="45 80" drop="53 15" bg="#e8f4f8" pad="15px"-->
 Why NBR and not NDVI?
 - NDVI saturates in dense forest and recovers fast with grass; the **SWIR₂** band (2.2 µm) reacts to char and soil moisture – it stays changed for months
 - NBR was designed for severity (Key & Benson 2006) and correlates with field CBI (Composite Burn Index)
@@ -195,7 +195,7 @@ Caveats:
 :::
 
 ::: source
-source: [UN-SPIDER burn severity – In detail](https://un-spider.org/advisory-support/recommended-practices/recommended-practice-burn-severity/in-detail); [USGS FIREMON](https://www.usgs.gov/landsat-missions/landsat-normalized-burn-ratio)
+source: [UN-SPIDER burn severity – In detail](https://un-spider.org/advisory-support/recommended-practices/recommended-practice-burn-severity/in-detail); [USGS Landsat NBR](https://www.usgs.gov/landsat-missions/landsat-normalized-burn-ratio); thresholds: Key & Benson 2006 (FIREMON)
 :::
 
 ---
@@ -250,7 +250,7 @@ A time series of NBR or NDVI over the burned perimeter for several years after t
 
 ::: block <!-- element style="font-size:42px" align="left" drag="95 78" drop="0 15"-->
 - **Field**: Composite Burn Index (CBI) plots – the standard against which dNBR thresholds were calibrated; you will not have them, say so
-- **EFFIS** (Copernicus) – burned-area perimeters for Europe from MODIS/Sentinel-2 since 2000, fire danger forecast, [forest-fire.emergency.copernicus.eu](https://forest-fire.emergency.copernicus.eu/) – your perimeter reference in Europe
+- **EFFIS** (Copernicus) – burned-area perimeters for Europe since 2003 (MODIS, ≥ 30 ha; Sentinel-2 since 2018), fire danger forecast, [forest-fire.emergency.copernicus.eu](https://forest-fire.emergency.copernicus.eu/) – your perimeter reference in Europe
 - **Copernicus EMS** grading maps after activations (Greece 2023, Portugal 2025…)
 - **MTBS** (USA) – Monitoring Trends in Burn Severity, dNBR maps for all large US fires since 1984 – a benchmark to test your script on a known fire
 - **Global Fire Atlas / GFED** – fire size, spread, emissions, from MODIS burned area
@@ -302,8 +302,8 @@ That is why every lab report in this course has: data, dates, method, thresholds
 - [ ] Submit the burn severity report
 - [ ] Next lecture: Earth Engine from **Python and R**. Install nothing yet – we start in Google Colab (only a browser)
 - [ ] Read the Moodle lesson *Application Programming Interfaces (API) for GEE*, page 1 (Colab basics) – 10 min
-- [ ] If you use R: install R ≥ 4.3 and RStudio / Positron on your laptop; `install.packages("rgee")` will download ~200 MB – do it at home, not on the university Wi-Fi during the lab
-- [ ] Literature (optional): [How to generate wildfire boundary maps with Earth Engine](https://medium.com/google-earth/how-to-generate-wildfire-boundary-maps-with-earth-engine-b38eadc97a38); Journal of Forest Science [2022/03](https://jfs.agriculturejournals.cz/pdfs/jfs/2022/03/02.pdf)
+- [ ] If you use R: install R ≥ 4.3 and RStudio / Positron on your laptop; `install.packages("rgee")` is quick, but `ee_install()` downloads ~200 MB – do it at home, not on the university Wi-Fi during the lab
+- [ ] Literature (optional): [How to generate wildfire boundary maps with Earth Engine](https://medium.com/google-earth/how-to-generate-wildfire-boundary-maps-with-earth-engine-b38eadc97a38); Al-hasn & Almuhammad (2022), [J. For. Sci. 68(3), 96–106](https://jfs.agriculturejournals.cz/pdfs/jfs/2022/03/02.pdf) – dNBR/BAIS2 burned area
 :::
 
 ---

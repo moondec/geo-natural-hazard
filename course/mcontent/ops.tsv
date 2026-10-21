@@ -15,12 +15,12 @@ sequence	6	428,403
 sequence	7	429,404,430
 rename	390	Homework after lecture 1: accounts and webinars
 rename	391	Lesson 2: Google Earth Engine step by step
-rename	392	Homework M2: index areas (script link)
+rename	392	Homework M2: index areas (script link, due 30.11)
 rename	394	Tip: administrative borders as a FeatureCollection
 rename	395	Other data sources (SAR, DEM, rainfall, soil moisture, land cover, landslides)
 rename	396	Lesson 3: Classifiers
 rename	397	Short deck: Random Forest and k-means
-rename	398	Homework M3: classification report
+rename	398	Homework M3: classification report (due 7.12)
 rename	401	Lesson 4: flood mapping – bands, water indices, SAR
 rename	402	Lesson 5: landslides and the SAR heatmap script
 rename	403	Lesson 6: fire detection and burn severity

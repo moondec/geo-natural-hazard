@@ -1,0 +1,261 @@
+{
+ "01-kickoff": {
+  "slides": 16,
+  "steps": 37,
+  "issues": [
+   {
+    "slide": 3,
+    "step": 0,
+    "kind": "outside-top",
+    "text": "Natural Hazards following UN",
+    "px": 2
+   },
+   {
+    "slide": 3,
+    "step": 1,
+    "kind": "outside-top",
+    "text": "Natural Hazards following UN",
+    "px": 3
+   },
+   {
+    "slide": 3,
+    "step": 2,
+    "kind": "outside-top",
+    "text": "Natural Hazards following UN",
+    "px": 3
+   },
+   {
+    "slide": 3,
+    "step": 3,
+    "kind": "outside-top",
+    "text": "Natural Hazards following UN",
+    "px": 3
+   },
+   {
+    "slide": 3,
+    "step": 4,
+    "kind": "outside-top",
+    "text": "Natural Hazards following UN",
+    "px": 3
+   },
+   {
+    "slide": 3,
+    "step": 5,
+    "kind": "outside-top",
+    "text": "Natural Hazards following UN",
+    "px": 3
+   },
+   {
+    "slide": 12,
+    "step": 0,
+    "kind": "outside-top",
+    "text": "How to find a study example?",
+    "px": 2
+   },
+   {
+    "slide": 15,
+    "step": 0,
+    "kind": "text-over-text",
+    "text": "A short guide to Copernicus Browser",
+    "other": "Introduction to CDSE"
+   }
+  ],
+  "errors": []
+ },
+ "04-floods": {
+  "slides": 14,
+  "steps": 14,
+  "issues": [
+   {
+    "slide": 6,
+    "step": 0,
+    "kind": "text-over-text",
+    "text": ",",
+    "other": "Sentinel-1 GRD in Earth Engine"
+   },
+   {
+    "slide": 6,
+    "step": 0,
+    "kind": "text-over-text",
+    "text": ",",
+    "other": "Sentinel-1 GRD in Earth Engine"
+   },
+   {
+    "slide": 6,
+    "step": 0,
+    "kind": "text-over-text",
+    "text": ", values already in dB",
+    "other": "Sentinel-1 GRD in Earth Engine"
+   }
+  ],
+  "errors": []
+ },
+ "05-landslides": {
+  "slides": 14,
+  "steps": 14,
+  "issues": [
+   {
+    "slide": 3,
+    "step": 0,
+    "kind": "text-over-text",
+    "text": "material",
+    "other": "type of movement"
+   },
+   {
+    "slide": 6,
+    "step": 0,
+    "kind": "text-over-text",
+    "text": "NDVI drops",
+    "other": "dNDVI = NDVI_before − NDVI_after > 0.2–0.3"
+   },
+   {
+    "slide": 6,
+    "step": 0,
+    "kind": "text-over-text",
+    "text": "(> 10–15°) → area",
+    "other": "Landslide mapping and monitoring with remote sensi"
+   },
+   {
+    "slide": 6,
+    "step": 0,
+    "kind": "text-over-text",
+    "text": "Landslide mapping and monitoring with remote sensi",
+    "other": "Use it: as validation of the SAR map on the first "
+   },
+   {
+    "slide": 7,
+    "step": 0,
+    "kind": "text-over-text",
+    "text": "I",
+    "other": "Landslide = large |change| (vegetation removed → V"
+   },
+   {
+    "slide": 7,
+    "step": 0,
+    "kind": "text-over-text",
+    "text": "=",
+    "other": "Landslide = large |change| (vegetation removed → V"
+   },
+   {
+    "slide": 7,
+    "step": 0,
+    "kind": "text-over-text",
+    "text": "10",
+    "other": "Landslide = large |change| (vegetation removed → V"
+   },
+   {
+    "slide": 7,
+    "step": 0,
+    "kind": "text-over-text",
+    "text": "10",
+    "other": "Landslide = large |change| (vegetation removed → V"
+   },
+   {
+    "slide": 7,
+    "step": 0,
+    "kind": "text-over-text",
+    "text": "¯",
+    "other": "σ"
+   },
+   {
+    "slide": 7,
+    "step": 0,
+    "kind": "text-over-text",
+    "text": "¯",
+    "other": "σ"
+   }
+  ],
+  "errors": []
+ },
+ "06-wildfires": {
+  "slides": 14,
+  "steps": 14,
+  "issues": [
+   {
+    "slide": 3,
+    "step": 0,
+    "kind": "text-over-text",
+    "text": "after",
+    "other": "this is what dNBR maps"
+   },
+   {
+    "slide": 6,
+    "step": 0,
+    "kind": "text-over-text",
+    "text": "NIR drops",
+    "other": "SWIR rises"
+   },
+   {
+    "slide": 6,
+    "step": 0,
+    "kind": "text-over-text",
+    "text": "=",
+    "other": "B"
+   },
+   {
+    "slide": 6,
+    "step": 0,
+    "kind": "text-over-text",
+    "text": "N",
+    "other": "−"
+   },
+   {
+    "slide": 6,
+    "step": 0,
+    "kind": "text-over-text",
+    "text": "R",
+    "other": "S"
+   },
+   {
+    "slide": 6,
+    "step": 0,
+    "kind": "text-over-text",
+    "text": "+",
+    "other": "_"
+   },
+   {
+    "slide": 6,
+    "step": 0,
+    "kind": "text-over-text",
+    "text": "=",
+    "other": "N"
+   },
+   {
+    "slide": 6,
+    "step": 0,
+    "kind": "text-over-text",
+    "text": "B",
+    "other": "S"
+   },
+   {
+    "slide": 6,
+    "step": 0,
+    "kind": "text-over-text",
+    "text": "7",
+    "other": "W"
+   },
+   {
+    "slide": 9,
+    "step": 0,
+    "kind": "text-over-text",
+    "text": "Applied Geography",
+    "other": "Quantifying spatial and temporal vegetation recove"
+   }
+  ],
+  "errors": []
+ },
+ "07-apis": {
+  "slides": 14,
+  "steps": 14,
+  "issues": [
+   {
+    "slide": 8,
+    "step": 0,
+    "kind": "covered-by-box",
+    "text": ").start()",
+    "frac": 78
+   }
+  ],
+  "errors": []
+ }
+}
