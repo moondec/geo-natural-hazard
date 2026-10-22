@@ -25,7 +25,8 @@ rename	398	Homework M3: classification report (due 7.12)
 rename	401	Lesson 4: flood mapping – bands, water indices, SAR
 rename	402	Lesson 5: landslides and the SAR heatmap script
 rename	403	Lesson 6: fire detection and burn severity
-rename	404	Lesson 7: APIs for GEE – Python, Colab, rgee
+rename	404	Lesson 7: APIs for GEE – Python, Colab, QGIS
+pagetitle	128	GEE in QGIS – and rgee for R volunteers
 answertext	322	Level-1C
 answertext	323	Level-2A
 answertext	324	Level-1B

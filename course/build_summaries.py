@@ -87,22 +87,22 @@ MODULES = [
                 ('Lesson: fire mapping', 'Background, spectral response, burn severity mapping, GEE script', mod('lesson', 403)),
                 ('Lab 6 – severity map', 'FIRMS dates, pre/post composites, NBR, dNBR, classes, hectares', mod('lesson', 403)),
                 ('Report', 'Checklist: dates, histogram, unburned class, EFFIS comparison', None),
-                ('Prepare lab 7', 'Nothing to install yet; R users: install rgee at home', None)],
+                ('Prepare lab 7', 'Install QGIS 3.44+ and the Google Earth Engine plugin at home; R volunteers: rgee', None)],
          links=[('Lecture 6 (slides)', mod('page', 428)), ('Lesson: fire detection and severity', mod('lesson', 403)),
                 ('UN-SPIDER burn severity practice', 'https://un-spider.org/advisory-support/recommended-practices/recommended-practice-burn-severity/burn-severity-earth-engine'),
                 ('NASA FIRMS', 'https://firms.modaps.eosdis.nasa.gov/'), ('EFFIS', 'https://forest-fire.emergency.copernicus.eu/')],
          extra=''),
     dict(n=7, short='Python & R', title='GEE beyond the Code Editor – and the wrap-up',
          lecture=('21.12', 429), lab='11.01', hours='4 h',
-         lead='The same engine from Python (Colab, geemap) and R (rgee): reproducible notebooks, your own data, real statistics. The capstone reproduces one hazard workflow as a notebook. Lecture 8 closes the course with uncertainty, operational services and assessment.',
+         lead='The same engine from Python (Colab, geemap) and inside QGIS (the Earth Engine plugin, print layouts): reproducible notebooks, your own layers, real maps. The capstone reproduces one hazard workflow as a notebook or a QGIS project. Lecture 8 closes the course with uncertainty, operational services and assessment.',
          outcome='Due 25.01.2027 (date to be confirmed in lecture 8) – a Colab (or R) notebook that reproduces one of labs 4–6 with text cells, figures, parameters and a limitations section; the QA-bitmask exercise; the API quiz. This is the final deliverable of the course.',
-         route=[('Watch lecture 7', 'Why leave the editor, Colab, JS → Python differences, bitmasks, exports, rgee', mod('page', 429)),
-                ('Lesson: APIs for GEE', 'Python/Colab, Colab exercise, cloud masking, rgee, quiz', mod('lesson', 404)),
+         route=[('Watch lecture 7', 'Why leave the editor, Colab, JS → Python differences, bitmasks, exports, QGIS', mod('page', 429)),
+                ('Lesson: APIs for GEE', 'Python/Colab, Colab exercise, cloud masking, GEE in QGIS (rgee for volunteers), quiz', mod('lesson', 404)),
                 ('Lab 7 – Colab + geemap', 'Authenticate, translate your lab-2 script, QA60 and SCL masks, export', mod('lesson', 404)),
                 ('Lab 7 – capstone notebook', 'Pick flood, landslide or fire and rerun it as a notebook', mod('lesson', 404)),
                 ('Lecture 8 – wrap-up', 'One workflow, sources of error, uncertainty, what next, assessment', mod('page', 430))],
          links=[('Lecture 7 (slides)', mod('page', 429)), ('Lecture 8 – wrap-up (slides)', mod('page', 430)), ('Lesson: APIs for GEE', mod('lesson', 404)), ('Python and R examples (GitHub)', 'https://github.com/moondec/geo-natural-hazard/tree/main/examples'),
-                ('Earth Engine Python quickstart', 'https://developers.google.com/earth-engine/guides/quickstart_python'), ('geemap', 'https://geemap.org/'), ('rgee', 'https://r-spatial.github.io/rgee/')],
+                ('Earth Engine Python quickstart', 'https://developers.google.com/earth-engine/guides/quickstart_python'), ('geemap', 'https://geemap.org/'), ('QGIS Earth Engine plugin – user guide', 'https://gee-community.github.io/qgis-earthengine-plugin/'), ('rgee (R volunteers)', 'https://r-spatial.github.io/rgee/')],
          extra=''),
 ]
 
@@ -211,7 +211,8 @@ ops = [
     ('rename', 401, 'Lesson 4: flood mapping – bands, water indices, SAR'),
     ('rename', 402, 'Lesson 5: landslides and the SAR heatmap script'),
     ('rename', 403, 'Lesson 6: fire detection and burn severity'),
-    ('rename', 404, 'Lesson 7: APIs for GEE – Python, Colab, rgee'),
+    ('rename', 404, 'Lesson 7: APIs for GEE – Python, Colab, QGIS'),
+    ('pagetitle', 128, 'GEE in QGIS – and rgee for R volunteers'),
 ]
 
 # Quizzes in lessons 2 (cm 391) and 7 (cm 404) – Marek, 22.10.2026: answer labels stay plain (no hint on the question page);

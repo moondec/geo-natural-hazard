@@ -1,0 +1,51 @@
+{
+ "07-apis": {
+  "slides": 14,
+  "steps": 14,
+  "issues": [
+   {
+    "slide": 9,
+    "step": 0,
+    "kind": "text-over-text",
+    "text": "Door B – the Google Earth Engine plugin",
+    "other": "Plugins → Manage and Install → \"Google Earth Engin"
+   },
+   {
+    "slide": 10,
+    "step": 0,
+    "kind": "text-over-text",
+    "text": "own Python",
+    "other": "pip install earthengine-api"
+   },
+   {
+    "slide": 10,
+    "step": 0,
+    "kind": "text-over-text",
+    "text": "import ee; ee.Authenticate()",
+    "other": "~/.config/earthengine/credentials"
+   },
+   {
+    "slide": 10,
+    "step": 0,
+    "kind": "text-over-text",
+    "text": "ee_check()",
+    "other": "ee_clean_pyenv(); ee_install()"
+   },
+   {
+    "slide": 13,
+    "step": 0,
+    "kind": "text-over-text",
+    "text": "End-to-End GEE – Python module",
+    "other": "QGIS plugin user guide"
+   },
+   {
+    "slide": 13,
+    "step": 0,
+    "kind": "text-over-text",
+    "text": "Geocomputation with R",
+    "other": "QGIS plugin user guide"
+   }
+  ],
+  "errors": []
+ }
+}

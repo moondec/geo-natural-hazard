@@ -1,4 +1,4 @@
-# Examples for lesson 7 – APIs for Google Earth Engine (Python, Colab, rgee)
+# Examples for lesson 7 – APIs for Google Earth Engine (Python, Colab, QGIS, rgee)
 
 Companion code for lab 7 of *Application of geoinformatics to natural hazards
 mapping and monitoring* and for the capstone notebook (milestone M7). Every
@@ -12,6 +12,9 @@ in labs 2–6; compare them line by line with your JavaScript.
 | `python/03_flood_s1_change_detection.py` | lab 4 in Python: Sentinel-1 VH before/after, difference in dB (< −3 dB), JRC permanent-water and NASADEM slope masks, flooded hectares, export – Nysa Kłodzka, September 2024 |
 | `python/04_dnbr_burn_severity.py` | lab 6 in Python: pre/post Sentinel-2 with SCL (or Cloud Score+) mask, NBR, dNBR × 1000, USGS classes, hectares per class – Landiras fire, Gironde, July 2022 |
 | `notebooks/07_capstone_template.ipynb` | template for the capstone notebook: text cells (event, data, method, results, limitations) + the code of 03/04 inline so it runs standalone in Colab |
+| `qgis/01_qgis_console_ndvi.py` | QGIS Python Console with the Google Earth Engine plugin: NDVI median as a live layer |
+| `qgis/02_qgis_flood_mask.py` | Sentinel-1 before/after flood mask on the QGIS canvas (lab 4 method) |
+| `qgis/03_qgis_dnbr_classes.py` | dNBR burn severity classes and hectares per class in QGIS (lab 6 method) |
 | `R/01_rgee_hello.R` | rgee: `ee_Initialize(project=...)`, NDVI median, `Map$addLayer`, `ee_as_rast`, `ee_extract` |
 | `R/02_rgee_dnbr.R` | dNBR burn severity in R with rgee, hectares per class, raster to terra |
 
@@ -54,7 +57,24 @@ The first `earthengine authenticate` may ask for the **gcloud CLI**
 to pip. The `geemap.Map` widget renders only inside a notebook; run as a
 plain script the examples still print the numbers and start the exports.
 
-## R and rgee
+## QGIS and the Google Earth Engine plugin
+
+Needs QGIS 3.44 or newer (QGIS 4 works). *Plugins → Manage and Install Plugins → All*,
+search "Google Earth Engine" (version 0.3.3, August 2026), install. On first start the
+plugin opens a browser tab to sign in and then asks for your Cloud project name
+(Code Editor → account name → *Project Info* → *Cloud Project*). Run the `qgis/*.py`
+scripts from *Plugins → Python Console → Show Editor*. Layers added by the plugin are
+Earth Engine tiles (view only); export with *Processing → Google Earth Engine → Export
+GeoTIFF* or with `Export.image.toDrive` in the Code Editor and open the file in QGIS.
+
+Traps: old QGIS (< 3.44) → use the export path; do not `pip install earthengine-api`
+into the QGIS Python (the plugin ships its own); stale credentials → delete
+`~/.config/earthengine/credentials`, run `import ee; ee.Authenticate()` in the console;
+unregistered Cloud project; tiles are not data (measure only exported files, in a
+metric CRS such as EPSG:2180). User guide and troubleshooting:
+https://gee-community.github.io/qgis-earthengine-plugin/
+
+## R and rgee (volunteers)
 
 ```r
 install.packages("rgee")
