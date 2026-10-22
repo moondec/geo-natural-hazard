@@ -1039,7 +1039,7 @@ source: [End-to-End GEE – computing area](https://courses.spatialthoughts.com/
 ```javascript
 // administrative units from FAO GAUL (level 0 = country, 1 = region, 2 = district)
 var admin2 = ee.FeatureCollection('FAO/GAUL/2025/level2');   // the 2015 assets are deprecated
-var poznan = admin2.filter(ee.Filter.eq('GAUL2_NAME', 'Poznański'));
+var poznan = admin2.filter(ee.Filter.eq('GAUL2_NAME', 'Poznanski')   // GAUL 2025 names have no diacritics);
 Map.addLayer(poznan, {color: 'red'}, 'Poznań district');
 
 var roi = poznan.geometry();   // use it exactly like the buffer before
