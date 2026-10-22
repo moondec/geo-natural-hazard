@@ -213,7 +213,7 @@ ops = [
     ('rename', 404, 'Lesson 7: APIs for GEE – Python, Colab, rgee'),
 ]
 
-# Lesson 2 (cm 391) quizzes – Marek, 22.10.2026: answer labels stay plain (no hint on the question page);
+# Quizzes in lessons 2 (cm 391) and 7 (cm 404) – Marek, 22.10.2026: answer labels stay plain (no hint on the question page);
 # the FEEDBACK shown after answering is coloured: green = correct, red = incorrect. Texts cleaned
 # (direct URLs instead of Google redirects, stray "??" emoji and editor junk removed).
 QUIZ_ANSWERS = [  # (answer id, label, correct, feedback text)
@@ -245,7 +245,29 @@ def feedback_html(text, correct):
     bg, border, fg, head = ('#d4edda', '#28a745', '#155724', '&#10004; Correct') if correct else ('#f8d7da', '#dc3545', '#721c24', '&#10008; Not correct')
     return (f'<div style="background:{bg};border-left:6px solid {border};color:{fg};padding:10px 16px;border-radius:6px;margin:4px 0">'
             f'<p style="margin:0 0 4px;font-weight:700">{head}</p><p style="margin:0">{text}</p></div>')
+# Lesson 7 (cm 404), API quiz page 124 – all four answers are correct
+QUIZ_ANSWERS += [
+    (403, 'Python', True, 'Google provides the official Earth Engine API for JavaScript and Python.'),
+    (404, 'R', True, 'R support comes from the community: <a href="https://github.com/r-spatial/rgee">rgee</a> wraps the Python API.'),
+    (405, 'Javascript', True, 'Google provides the official Earth Engine API for JavaScript and Python (the Code Editor uses JavaScript).'),
+    (406, 'Julia', True, 'Julia support comes from the community: <a href="https://docs.juliahub.com/EarthEngine/">EarthEngine.jl</a> wraps the Python API.'),
+]
+# Multi-answer pages: Moodle shows the feedback of EVERY ticked option, and the question counts as correct only when
+# exactly the correct set is ticked – so the green feedback must say how many answers are expected.
+ANSWER_PAGE = {**{a: 95 for a in (322, 323, 324, 325)}, **{a: 96 for a in (326, 327, 328, 329)}, **{a: 97 for a in (330, 331, 332)},
+               **{a: 98 for a in (333, 334, 335, 336, 337)}, **{a: 102 for a in (338, 339, 340, 341)}, **{a: 103 for a in (342, 343, 344)},
+               **{a: 124 for a in (403, 404, 405, 406)}}
+MULTI_NOTE = {
+    95: 'Only this answer is correct – if you also ticked another option, the question counts as incorrect.',
+    97: 'Only this answer is correct – if you also ticked another option, the question counts as incorrect.',
+    102: 'Two answers are correct (co-located data and parallel processing); the question counts as correct only with exactly these two ticked.',
+    103: 'All three answers are correct; the question counts as correct only with all three ticked.',
+    124: 'All four answers are correct; the question counts as correct only with all four ticked.',
+}
+def feedback_for(aid, ok, fb):
+    note = MULTI_NOTE.get(ANSWER_PAGE[aid])
+    return feedback_html(fb + (f' <em>{note}</em>' if ok and note else ''), ok)
 ops += [('answertext', aid, label) for aid, label, ok, fb in QUIZ_ANSWERS]
-ops += [('answerresponse', aid, feedback_html(fb, ok)) for aid, label, ok, fb in QUIZ_ANSWERS]
+ops += [('answerresponse', aid, feedback_for(aid, ok, fb)) for aid, label, ok, fb in QUIZ_ANSWERS]
 (OUT / 'ops.tsv').write_text(''.join('\t'.join(map(str, o)) + '\n' for o in ops), encoding='utf-8', newline='\n')
 print('written: s0..s7 summaries, lecture intros, forum intro, ops.tsv')
