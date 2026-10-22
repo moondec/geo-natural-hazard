@@ -21,6 +21,9 @@ ROI_BUFFER_M = 5000
 DATE_START, DATE_END = '2025-05-01', '2025-09-30'
 MAX_CLOUD_PCT = 30
 EXPORT_SCALE = 10                    # m; B4/B8 are 10 m bands
+# CRS: EPSG code of a METRIC system - Poland 'EPSG:2180'; elsewhere the UTM zone,
+# 'EPSG:326' + zone (N) / '327' + zone (S), zone = floor((lon + 180) / 6) + 1; look it up at
+# https://epsg.io or in QGIS (Project > Properties > CRS). Never 4326 (degrees) or 3857.
 EXPORT_CRS = 'EPSG:2180'             # Polish national grid - opens in QGIS with other PL data
 LOCAL_TIF = 'ndvi_poznan_2025.tif'   # small export to disk (ee_export_image, < 32 MB)
 DRIVE_FOLDER = 'gee'                 # Drive folder for the background export

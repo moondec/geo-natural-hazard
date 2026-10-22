@@ -26,6 +26,9 @@ MAX_CLOUD_PCT = 40            # scene-level pre-filter; the pixel mask does the 
 USE_CLOUD_SCORE_PLUS = False  # True -> Cloud Score+ instead of SCL
 CS_PLUS_THRESHOLD = 0.6       # keep pixels with cs_cdf >= 0.6
 EXPORT_SCALE = 20
+# CRS: EPSG code of a METRIC system - Poland 'EPSG:2180'; elsewhere the UTM zone,
+# 'EPSG:326' + zone (N) / '327' + zone (S), zone = floor((lon + 180) / 6) + 1; look it up at
+# https://epsg.io or in QGIS (Project > Properties > CRS). Never 4326 (degrees) or 3857.
 EXPORT_CRS = 'EPSG:2154'      # Lambert-93 for France; use EPSG:2180 in Poland
 DRIVE_FOLDER = 'gee'
 

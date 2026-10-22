@@ -266,7 +266,7 @@ source: [Exporting data](https://developers.google.com/earth-engine/guides/expor
 
 ::: block <!-- element style="font-size:28px" align="left" drag="47 80" drop="0 15"-->
 **Door A – export, then QGIS (always works)**
-1. `Export.image.toDrive({image: severity.toByte(), region: AOI, scale: 20, crs: 'EPSG:2180'})` – Tasks → Run
+1. `Export.image.toDrive({image: severity.toByte(), region: AOI, scale: 20, crs: 'EPSG:2180'})` – Tasks → Run; EPSG code from [epsg.io](https://epsg.io) or the QGIS CRS selector: Poland 2180, elsewhere UTM 326 + zone
 2. Download from Drive, *Layer → Add Raster Layer*; the CSV of hectares as a delimited text layer
 3. *Symbology → Paletted / Unique values*: class names and colours; no-data transparent
 4. *Print Layout*: title, legend, scale bar, source line, your vectors (EMS / EFFIS perimeter) → PDF

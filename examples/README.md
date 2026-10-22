@@ -57,6 +57,16 @@ The first `earthengine authenticate` may ask for the **gcloud CLI**
 to pip. The `geemap.Map` widget renders only inside a notebook; run as a
 plain script the examples still print the numbers and start the exports.
 
+## Which CRS? (EXPORT_CRS, UTM_CRS, GRID_CRS)
+
+Use the EPSG code of a metric system: Poland `EPSG:2180` (PUWG 1992); elsewhere the
+UTM zone of your area, `EPSG:326` + zone (northern hemisphere) or `327` + zone (southern),
+zone = floor((longitude + 180) / 6) + 1 (Poznan 33 -> 32633, Gironde 30 -> 32630,
+Hokkaido 54 -> 32654). Look codes up at https://epsg.io or in QGIS (Project > Properties
+> CRS); `image.projection().getInfo()` shows the native CRS of a dataset. Never export in
+`EPSG:4326` (degrees) or `EPSG:3857` (Web Mercator) - `scale` in metres and areas are only
+right in a metric CRS.
+
 ## QGIS and the Google Earth Engine plugin
 
 Needs QGIS 3.44 or newer (QGIS 4 works). *Plugins → Manage and Install Plugins → All*,

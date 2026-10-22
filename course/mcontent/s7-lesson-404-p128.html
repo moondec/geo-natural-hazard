@@ -24,6 +24,17 @@ Export.table.toDrive({collection: areaTable, description: 'M6_area_ha',
   folder: 'GEE_exports', fileFormat: 'CSV'});
 </code></pre>
 In the Code Editor open the <em>Tasks</em> tab and press <strong>Run</strong>; in Python use <code>task = ee.batch.Export.image.toDrive(...)</code>; <code>task.start()</code>. Class rasters go as <code>toByte()</code> (small, exact); continuous rasters (dNBR, NDVI) as <code>toFloat()</code>.</li>
+<li class="iot-material-step-note"><div class="iot-material-callout iot-material-callout--task">
+<p class="iot-material-callout-title">Which CRS, and where to find its EPSG code</p>
+<p>A CRS is identified by an <strong>EPSG code</strong>; Earth Engine, QGIS, GDAL and rgee all accept the string <code>'EPSG:nnnn'</code>. Rules of thumb:</p>
+<ul class="iot-material-list">
+<li><strong>Poland</strong>: <code>EPSG:2180</code> (PUWG 1992, the national grid – one zone for the whole country, metres). Large-scale maps also use PUWG 2000 (<code>EPSG:2176</code>–<code>2179</code>, zones 5–8).</li>
+<li><strong>Anywhere else</strong>: the <strong>UTM zone</strong> of your area, WGS 84. Zone = ⌊(longitude + 180) / 6⌋ + 1; code = <code>326</code> + zone (northern hemisphere) or <code>327</code> + zone (southern). Poznań 16.9° E → zone 33 → <code>EPSG:32633</code>; Gironde −0.4° → zone 30 → <code>EPSG:32630</code>; Hokkaido 142° E → zone 54 → <code>EPSG:32654</code>.</li>
+<li><strong>Never for exports</strong>: <code>EPSG:4326</code> (degrees – pixel size and areas are meaningless) and <code>EPSG:3857</code> (Web Mercator – only for web tiles; areas inflate with latitude).</li>
+</ul>
+<p>Where to look it up: <a href="https://epsg.io/" target="_blank" rel="noopener">epsg.io</a> (search by country or name, e.g. "Poland 1992"; the page also shows the area of use); in QGIS <em>Project → Properties → CRS</em> or the globe icon bottom right – the filter box searches by name and code; in the Code Editor <code>print(image.projection())</code> shows the native CRS of a dataset (Sentinel-2 scenes are already in UTM, e.g. <code>EPSG:32633</code>); in Python <code>image.projection().getInfo()</code>. Set the same code in <code>crs:</code> of every <code>Export</code> and in the <code>setDefaultProjection</code> / <code>reproject</code> calls of the scripts (<code>UTM_CRS</code>, <code>GRID_CRS</code>, <code>EXPORT_CRS</code>) – metres in <code>scale</code> only mean metres in a metric CRS.</p>
+</div>
+</li>
 <li><strong>Download</strong> the GeoTIFF and the CSV from the Drive folder <code>GEE_exports</code>.</li>
 <li><strong>Add it in QGIS</strong>: <em>Layer → Add Layer → Add Raster Layer</em>. Check the CRS in the layer properties (EPSG:2180). Add OpenStreetMap from the <em>XYZ Tiles</em> as a background.</li>
 <li><strong>Style the classes</strong>: <em>Symbology → Paletted / Unique values → Classify</em>, then give every class its name and colour (dNBR: USGS colours from the script; flood: one blue class; heatmap: <em>Singleband pseudocolor</em>, YlOrRd). Set the no-data value (0) to transparent.</li>

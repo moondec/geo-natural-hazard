@@ -33,6 +33,9 @@ PERMANENT_WATER_MONTHS = 10  # JRC seasonality >= 10 months/yr = permanent
 MAX_SLOPE_DEG = 5            # steeper = radar shadow, not water
 MIN_CONNECTED_PIXELS = 8     # remove isolated specks
 EXPORT_SCALE = 10
+# CRS: EPSG code of a METRIC system - Poland 'EPSG:2180'; elsewhere the UTM zone,
+# 'EPSG:326' + zone (N) / '327' + zone (S), zone = floor((lon + 180) / 6) + 1; look it up at
+# https://epsg.io or in QGIS (Project > Properties > CRS). Never 4326 (degrees) or 3857.
 EXPORT_CRS = 'EPSG:2180'
 DRIVE_FOLDER = 'gee'
 
