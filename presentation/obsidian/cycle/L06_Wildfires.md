@@ -20,7 +20,7 @@ course: Application of geoinformatics to natural hazards mapping and monitoring
 ---
 
 <!-- slide data-background-image=![[sateliteGEEbanner.png|1920]] -->
-<grid drag="60 34" drop="left" bg="#EEB73F" align="left" pad="250px 0  250px 300px">
+<grid drag="64 58" drop="0 27" bg="#EEB73F" align="left" pad="60px 60px 60px 300px">
 
 ### Lecture 6<!-- element style="letter-spacing: 1.5rem;"-->
 ## Wildfire detection and burn severity
