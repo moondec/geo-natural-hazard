@@ -26,3 +26,26 @@ rename	401	Lesson 4: flood mapping – bands, water indices, SAR
 rename	402	Lesson 5: landslides and the SAR heatmap script
 rename	403	Lesson 6: fire detection and burn severity
 rename	404	Lesson 7: APIs for GEE – Python, Colab, rgee
+answertext	322	<span style="display:inline-block;background:#f8d7da;color:#721c24;padding:2px 10px;border-radius:4px">Level-1C</span>
+answertext	323	<span style="display:inline-block;background:#d4edda;color:#155724;padding:2px 10px;border-radius:4px">Level-2A</span>
+answertext	324	<span style="display:inline-block;background:#f8d7da;color:#721c24;padding:2px 10px;border-radius:4px">Level-1B</span>
+answertext	325	<span style="display:inline-block;background:#f8d7da;color:#721c24;padding:2px 10px;border-radius:4px">Level-0</span>
+answertext	326	<span style="display:inline-block;background:#d4edda;color:#155724;padding:2px 10px;border-radius:4px">NIR and RED</span>
+answertext	327	<span style="display:inline-block;background:#f8d7da;color:#721c24;padding:2px 10px;border-radius:4px">NIR and GREEN</span>
+answertext	328	<span style="display:inline-block;background:#f8d7da;color:#721c24;padding:2px 10px;border-radius:4px">NIR and SWIR</span>
+answertext	329	<span style="display:inline-block;background:#f8d7da;color:#721c24;padding:2px 10px;border-radius:4px">BLUE and SWIR</span>
+answertext	330	<span style="display:inline-block;background:#d4edda;color:#155724;padding:2px 10px;border-radius:4px">Google Earth</span>
+answertext	331	<span style="display:inline-block;background:#f8d7da;color:#721c24;padding:2px 10px;border-radius:4px">Google Earth Engine</span>
+answertext	332	<span style="display:inline-block;background:#f8d7da;color:#721c24;padding:2px 10px;border-radius:4px">Google Earth Timelapse</span>
+answertext	333	<span style="display:inline-block;background:#f8d7da;color:#721c24;padding:2px 10px;border-radius:4px">Public Data Catalog</span>
+answertext	334	<span style="display:inline-block;background:#f8d7da;color:#721c24;padding:2px 10px;border-radius:4px">Co-located Data Storage and Computation</span>
+answertext	335	<span style="display:inline-block;background:#f8d7da;color:#721c24;padding:2px 10px;border-radius:4px">Javascript and Python API</span>
+answertext	336	<span style="display:inline-block;background:#f8d7da;color:#721c24;padding:2px 10px;border-radius:4px">Browser-based Code Editor</span>
+answertext	337	<span style="display:inline-block;background:#d4edda;color:#155724;padding:2px 10px;border-radius:4px">All of them</span>
+answertext	338	<span style="display:inline-block;background:#d4edda;color:#155724;padding:2px 10px;border-radius:4px">Data is downloaded, pre-processed and co-located with computational resources</span>
+answertext	339	<span style="display:inline-block;background:#f8d7da;color:#721c24;padding:2px 10px;border-radius:4px">It supports only low-resolution datasets</span>
+answertext	340	<span style="display:inline-block;background:#d4edda;color:#155724;padding:2px 10px;border-radius:4px">The API takes advantage of parallel processing</span>
+answertext	341	<span style="display:inline-block;background:#f8d7da;color:#721c24;padding:2px 10px;border-radius:4px">Google Earth Engine is integrated with Google's AI Platform</span>
+answertext	342	<span style="display:inline-block;background:#d4edda;color:#155724;padding:2px 10px;border-radius:4px">Google Earth Engine User Guide</span>
+answertext	343	<span style="display:inline-block;background:#d4edda;color:#155724;padding:2px 10px;border-radius:4px">GIS Stack Exchange</span>
+answertext	344	<span style="display:inline-block;background:#d4edda;color:#155724;padding:2px 10px;border-radius:4px">Earth Engine Developer Forum</span>

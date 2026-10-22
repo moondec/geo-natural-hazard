@@ -212,5 +212,23 @@ ops = [
     ('rename', 403, 'Lesson 6: fire detection and burn severity'),
     ('rename', 404, 'Lesson 7: APIs for GEE – Python, Colab, rgee'),
 ]
+
+# Lesson 2 (cm 391) quiz answers: colour correct (green) / incorrect (red) answer labels – Marek, 22.10.2026.
+# Students see the colours on the question page too; drop this block and re-push to revert.
+QUIZ_ANSWERS = [  # (answer id, text, correct)
+    (322, 'Level-1C', False), (323, 'Level-2A', True), (324, 'Level-1B', False), (325, 'Level-0', False),
+    (326, 'NIR and RED', True), (327, 'NIR and GREEN', False), (328, 'NIR and SWIR', False), (329, 'BLUE and SWIR', False),
+    (330, 'Google Earth', True), (331, 'Google Earth Engine', False), (332, 'Google Earth Timelapse', False),
+    (333, 'Public Data Catalog', False), (334, 'Co-located Data Storage and Computation', False), (335, 'Javascript and Python API', False),
+    (336, 'Browser-based Code Editor', False), (337, 'All of them', True),
+    (338, 'Data is downloaded, pre-processed and co-located with computational resources', True),
+    (339, 'It supports only low-resolution datasets', False), (340, 'The API takes advantage of parallel processing', True),
+    (341, "Google Earth Engine is integrated with Google's AI Platform", False),
+    (342, 'Google Earth Engine User Guide', True), (343, 'GIS Stack Exchange', True), (344, 'Earth Engine Developer Forum', True),
+]
+def answer_html(text, correct):
+    bg, fg = ('#d4edda', '#155724') if correct else ('#f8d7da', '#721c24')
+    return f'<span style="display:inline-block;background:{bg};color:{fg};padding:2px 10px;border-radius:4px">{text}</span>'
+ops += [('answertext', aid, answer_html(txt, ok)) for aid, txt, ok in QUIZ_ANSWERS]
 (OUT / 'ops.tsv').write_text(''.join('\t'.join(map(str, o)) + '\n' for o in ops), encoding='utf-8', newline='\n')
 print('written: s0..s7 summaries, lecture intros, forum intro, ops.tsv')
