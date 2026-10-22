@@ -168,12 +168,10 @@ Know them, cite them, compare against them – and know that the method you ran 
 <grid drag="13 26" drop="80 53" bg="#ffB73F"/>
 
 ::: block <!-- element style="font-size:44px" align="left" drag="95 78" drop="0 15"-->
-<!-- TODO: fill in the actual rules. Placeholder based on the Moodle assignments: -->
-- Lab reports in Moodle: index areas (lab 2), classification report (lab 3), flood / landslide / fire notes (labs 4–6)
-- Capstone notebook (lab 7): one hazard reproduced in Python or R, with text, figures, parameters, limitations
+- Lab deliverables M1–M6: submitted in Moodle (assignments and lessons), always with the script link
+- Capstone notebook M7 (lab 7): one hazard reproduced in Python or R, with text, figures, parameters, limitations
 - Lesson quizzes (GEE, API)
-- Deadline for all submissions: __.01.2027
-- Grade: __ % reports, __ % capstone, __ % quizzes
+- Grading weights, deadlines and attendance rules: **Course regulations and syllabus** – the resource at the top of the Moodle course
 :::
 
 ---

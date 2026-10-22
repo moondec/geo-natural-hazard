@@ -19,7 +19,7 @@ MODULES = [
                 ('Lab 1 – Copernicus Browser', 'Find one wildfire and one flood in Highlights, compare, export a GeoTIFF', None),
                 ('Lab 1 – first GEE script', 'Open the Code Editor, load Sentinel-2, add the End-to-End repository', None),
                 ('Homework', 'Webinars on the homework page; bring one event you care about', mod('page', 390))],
-         links=[('Lecture 1 (slides)', mod('page', 423)), ('Intro presentation (course overview)', mod('page', 422)),
+         links=[('Lecture 1 (slides)', mod('page', 423)),
                 ('Homework after lecture 1', mod('page', 390)),
                 ('Copernicus Browser', 'https://browser.dataspace.copernicus.eu/'), ('GEE access guide', 'https://developers.google.com/earth-engine/guides/access')],
          extra='''<h5 class="iot-h">What you need before lab 1</h5>
@@ -157,7 +157,6 @@ intro = f'''<div class="iot-course-intro">
   <nav class="iot-start" aria-label="Start here">
     <a class="iot-start-primary" href="{mod('page', 390)}"><small>Step 1 · before the first lab</small><strong>Create your two accounts</strong><span>Copernicus Data Space (free) and a registered Google Earth Engine Cloud project. Approval takes up to a day – do it this week.</span></a>
     <a href="{mod('page', 423)}"><small>Lecture 1 · 9.11</small><strong>Course kick-off</strong><span>Hazards, the before/after recipe, how satellites see, where to get data in 2026.</span></a>
-    <a href="{mod('page', 422)}"><small>Overview</small><strong>Intro presentation</strong><span>The whole course on 25 slides: tools, methods, literature.</span></a>
   </nav>
 
   <nav class="iot-roadmap" aria-label="Roadmap of the seven modules">{roadmap}</nav>
@@ -192,13 +191,14 @@ ops = [
     ('sectionname', 6, '06 · Wildfire mapping'),
     ('sectionname', 7, '07 · Python and R APIs for GEE · wrap-up'),
     # lecture first, then lesson/materials, homework last
-    ('sequence', 1, '423,422,390'),
+    ('sequence', 1, '423,390,422'),  # 422 hidden, kept in the sequence until deleted
     ('sequence', 2, '424,391,394,395,392,393'),
     ('sequence', 3, '425,396,397,398'),
     ('sequence', 4, '426,401,399,400'),
     ('sequence', 5, '427,402'),
     ('sequence', 6, '428,403'),
     ('sequence', 7, '429,404,430'),
+    ('hide', 422),  # intro presentation retired 22.10.2026 (duplicated lecture 1); delete the module in the UI
     ('rename', 390, 'Homework after lecture 1: accounts and webinars'),
     ('rename', 391, 'Lesson 2: Google Earth Engine step by step'),
     ('rename', 392, 'Homework M2: index areas (script link, due 30.11)'),

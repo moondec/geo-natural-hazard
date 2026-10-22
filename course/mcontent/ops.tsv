@@ -6,13 +6,14 @@ sectionname	4	04 · Flood mapping
 sectionname	5	05 · Landslide mapping
 sectionname	6	06 · Wildfire mapping
 sectionname	7	07 · Python and R APIs for GEE · wrap-up
-sequence	1	423,422,390
+sequence	1	423,390,422
 sequence	2	424,391,394,395,392,393
 sequence	3	425,396,397,398
 sequence	4	426,401,399,400
 sequence	5	427,402
 sequence	6	428,403
 sequence	7	429,404,430
+hide	422
 rename	390	Homework after lecture 1: accounts and webinars
 rename	391	Lesson 2: Google Earth Engine step by step
 rename	392	Homework M2: index areas (script link, due 30.11)

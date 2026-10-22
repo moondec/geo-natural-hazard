@@ -12,7 +12,6 @@ ROOT = pathlib.Path(__file__).parent
 EXPORT = ROOT / 'presentation' / 'export'
 DOCS = ROOT / 'docs'
 DECKS = [  # zip stem, slug, title, date
-    ('ApplicationHazards_GEO_2026', 'intro', 'Course overview: tools, methods, literature', 'intro presentation'),
     ('ApplicationHazards_GEO_2026_extended_01_Kickoff', '01-kickoff', 'Lecture 1 · Natural hazards and Earth observation: course kick-off', '9.11.2026'),
     ('ApplicationHazards_GEO_2026_extended_02_GEE_CodeEditor', '02-gee-code-editor', 'Lecture 2 · Google Earth Engine: the Code Editor', '16.11.2026'),
     ('ApplicationHazards_GEO_2026_extended_03_ML_Classification', '03-ml-classification', 'Lecture 3 · Machine learning for land cover classification', '23.11.2026'),

@@ -11,7 +11,7 @@ Author: Marek Urbaniak. Licence: CC BY 4.0 unless stated otherwise on a slide.
 | `docs/` | Published site (GitHub Pages): `index.html` landing page, one folder per deck, `lib/` shared reveal.js runtime, `assets/` images |
 | `presentation/obsidian/cycle/L01…L08_*.md` | Lecture sources – Obsidian Advanced Slides markdown (the vault copy is the one being exported) |
 | `presentation/obsidian/cycle/svg/` | Hand-generated SVG diagrams used on the slides (Mermaid is unusable in the plugin) |
-| `presentation/obsidian/ApplicationHazards_GEO.md` | Intro presentation (course overview), updated 2026 |
+| `presentation/obsidian/ApplicationHazards_GEO.md` | Former intro presentation (retired 22.10.2026 – it duplicated lecture 1; not published) |
 | `presentation/obsidian/cycle/PLAN-cyklu-wykladow.md` | Lecture cycle plan vs. the timetable (Polish) |
 | `build_docs.py` | Builds `docs/` from the Advanced Slides exports (`presentation/export/*.zip`, not in git) |
 | `course/mcontent/` | Moodle course text fields (section summaries, lesson pages, labels, assignment intros) in the restyled version |
