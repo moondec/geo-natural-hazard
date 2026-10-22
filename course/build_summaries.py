@@ -37,7 +37,7 @@ MODULES = [
                 ('Lab 2 – build the script', 'Line by line on your own AOI; verify three pixels with the Inspector', mod('lesson', 391)),
                 ('Homework "index areas"', 'A different index, your own ROI and thresholds; submit the script link', mod('assign', 392)),
                 ('Prepare lab 3', 'Pick an area of 60–100 km² with four clearly different surfaces', None)],
-         links=[('Lecture 2 (slides)', mod('page', 424)), ('Lesson: Google Earth Engine', mod('lesson', 391)), ('Homework: index areas', mod('assign', 392)),
+         links=[('Lecture 2 (slides)', mod('page', 424)), ('Lesson: Google Earth Engine', mod('lesson', 391)), ('Course scripts: add the GEO2 repository', 'https://code.earthengine.google.com/?accept_repo=users/marekurbaniak/GEO2'), ('Homework: index areas', mod('assign', 392)),
                 ('End-to-End GEE course', 'https://courses.spatialthoughts.com/end-to-end-gee.html'), ('Earth Engine data catalogue', 'https://developers.google.com/earth-engine/datasets')],
          extra=''),
     dict(n=3, short='Machine learning', title='Machine learning for land cover classification',
@@ -101,7 +101,7 @@ MODULES = [
                 ('Lab 7 – Colab + geemap', 'Authenticate, translate your lab-2 script, QA60 and SCL masks, export', mod('lesson', 404)),
                 ('Lab 7 – capstone notebook', 'Pick flood, landslide or fire and rerun it as a notebook', mod('lesson', 404)),
                 ('Lecture 8 – wrap-up', 'One workflow, sources of error, uncertainty, what next, assessment', mod('page', 430))],
-         links=[('Lecture 7 (slides)', mod('page', 429)), ('Lecture 8 – wrap-up (slides)', mod('page', 430)), ('Lesson: APIs for GEE', mod('lesson', 404)),
+         links=[('Lecture 7 (slides)', mod('page', 429)), ('Lecture 8 – wrap-up (slides)', mod('page', 430)), ('Lesson: APIs for GEE', mod('lesson', 404)), ('Python and R examples (GitHub)', 'https://github.com/moondec/geo-natural-hazard/tree/main/examples'),
                 ('Earth Engine Python quickstart', 'https://developers.google.com/earth-engine/guides/quickstart_python'), ('geemap', 'https://geemap.org/'), ('rgee', 'https://r-spatial.github.io/rgee/')],
          extra=''),
 ]
@@ -157,6 +157,7 @@ intro = f'''<div class="iot-course-intro">
   <nav class="iot-start" aria-label="Start here">
     <a class="iot-start-primary" href="{mod('page', 390)}"><small>Step 1 · before the first lab</small><strong>Create your two accounts</strong><span>Copernicus Data Space (free) and a registered Google Earth Engine Cloud project. Approval takes up to a day – do it this week.</span></a>
     <a href="{mod('page', 423)}"><small>Lecture 1 · 9.11</small><strong>Course kick-off</strong><span>Hazards, the before/after recipe, how satellites see, where to get data in 2026.</span></a>
+    <a href="https://code.earthengine.google.com/?accept_repo=users/marekurbaniak/GEO2" target="_blank" rel="noopener"><small>Scripts</small><strong>Course script repository</strong><span>Every lab script, one folder per lesson. Click once to add GEO2 to your Code Editor (needs your Earth Engine account).</span></a>
   </nav>
 
   <nav class="iot-roadmap" aria-label="Roadmap of the seven modules">{roadmap}</nav>

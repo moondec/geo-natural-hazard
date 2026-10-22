@@ -180,7 +180,7 @@ Why a heatmap and not single landslides?
 - emergency managers need to know *which valleys* were hit within a day – not polygons
 - the heatmap is then validated against mapped inventories (Hokkaido 2018 earthquake, Hiroshima 2018 rain, Haiti 2021 – all in the paper)
 
-Script: [code.earthengine.google.com/341d37e9…](https://code.earthengine.google.com/341d37e9277edce71a3e720bc6e3bf07) (Moodle, *Landslides* lesson, page 2); the authors' GitHub repository has 30 figure scripts with Code Editor links (start with a Hokkaido figure).
+Script: [GEO2 › 05_landslides › 03_full_workflow_hokkaido_2018](https://code.earthengine.google.com/?scriptPath=users%2Fmarekurbaniak%2FGEO2%3A05_landslides%2F03_full_workflow_hokkaido_2018) (Moodle, *Landslides* lesson, page 2); the authors' GitHub repository has 30 figure scripts with Code Editor links (start with a Hokkaido figure).
 :::
 
 ::: source
