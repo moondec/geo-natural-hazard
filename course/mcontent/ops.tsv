@@ -26,7 +26,12 @@ rename	401	Lesson 4: flood mapping – bands, water indices, SAR
 rename	402	Lesson 5: landslides and the SAR heatmap script
 rename	403	Lesson 6: fire detection and burn severity
 rename	404	Lesson 7: APIs for GEE – Python, Colab, QGIS
-pagetitle	128	GEE in QGIS – and rgee for R volunteers
+pagetitle	127	QGIS 1 – Install the Google Earth Engine plugin and sign in
+pagetitle	128	QGIS 4 – From Earth Engine to a finished map (traps; rgee for volunteers)
+pagetitle	101	6. NDVI classes and area
+addpage	404	127	QGIS 3 – No-code tools: Add Image Collection, Data Catalog, Export GeoTIFF	newpages/s7-qgis3.html
+addpage	404	127	QGIS 2 – Your first Earth Engine layer from the Python Console	newpages/s7-qgis2.html
+addpage	391	100	5. Clouds first: SCL, Cloud Score+ and the QA60 bitmask	newpages/s2-clouds.html
 answertext	322	Level-1C
 answertext	323	Level-2A
 answertext	324	Level-1B

@@ -42,9 +42,10 @@ course: Application of geoinformatics to natural hazards mapping and monitoring
 2. The Code Editor – panels you will use every week
 3. Data model: `Image`, `ImageCollection`, `Geometry`, `Feature`, `FeatureCollection`
 4. Filter → map → reduce: the three verbs of every script
-5. Spectral indices: NDVI and friends
-6. From classes to hectares: `reduceRegion` with `pixelArea`
-7. **In the lab**: the full script, step by step; homework "index areas"
+5. Clouds first: scene filter, `SCL`, Cloud Score+ and what a bitmask is
+6. Spectral indices: NDVI and friends
+7. From classes to hectares: `reduceRegion` with `pixelArea`
+8. **In the lab**: the full script, step by step; homework "index areas"
 :::
 
 <style>.reveal table{max-width:100%;border-collapse:collapse}.reveal table th,.reveal table td{padding:3px 8px;line-height:1.25}</style>
@@ -204,10 +205,50 @@ Map.addLayer(s2.median().clip(roi), rgb, 'S2 median RGB');
 
 ::: block <!-- element style="font-size:36px" align="left" drag="42 80" drop="58 15" bg="#e8f4f8" pad="15px"-->
 - `filterDate` end date is **exclusive**
-- `CLOUDY_PIXEL_PERCENTAGE` is a scene-level metadata property – it filters whole scenes, not pixels (pixel masking: lecture 7)
+- `CLOUDY_PIXEL_PERCENTAGE` is a scene-level metadata property – it filters whole scenes, not pixels (pixel masking: next slide)
 - `median()` of a stack removes most clouds (bright) and shadows (dark) – the simplest composite
 - `clip` only for display; clipping before computation does not speed it up
 - `min`/`max` 0–3000 because reflectance × 10 000 and land is rarely brighter than 0.3
+:::
+
+---
+<!-- slide template="[[tpl-geo-default-slide]]" -->
+::: title
+## Clouds first: scene filter, SCL, Cloud Score+ and bitmasks
+:::
+<grid drag="13 26" drop="87 75" bg="#00ced1" rotate="-15"/>
+
+::: block <!-- element style="font-size:26px" align="left" drag="50 78" drop="0 15"-->
+Scene-level `CLOUDY_PIXEL_PERCENTAGE` removes cloudy *scenes*. Pixel-level masking uses a **QA band** where each **bit** is a flag:
+
+Sentinel-2 `QA60` (60 m): bit 10 = opaque cloud, bit 11 = cirrus. **Empty for 25 Jan 2022 – 28 Feb 2024** – for those dates use SCL or Cloud Score+. The band value is an integer whose binary digits are the flags: 0 = clear, 1024 = cloud (2¹⁰), 2048 = cirrus (2¹¹), 3072 = both.
+
+```javascript
+function maskS2(img) {
+  var qa = img.select('QA60');
+  var cloud  = 1 << 10;          // 1024
+  var cirrus = 1 << 11;          // 2048
+  var clear = qa.bitwiseAnd(cloud).eq(0).and(qa.bitwiseAnd(cirrus).eq(0));
+  return img.updateMask(clear)
+            .select('B.*')
+            .copyProperties(img, ['system:time_start']);
+}
+```
+`1 << 10` shifts a 1 ten places left = 1024; `bitwiseAnd` keeps only that bit; `.eq(0)` = the flag is off.
+:::
+
+::: block <!-- element style="font-size:24px" align="left" drag="45 78" drop="53 15" bg="#e8f4f8" pad="15px"-->
+Better masks (2026):
+- Sentinel-2 L2A **`SCL`** band (20 m): 3 = cloud shadow, 8–9 = cloud, 10 = cirrus, 11 = snow → keep pixels whose `scl` is not 3, 8, 9 or 10 (shadow, cloud, cirrus)
+- **Cloud Score+** (`GOOGLE/CLOUD_SCORE_PLUS/V1/S2_HARMONIZED`): per-pixel quality 0–1, link by `system:index`, `cs_cdf >= 0.6` – currently the recommended S2 mask
+- Landsat 8/9 `QA_PIXEL`: bit 3 cloud, bit 4 shadow, bit 5 snow – same `bitwiseAnd` trick
+- MODIS `state_1km`, VIIRS `QF1`: multi-bit fields (2 bits = 4 states) → `bitwiseAnd(3)` after a shift
+
+Moodle lesson 2, step 5 (*Clouds first*) has the three masks ready to paste; the Python version differs only by `.And()`.
+:::
+
+::: source
+source: [Working with QA bands and bitmasks in GEE (Spatial Thoughts)](https://spatialthoughts.com/2021/08/19/qa-bands-bitmasks-gee/); [Cloud Score+ dataset](https://developers.google.com/earth-engine/datasets/catalog/GOOGLE_CLOUD_SCORE_PLUS_V1_S2_HARMONIZED)
 :::
 
 ---
@@ -359,8 +400,9 @@ source: [End-to-End GEE – computing area](https://courses.spatialthoughts.com/
 ::: block <!-- element style="font-size:34px" align="left" drag="55 75" drop="0 15"-->
 ```javascript
 // administrative units from FAO GAUL (level 0 = country, 1 = region, 2 = district)
-var admin2 = ee.FeatureCollection('FAO/GAUL/2025/level2');   // the 2015 assets are deprecated
-var poznan = admin2.filter(ee.Filter.eq('GAUL2_NAME', 'Poznanski')   // GAUL 2025 names have no diacritics);
+// FAO GAUL 2025 (the 2015 assets are deprecated); names have no diacritics
+var admin2 = ee.FeatureCollection('FAO/GAUL/2025/level2');
+var poznan = admin2.filter(ee.Filter.eq('GAUL2_NAME', 'Poznanski'));
 Map.addLayer(poznan, {color: 'red'}, 'Poznań district');
 
 var roi = poznan.geometry();   // use it exactly like the buffer before

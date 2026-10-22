@@ -45,10 +45,10 @@ course: Application of geoinformatics to natural hazards mapping and monitoring
 3. Google Colab and Jupyter: a notebook in 5 minutes
 4. `geemap`: the map, the translator, the exporter
 5. JavaScript → Python: the seven differences
-6. Cloud masking properly: QA bands and bitmasks
-7. Getting data out: exports, `getInfo`, time series to pandas / data.frame
-8. QGIS: export → print layout, or the Earth Engine plugin (and rgee for R volunteers)
-9. **In the lab (4 h)**: Colab notebook + bitmask exercise + QGIS map
+6. Getting data out: exports, `getInfo`, time series to pandas / data.frame
+7. QGIS step by step: plugin and sign-in, Python Console, no-code tools and export, the finished map
+8. Traps of the plugin; rgee for R volunteers
+9. **In the lab (4 h)**: Colab notebook + four QGIS pages + capstone
 :::
 
 <style>.reveal table{max-width:100%;border-collapse:collapse}.reveal table th,.reveal table td{padding:3px 8px;line-height:1.25}</style>
@@ -174,45 +174,6 @@ img = ee.Algorithms.If(s2.size().gt(10), s2.median(), ee.Image(0))
 
 ::: source
 source: [Earth Engine – client vs. server](https://developers.google.com/earth-engine/guides/client_server)
-:::
-
----
-<!-- slide template="[[tpl-geo-default-slide]]" -->
-::: title
-## Cloud masking properly: QA bands and bitmasks
-:::
-<grid drag="13 26" drop="87 75" bg="#00ced1" rotate="-15"/>
-
-::: block <!-- element style="font-size:26px" align="left" drag="50 78" drop="0 15"-->
-Scene-level `CLOUDY_PIXEL_PERCENTAGE` removes cloudy *scenes*. Pixel-level masking uses a **QA band** where each **bit** is a flag:
-
-Sentinel-2 `QA60` (60 m): bit 10 = opaque cloud, bit 11 = cirrus. **Empty for 25 Jan 2022 – 28 Feb 2024** – for those dates use SCL or Cloud Score+. The band value is an integer whose binary digits are the flags: 0 = clear, 1024 = cloud (2¹⁰), 2048 = cirrus (2¹¹), 3072 = both.
-
-```python
-def mask_s2(img):
-    qa = img.select('QA60')
-    cloud  = 1 << 10          # 1024
-    cirrus = 1 << 11          # 2048
-    clear = qa.bitwiseAnd(cloud).eq(0).And(qa.bitwiseAnd(cirrus).eq(0))
-    return (img.updateMask(clear)
-               .select('B.*')
-               .copyProperties(img, ['system:time_start']))
-```
-`1 << 10` shifts a 1 ten places left = 1024; `bitwiseAnd` keeps only that bit; `.eq(0)` = the flag is off.
-:::
-
-::: block <!-- element style="font-size:24px" align="left" drag="45 78" drop="53 15" bg="#e8f4f8" pad="15px"-->
-Better masks (2026):
-- Sentinel-2 L2A **`SCL`** band (20 m): 3 = cloud shadow, 8–9 = cloud, 10 = cirrus, 11 = snow → `img.select('SCL').remap([4,5,6,7,11],[1,1,1,1,1],0)` keeps vegetation, bare, water, unclassified, snow
-- **Cloud Score+** (`GOOGLE/CLOUD_SCORE_PLUS/V1/S2_HARMONIZED`): per-pixel quality 0–1, link by `system:index`, `cs_cdf >= 0.6` – currently the recommended S2 mask
-- Landsat 8/9 `QA_PIXEL`: bit 3 cloud, bit 4 shadow, bit 5 snow – same `bitwiseAnd` trick
-- MODIS `state_1km`, VIIRS `QF1`: multi-bit fields (2 bits = 4 states) → `bitwiseAnd(3)` after a shift
-
-Moodle lesson page 3 has the JS and Python versions side by side.
-:::
-
-::: source
-source: [Working with QA bands and bitmasks in GEE (Spatial Thoughts)](https://spatialthoughts.com/2021/08/19/qa-bands-bitmasks-gee/); [Cloud Score+ dataset](https://developers.google.com/earth-engine/datasets/catalog/GOOGLE_CLOUD_SCORE_PLUS_V1_S2_HARMONIZED)
 :::
 
 ---
@@ -357,9 +318,9 @@ Everything in this course can be done in all of them (R users: rgee, community-m
 <grid drag="13 26" drop="80 53" bg="#ffB73F"/>
 
 ::: block <!-- element style="font-size:40px" align="left" drag="95 78" drop="0 15"-->
-1. **Colab** (60 min): new notebook, `ee.Authenticate()` with your project; translate your lab 2 script with `geemap.js_snippet_to_py`; fix what the translator missed; the map appears
-2. **Bitmasks** (45 min): add the `QA60` mask and the `SCL` mask, compare composites with and without; count masked pixels per month (`ui.Chart` → `geemap.ee_to_df` + pandas plot)
-3. **Export** (30 min): NDVI median to Drive in EPSG:2180 and open it in QGIS; time series to CSV
+1. **Colab** (45 min): new notebook, `ee.Authenticate()` with your project; translate your lab 2 script with `geemap.js_snippet_to_py`; fix what the translator missed; the map appears
+2. **QGIS 1–2** (45 min): install the plugin, sign in, set the project; the NDVI median from the Python Console; identify tool
+3. **QGIS 3** (45 min): Add Image Collection without code, Data Catalog, Export Image to GeoTIFF in EPSG:2180; the flood or dNBR script of your event
 4. **QGIS** (60 min): plugin or export path; NDVI in the Python Console; the map of your M4–M6 result with legend, scale bar and hectares (Print Layout → PDF)
 5. **Capstone** (rest): pick one of labs 4–6 (flood, landslide, fire) and rerun it as a Python notebook or a QGIS project with a PDF map and a short report (R volunteers: rgee) – this is the final deliverable of the course
 6. API quiz in the Moodle lesson
