@@ -9,7 +9,7 @@ topic: 👨🏼‍🏫  Wykład
 type: wyklad
 author: Marek Urbaniak
 lecture: 7
-summary: "Wykład 7 (2 h, 21.12.2026) – GEE poza Code Editorem: API Pythona, Google Colab, geemap, różnice JS/Python, obiekty klienta vs serwera, maski chmur i bity QA, eksport, GEE w QGIS (wtyczka i eksport do kompozycji mapy), rgee dla chętnych; wstęp do ćwiczeń 7 (4 h, Colab + geemap + rgee)"
+summary: "Wykład 7 (2 h, 21.12.2026) – GEE poza Code Editorem: API Pythona, Google Colab, geemap, różnice JS/Python, obiekty klienta vs serwera, maski chmur i bity QA, eksport, GEE w QGIS (wtyczka i eksport do kompozycji mapy), rgee dla chętnych, CDSE JupyterLab/openEO dla zainteresowanych; wstęp do ćwiczeń 7 (4 h, Colab + geemap + rgee)"
 timeForPresentation: 5400
 theme: beige
 width: 1920
@@ -293,6 +293,49 @@ source: [plugin troubleshooting](https://gee-community.github.io/qgis-earthengin
 ---
 <!-- slide template="[[tpl-geo-default-slide]]" -->
 ::: title
+## For the curious: beyond Google – CDSE JupyterLab and openEO
+:::
+<grid drag="13 26" drop="87 75" bg="#00ced1" rotate="-15"/>
+
+::: block <!-- element style="font-size:26px" align="left" drag="56 80" drop="0 15"-->
+**Optional, not assessed.** The Copernicus Data Space Ecosystem (your lab-1 account) also has a free hosted **JupyterLab** (on request, 2 working days; kernels Python / Geo Science / OpenEO / Sentinel Hub; 10 GB `mystorage`, server stops after 8 h idle) and **openEO**, an open cloud-processing API.
+
+| CDSE gives you | Earth Engine |
+|---|---|
+| Sentinel scenes **at the source**, hours after acquisition | mirrored with a delay |
+| **Sentinel-1 SLC** → InSAR (deformation, coherence) | GRD only, no phase |
+| the **original products** as files (S3, download) | derived exports only |
+| **openEO**: one process graph, several backends (Terrascope, EODC…) | Google only |
+| EU account, **no Google Cloud project** | registered project required |
+| | **1000+ datasets**, classifiers, instant map, free quota |
+
+Use it when the thesis needs InSAR or the original product, when Google is not allowed, or when yesterday's scene matters. Moodle lesson 7 has the optional page; `examples/python/05_cdse_openeo_ndvi.py`.
+:::
+
+::: block <!-- element style="font-size:22px" align="left" drag="39 80" drop="58 15" bg="#e8f4f8" pad="12px"-->
+The lesson-2 NDVI median, written for openEO:
+<pre><code class="language-python">import openeo
+con = openeo.connect("openeo.dataspace.copernicus.eu").authenticate_oidc()
+s2 = con.load_collection("SENTINEL2_L2A",
+    spatial_extent={"west":16.80,"south":52.33,"east":17.06,"north":52.49},
+    temporal_extent=["2025-05-01","2025-09-30"],
+    bands=["B04","B08","SCL"], max_cloud_cover=30)
+scl = s2.band("SCL")
+clouds = (scl==3)|(scl==8)|(scl==9)|(scl==10)
+ndvi = s2.ndvi(nir="B08", red="B04").mask(clouds)
+ndvi.reduce_dimension(dimension="t", reducer="median") \
+    .download("ndvi_poznan_2025.tiff")
+</code></pre>
+Same three verbs – load/filter, map, reduce – on a **datacube** (x, y, t, bands); nothing runs until `download()`. Big areas: `execute_batch()` = Export.
+:::
+
+::: source
+source: [CDSE JupyterLab](https://dataspace.copernicus.eu/analyse/jupyterlab); [openEO Python client](https://open-eo.github.io/openeo-python-client/)
+:::
+
+---
+<!-- slide template="[[tpl-geo-default-slide]]" -->
+::: title
 ## Which client, when?
 :::
 
@@ -307,7 +350,7 @@ source: [plugin troubleshooting](https://gee-community.github.io/qgis-earthengin
 | share with a non-programmer | Earth Engine **Apps** (`ui.*`) | Streamlit, Solara (geemap) | QGIS project, QField |
 | setup effort | zero | low (Colab) / medium (local) | low (plugin) / zero (export) |
 
-Everything in this course can be done in all of them (R users: rgee, community-maintained) – choose what your thesis needs.
+Everything in this course can be done in all of them (R users: rgee, community-maintained; CDSE openEO for the curious) – choose what your thesis needs.
 :::
 
 ---

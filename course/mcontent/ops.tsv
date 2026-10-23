@@ -32,6 +32,7 @@ pagetitle	101	6. NDVI classes and area
 addpage	404	127	QGIS 3 – No-code tools: Add Image Collection, Data Catalog, Export GeoTIFF	newpages/s7-qgis3.html
 addpage	404	127	QGIS 2 – Your first Earth Engine layer from the Python Console	newpages/s7-qgis2.html
 addpage	391	100	5. Clouds first: SCL, Cloud Score+ and the QA60 bitmask	newpages/s2-clouds.html
+addpage	404	125	For the curious: what CDSE JupyterLab and openEO give you beyond Earth Engine (optional)	newpages/s7-cdse.html
 answertext	322	Level-1C
 answertext	323	Level-2A
 answertext	324	Level-1B

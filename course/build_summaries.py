@@ -97,13 +97,13 @@ MODULES = [
          lead='The same engine from Python (Colab, geemap) and inside QGIS (the Earth Engine plugin, print layouts): reproducible notebooks, your own layers, real maps. The capstone reproduces one hazard workflow as a notebook or a QGIS project. Lecture 8 closes the course with uncertainty, operational services and assessment.',
          outcome='Due 25.01.2027 (date to be confirmed in lecture 8) – a Colab (or R) notebook that reproduces one of labs 4–6 with text cells, figures, parameters and a limitations section (or a QGIS project with a PDF map and a short report); the API quiz. This is the final deliverable of the course.',
          route=[('Watch lecture 7', 'Why leave the editor, Colab, JS → Python differences, exports, QGIS step by step', mod('page', 429)),
-                ('Lesson: APIs for GEE', 'Python/Colab, Colab exercise, QGIS 1–4: plugin, console, no-code tools and export, the map (rgee for volunteers), quiz', mod('lesson', 404)),
+                ('Lesson: APIs for GEE', 'Python/Colab, Colab exercise, CDSE JupyterLab and openEO (for the curious), QGIS 1–4: plugin, console, no-code tools and export, the map (rgee for volunteers), quiz', mod('lesson', 404)),
                 ('Lab 7 – Colab + geemap', 'Authenticate, translate your lab-2 script, export', mod('lesson', 404)),
                 ('Lab 7 – GEE in QGIS', 'Four pages: plugin and sign-in, Python Console layer, no-code tools and export, the finished map', mod('lesson', 404)),
                 ('Lab 7 – capstone', 'Pick flood, landslide or fire and rerun it as a notebook or a QGIS project with a map', mod('lesson', 404)),
                 ('Lecture 8 – wrap-up', 'One workflow, sources of error, uncertainty, what next, assessment', mod('page', 430))],
          links=[('Lecture 7 (slides)', mod('page', 429)), ('Lecture 8 – wrap-up (slides)', mod('page', 430)), ('Lesson: APIs for GEE', mod('lesson', 404)), ('Python, QGIS and R examples (GitHub)', 'https://github.com/moondec/geo-natural-hazard/tree/main/examples'),
-                ('Earth Engine Python quickstart', 'https://developers.google.com/earth-engine/guides/quickstart_python'), ('geemap', 'https://geemap.org/'), ('QGIS Earth Engine plugin – user guide', 'https://gee-community.github.io/qgis-earthengine-plugin/'), ('rgee (R volunteers)', 'https://r-spatial.github.io/rgee/')],
+                ('Earth Engine Python quickstart', 'https://developers.google.com/earth-engine/guides/quickstart_python'), ('geemap', 'https://geemap.org/'), ('QGIS Earth Engine plugin – user guide', 'https://gee-community.github.io/qgis-earthengine-plugin/'), ('rgee (R volunteers)', 'https://r-spatial.github.io/rgee/'), ('For the curious: CDSE JupyterLab (free, on request)', 'https://dataspace.copernicus.eu/analyse/jupyterlab'), ('openEO Python client – documentation', 'https://open-eo.github.io/openeo-python-client/')],
          extra=''),
 ]
 
@@ -220,6 +220,7 @@ ops = [
     ('addpage', 404, 127, 'QGIS 3 – No-code tools: Add Image Collection, Data Catalog, Export GeoTIFF', 'newpages/s7-qgis3.html'),
     ('addpage', 404, 127, 'QGIS 2 – Your first Earth Engine layer from the Python Console', 'newpages/s7-qgis2.html'),
     ('addpage', 391, 100, '5. Clouds first: SCL, Cloud Score+ and the QA60 bitmask', 'newpages/s2-clouds.html'),
+    ('addpage', 404, 125, 'For the curious: what CDSE JupyterLab and openEO give you beyond Earth Engine (optional)', 'newpages/s7-cdse.html'),
 ]
 
 # Quizzes in lessons 2 (cm 391) and 7 (cm 404) – Marek, 22.10.2026: answer labels stay plain (no hint on the question page);

@@ -774,6 +774,101 @@ source: [plugin troubleshooting](https://gee-community.github.io/qgis-earthengin
 
  <div class="block">
 
+## For the curious: beyond Google – CDSE JupyterLab and openEO
+</div>
+
+
+</div>
+
+<div class="" style="position: absolute; left: 5%; top: 17%; height: 66%; width: 90%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-start" align="left">
+
+
+
+<div class="has-light-background" style="background-color: #00ced1; position: absolute; left: 87%; top: 75%; height: 26%; width: 13%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+</div>
+
+<div class="block">
+
+<!-- .element: style="font-size: 26px; position: absolute; left: 0%; top: 15%; height: 80%; width: 56%; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" align="left" -->
+**Optional, not assessed.** The Copernicus Data Space Ecosystem (your lab-1 account) also has a free hosted **JupyterLab** (on request, 2 working days; kernels Python / Geo Science / OpenEO / Sentinel Hub; 10 GB `mystorage`, server stops after 8 h idle) and **openEO**, an open cloud-processing API.
+
+| CDSE gives you | Earth Engine |
+|---|---|
+| Sentinel scenes **at the source**, hours after acquisition | mirrored with a delay |
+| **Sentinel-1 SLC** → InSAR (deformation, coherence) | GRD only, no phase |
+| the **original products** as files (S3, download) | derived exports only |
+| **openEO**: one process graph, several backends (Terrascope, EODC…) | Google only |
+| EU account, **no Google Cloud project** | registered project required |
+| | **1000+ datasets**, classifiers, instant map, free quota |
+
+Use it when the thesis needs InSAR or the original product, when Google is not allowed, or when yesterday's scene matters. Moodle lesson 7 has the optional page; `examples/python/05_cdse_openeo_ndvi.py`.
+</div>
+
+
+
+<div class="block">
+
+<!-- .element: style="font-size: 22px; background-color: #e8f4f8; padding: 12px; box-sizing: border-box; position: absolute; left: 58%; top: 15%; height: 80%; width: 39%; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" class="has-light-background" align="left" -->
+The lesson-2 NDVI median, written for openEO:
+<pre><code class="language-python">import openeo
+con = openeo.connect("openeo.dataspace.copernicus.eu").authenticate_oidc()
+s2 = con.load_collection("SENTINEL2_L2A",
+    spatial_extent={"west":16.80,"south":52.33,"east":17.06,"north":52.49},
+    temporal_extent=["2025-05-01","2025-09-30"],
+    bands=["B04","B08","SCL"], max_cloud_cover=30)
+scl = s2.band("SCL")
+clouds = (scl==3)|(scl==8)|(scl==9)|(scl==10)
+ndvi = s2.ndvi(nir="B08", red="B04").mask(clouds)
+ndvi.reduce_dimension(dimension="t", reducer="median") \
+    .download("ndvi_poznan_2025.tiff")
+</code></pre>
+Same three verbs – load/filter, map, reduce – on a **datacube** (x, y, t, bands); nothing runs until `download()`. Big areas: `execute_batch()` = Export.
+</div>
+
+
+
+
+
+
+</div>
+
+<style>
+.horizontal_dotted_line{
+  border-bottom: 2px dotted gray;
+} 
+</style>
+
+<div class="horizontal_dotted_line" style="position: absolute; left: 3%; top: 94%; height: 0%; width: 94%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+</div>
+
+<div class="" style="padding: 0 30px; box-sizing: border-box; position: absolute; left: 0%; top: 64%; height: 30%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-end" align="left">
+
+<div class="block">
+
+source: [CDSE JupyterLab](https://dataspace.copernicus.eu/analyse/jupyterlab); [openEO Python client](https://open-eo.github.io/openeo-python-client/)
+</div>
+
+
+
+</div>
+
+<div class="" style="padding: 0 30px; box-sizing: border-box; position: absolute; left: 0%; top: 58%; height: 30%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-end" align="left">
+
+
+</div>
+
+<div class="" style="position: absolute; left: 0%; top: 94%; height: 6%; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center" >
+
+© 2026 Pracownia Meteorologii<!-- .element: style="font-weight: 300" -->
+</div>
+</div></script></section><section  data-markdown><script type="text/template"><!-- .slide: class="drop" -->
+<div class="" style="position: absolute; left: 0px; top: 0px; height: 1200px; width: 1920px; min-height: 1200px; display: flex; flex-direction: column; align-items: center; justify-content: center" absolute="true">
+
+<div class="has-light-background" style="background-color: white; padding: 0 20px; box-sizing: border-box; position: absolute; left: 0%; top: 0%; height: 10%; width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" align="left">
+
+ <div class="block">
+
 ## Which client, when?
 </div>
 
@@ -799,7 +894,7 @@ source: [plugin troubleshooting](https://gee-community.github.io/qgis-earthengin
 | share with a non-programmer | Earth Engine **Apps** (`ui.*`) | Streamlit, Solara (geemap) | QGIS project, QField |
 | setup effort | zero | low (Colab) / medium (local) | low (plugin) / zero (export) |
 
-Everything in this course can be done in all of them (R users: rgee, community-maintained) – choose what your thesis needs.
+Everything in this course can be done in all of them (R users: rgee, community-maintained; CDSE openEO for the curious) – choose what your thesis needs.
 </div>
 
 

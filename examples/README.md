@@ -11,6 +11,7 @@ in labs 2–6; compare them line by line with your JavaScript.
 | `python/02_geemap_ndvi_map.py` | `geemap.Map`, layers, split map, GeoTIFF export (`geemap.ee_export_image` and `ee.batch.Export.image.toDrive`) |
 | `python/03_flood_s1_change_detection.py` | lab 4 in Python: Sentinel-1 VH before/after, difference in dB (< −3 dB), JRC permanent-water and NASADEM slope masks, flooded hectares, export – Nysa Kłodzka, September 2024 |
 | `python/04_dnbr_burn_severity.py` | lab 6 in Python: pre/post Sentinel-2 with SCL (or Cloud Score+) mask, NBR, dNBR × 1000, USGS classes, hectares per class – Landiras fire, Gironde, July 2022 |
+| `python/05_cdse_openeo_ndvi.py` | *for the curious:* the lesson-2 NDVI median without Google – Sentinel-2 L2A from the Copernicus Data Space Ecosystem through openEO, SCL cloud mask, GeoTIFF for QGIS |
 | `notebooks/07_capstone_template.ipynb` | template for the capstone notebook: text cells (event, data, method, results, limitations) + the code of 03/04 inline so it runs standalone in Colab |
 | `qgis/01_qgis_console_ndvi.py` | QGIS Python Console with the Google Earth Engine plugin: NDVI median as a live layer |
 | `qgis/02_qgis_flood_mask.py` | Sentinel-1 before/after flood mask on the QGIS canvas (lab 4 method) |
@@ -66,6 +67,18 @@ Hokkaido 54 -> 32654). Look codes up at https://epsg.io or in QGIS (Project > Pr
 > CRS); `image.projection().getInfo()` shows the native CRS of a dataset. Never export in
 `EPSG:4326` (degrees) or `EPSG:3857` (Web Mercator) - `scale` in metres and areas are only
 right in a metric CRS.
+
+## For the curious: CDSE JupyterLab and openEO (optional)
+
+The Copernicus Data Space Ecosystem (the account of lab 1) offers a free hosted JupyterLab
+(https://dataspace.copernicus.eu/analyse/jupyterlab, access on request, approved within two
+working days; kernels Python 3, Geo Science, OpenEO, Sentinel Hub; only `mystorage`, 10 GB,
+survives the session) and the openEO API. `python/05_cdse_openeo_ndvi.py` runs there without
+installing anything, or locally after `pip install openeo`; `authenticate_oidc()` prints a link
+and a code for the CDSE login. What you gain: Sentinel data at the source (newest scenes first),
+Sentinel-1 SLC for InSAR, the original products as files, an open API that runs on other
+backends, no Google account. What you lose: the Earth Engine catalogue, built-in classifiers,
+unlimited free compute (openEO and Sentinel Hub use monthly credits). Not assessed.
 
 ## QGIS and the Google Earth Engine plugin
 
