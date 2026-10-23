@@ -37,6 +37,8 @@ s2 = con.load_collection(
     bands=["B04", "B08", "SCL"],           # two-digit band names (B04, not B4)
     max_cloud_cover=MAX_CLOUD,
 )
+# A WARNING "Failed to get/parse queryables ..." may appear here: the client could not download the
+# list of filterable properties from CDSE and skips its local check. The filter is still applied; ignore it.
 
 # ---------------------------------------------------------------- 3. map: cloud mask + NDVI per scene
 scl = s2.band("SCL")
