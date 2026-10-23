@@ -56,6 +56,10 @@ if EXPORT_EPSG:
 #     job = ndvi_median.execute_batch(OUT, title="NDVI median Poznan 2025")
 ndvi_median.download(OUT)
 print("written", OUT, "- open it in QGIS next to the Earth Engine export")
+# Where is the file? In the working directory of the Python you ran: Colab -> /content (Files panel on
+# the left, three dots -> Download, or files.download(OUT); it vanishes with the session, so copy it
+# to Drive); CDSE JupyterLab -> next to the notebook (keep it in mystorage/); locally -> the folder
+# you started the script from.
 
 # What CDSE gives you that Earth Engine does not: the same scenes a day earlier, Sentinel-1 SLC
 # (InSAR), the original products as files, an open API that also runs on non-Google backends.
