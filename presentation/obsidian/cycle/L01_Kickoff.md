@@ -105,7 +105,7 @@ source: [https://www.un-spider.org](https://www.un-spider.org/risks-and-disaster
 + and tools that work for all of them: Copernicus Browser, Google Earth Engine, machine learning, Python and R
 :::
 
-::: block <!-- element style="font-size:40px" align="left" drag="35 60" drop="63 15" bg="#e8f4f8" pad="15px"-->
+::: block <!-- element style="font-size:40px" align="left" drag="35 72" drop="63 15" bg="#e8f4f8" pad="15px"-->
 **Why satellites?**
 - the event area is large or inaccessible
 - we need the state **before** the event, and nobody measured it on the ground
@@ -123,8 +123,8 @@ source: [UN-SPIDER recommended practices](https://un-spider.org/advisory-support
 ## One method for all hazards: before / after
 :::
 
-::: block <!-- element style="font-size:34px" align="left" drag="52 70" drop="0 15"-->
-+ Step 1 – select satellite images for the period **before** the event
+::: block <!-- element style="font-size:34px" align="left" drag="49 70" drop="0 15"-->
++ Step 1 – select satellite images for the period<br>**before** the event
 + Step 2 – select images for the period **after** the event
 + Step 3 – compute the same quantity for both (an index, backscatter, a class)
 + Step 4 – **difference** = change caused by the event
