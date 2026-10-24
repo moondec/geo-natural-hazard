@@ -11,9 +11,10 @@
 <h3 class="iot-material-divider">Step by step</h3>
 <ol class="iot-material-steps">
 <li><strong>Sample the composite.</strong> k-means needs a table of pixels, not polygons:
-<pre><code class="language-javascript">var sample = composite.sample({region: aoi, scale: 10, numPixels: 5000});</code></pre></li>
+<pre><code class="language-javascript">// 5000 random pixels (band values only, no labels) are enough to train the clusterer
+var clusterSample = composite.sample({region: aoi, scale: 10, numPixels: 5000});</code></pre></li>
 <li><strong>Train the clusterer with k = 4</strong> – the same number as your supervised classes – and cluster the image:
-<pre><code class="language-javascript">var clusterer = ee.Clusterer.wekaKMeans(4).train(sample);
+<pre><code class="language-javascript">var clusterer = ee.Clusterer.wekaKMeans(4).train(clusterSample);
 var clusters = composite.cluster(clusterer);
 Map.addLayer(clusters.randomVisualizer(), {}, 'k-means clusters');</code></pre></li>
 <li><strong>Name the clusters.</strong> Use the <em>Inspector</em> and the true-colour layer to decide which cluster is water, urban, crops, forest. Write the mapping down.</li>
@@ -24,12 +25,12 @@ Map.addLayer(kmeansClass, {min: 0, max: 3,
   palette: ['blue', 'gray', 'yellow', 'green']}, 'k-means relabelled');</code></pre></li>
 <li><strong>Compute the confusion matrix</strong> with the same test set as for Random Forest:
 <pre><code class="language-javascript">// testSet keeps its point geometries (geometries: true on the previous page)
-var testK = kmeansClass.sampleRegions({
+var testKmeans = kmeansClass.sampleRegions({
   collection: testSet, properties: ['landcover'], scale: 10});
-var cmK = testK.errorMatrix('landcover', 'classification');
-print('k-means confusion matrix', cmK);
-print('k-means overall accuracy', cmK.accuracy());
-print('k-means kappa', cmK.kappa());</code></pre></li>
+var cmKmeans = testKmeans.errorMatrix('landcover', 'classification');
+print('k-means confusion matrix', cmKmeans);
+print('k-means overall accuracy', cmKmeans.accuracy());
+print('k-means kappa', cmKmeans.kappa());</code></pre></li>
 <li><strong>Try other k.</strong> Repeat with k = 6 and k = 8 and look how the clusters split – this is the argument for the number of classes in your report.</li>
 <li><strong>Export and save.</strong> Export the relabelled map to Drive (scale 10) and copy the script link.</li>
 </ol>
@@ -55,7 +56,7 @@ print('k-means kappa', cmK.kappa());</code></pre></li>
 </div>
 <div class="iot-material-callout iot-material-callout--warn">
 <p class="iot-material-callout-title">Common mistakes</p>
-<p>Comparing cluster numbers directly with <code>landcover</code> codes without <code>remap</code> – the accuracy is then close to zero even for a good clustering. Using a different composite or AOI than for Random Forest. An empty <code>testK</code>: the first <code>sampleRegions</code> on the previous page was run without <code>geometries: true</code>, so the test features have no geometry – add it (or sample once from <code>composite.addBands(kmeansClass)</code>) and run again.</p>
+<p>Comparing cluster numbers directly with <code>landcover</code> codes without <code>remap</code> – the accuracy is then close to zero even for a good clustering. Using a different composite or AOI than for Random Forest. An empty <code>testKmeans</code>: the first <code>sampleRegions</code> on the previous page was run without <code>geometries: true</code>, so the test features have no geometry – add it (or sample once from <code>composite.addBands(kmeansClass)</code>) and run again.</p>
 </div>
 <p>Next page: <em>Improving the Classification</em> (button below).</p>
 </div>

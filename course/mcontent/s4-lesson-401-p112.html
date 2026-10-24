@@ -25,17 +25,19 @@
 <li><strong>Compute MNDWI for both dates</strong> (reuse your lab 2 script):
 <pre><code class="language-javascript">var s2 = ee.ImageCollection('COPERNICUS/S2_SR_HARMONIZED')
   .filterBounds(aoi)
-  .filter(ee.Filter.lt('CLOUDY_PIXEL_PERCENTAGE', 20));
-var before = s2.filterDate('2024-08-20', '2024-09-10').median();
-var after  = s2.filterDate('2024-09-16', '2024-09-30').median();
-var mndwiBefore = before.normalizedDifference(['B3', 'B11']).rename('mndwi');
-var mndwiAfter  = after.normalizedDifference(['B3', 'B11']).rename('mndwi');
+  .filter(ee.Filter.lt('CLOUDY_PIXEL_PERCENTAGE', 20))
+  .map(maskSCL);                                   // the cloud mask function of lesson 2, step 5
+// one median image per period (short windows: the flood peak is a matter of days)
+var medianBefore = s2.filterDate('2024-08-20', '2024-09-10').median();
+var medianAfter  = s2.filterDate('2024-09-16', '2024-09-30').median();
+var mndwiBefore = medianBefore.normalizedDifference(['B3', 'B11']).rename('mndwi');
+var mndwiAfter  = medianAfter.normalizedDifference(['B3', 'B11']).rename('mndwi');
 Map.addLayer(mndwiAfter, {min: -1, max: 1, palette: ['brown', 'white', 'blue']}, 'MNDWI after');</code></pre></li>
 <li><strong>Look at the histogram</strong> of <code>mndwiAfter</code> over the AOI (<code>ui.Chart.image.histogram</code>) and pick the threshold in the valley between the land and water peaks.</li>
 <li><strong>Threshold and area.</strong> Water pixels that were not water before are the flood:
-<pre><code class="language-javascript">var waterAfter  = mndwiAfter.gt(0);
-var waterBefore = mndwiBefore.gt(0);
-var floodOptical = waterAfter.and(waterBefore.not()).selfMask();
+<pre><code class="language-javascript">var waterAfter  = mndwiAfter.gt(0);            // 1 = water after the event
+var waterBefore = mndwiBefore.gt(0);           // 1 = water before (rivers, lakes)
+var floodOptical = waterAfter.and(waterBefore.not()).selfMask();   // new water only; selfMask hides the zeros
 var areaHa = floodOptical.multiply(ee.Image.pixelArea()).divide(1e4)
   .reduceRegion({reducer: ee.Reducer.sum(), geometry: aoi, scale: 20, maxPixels: 1e10});
 print('optical flood area [ha]', areaHa);</code></pre></li>

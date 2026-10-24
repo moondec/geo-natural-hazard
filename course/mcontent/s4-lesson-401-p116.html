@@ -13,27 +13,28 @@
 <h3 class="iot-material-divider">Step by step: the UN-SPIDER flood script</h3>
 <ol class="iot-material-steps">
 <li><strong>Compare optical and radar in the Copernicus Browser.</strong> Open Sentinel-2 and Sentinel-1 of the same days over your event and see what the clouds do to the optical image.</li>
-<li><strong>Open script 2</strong> and save a copy in your repository. Draw or import your AOI as <code>geometry</code>.</li>
+<li><strong>Open script 2</strong> and save a copy in your repository. Draw or import your AOI and assign it to <code>aoi</code> at the top of the script.</li>
 <li><strong>Set the parameters</strong> at the top of the script: before-period and after-period dates (about 2–3 weeks each, the after-period starting at the flood peak), polarisation <code>VH</code>, orbit pass <code>DESCENDING</code> (or ascending – check which one covers your area on the right days), difference threshold <code>1.25</code>.</li>
 <li><strong>Run it</strong> and inspect the layers: before, after, difference, flooded area. The script computes the change like this:
 <pre><code class="language-javascript">// UN-SPIDER: ratio of the two dB images, flood where the ratio exceeds 1.25
-var ratio = afterF.divide(beforeF);           // both images are in dB!
+var ratio = sarAfterSmooth.divide(sarBeforeSmooth);           // both images are in dB!
 var flooded = ratio.gt(1.25);                 // after value at least 25 % more negative
 // cleaner equivalent: the difference in dB
-// var flooded = afterF.subtract(beforeF).lt(-3);   // at least 3 dB darker</code></pre>
+// var flooded = sarAfterSmooth.subtract(sarBeforeSmooth).lt(-3);   // at least 3 dB darker</code></pre>
 The script divides the <em>dB</em> values, so a ratio of 1.25 means the after value is at least 25 % more negative (e.g. −12 → −15 dB, roughly 3 dB darker for a typical land pixel); it is not a physical ratio of backscatter. The difference in dB does the same more transparently.</li>
 <li><strong>Understand the masks.</strong> Permanent water (JRC), slopes steeper than 5° (radar shadow) and isolated specks (fewer than 8 connected pixels) are removed:
-<pre><code class="language-javascript">var jrc = ee.Image('JRC/GSW1_4/GlobalSurfaceWater').select('seasonality');
-var permanent = jrc.gte(10);                   // water 10 or more months a year
+<pre><code class="language-javascript">var gsw = ee.Image('JRC/GSW1_4/GlobalSurfaceWater').select('seasonality');   // months with water per year
+var permanentWater = gsw.gte(10);                   // water 10 or more months a year
 var dem = ee.Image('WWF/HydroSHEDS/03VFDEM');
 var slope = ee.Terrain.slope(dem);
-flooded = flooded.updateMask(permanent.not())
+flooded = flooded.updateMask(permanentWater.not())
                  .updateMask(slope.lt(5))
                  .updateMask(flooded.connectedPixelCount(25).gte(8)); // remove specks</code></pre></li>
 <li><strong>Read the flooded area</strong> (and, in the script, the exposed population and cropland):
-<pre><code class="language-javascript">var area_ha = flooded.multiply(ee.Image.pixelArea()).divide(1e4)
+<pre><code class="language-javascript">// sum of the pixel areas of the flooded pixels, in hectares
+var floodAreaHa = flooded.multiply(ee.Image.pixelArea()).divide(1e4)
   .reduceRegion({reducer: ee.Reducer.sum(), geometry: aoi, scale: 10, maxPixels: 1e10});
-print('flooded area [ha]', area_ha);</code></pre></li>
+print('flooded area [ha]', floodAreaHa);</code></pre></li>
 <li><strong>Sensitivity test.</strong> Change the threshold to 1.15 and 1.40 and the speckle filter radius (e.g. 30 m and 100 m); write down the flooded area for each run in a small table – this is the uncertainty of your map.</li>
 <li><strong>Validate.</strong> Compare your map with the Global Flood Monitoring product (<a href="https://global-flood.emergency.copernicus.eu/" target="_blank" rel="noopener">global-flood.emergency.copernicus.eu</a>) or a Copernicus EMS map of the same event; write one paragraph of agreement and disagreement and say what you compared against.</li>
 <li><strong>Optional:</strong> run script 1 (optical, Sentinel-2) for the same event and compare the two areas.</li>

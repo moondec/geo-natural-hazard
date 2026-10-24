@@ -38,14 +38,15 @@
   .filterBounds(aoi)
   .select('VH');</code></pre></li>
 <li><strong>Make a before and an after mosaic</strong> around the flood peak:
-<pre><code class="language-javascript">var before = s1.filterDate('2024-08-20', '2024-09-10').mosaic();
-var after  = s1.filterDate('2024-09-15', '2024-09-25').mosaic();</code></pre></li>
+<pre><code class="language-javascript">// mosaic() stitches the scenes of each period into one image (VH backscatter in dB)
+var sarBefore = s1.filterDate('2024-08-20', '2024-09-10').mosaic();
+var sarAfter  = s1.filterDate('2024-09-15', '2024-09-25').mosaic();</code></pre></li>
 <li><strong>Reduce speckle</strong> with a 50 m focal mean and display both images:
-<pre><code class="language-javascript">var smooth = 50;
-var beforeF = before.focal_mean(smooth, 'circle', 'meters');
-var afterF  = after.focal_mean(smooth, 'circle', 'meters');
-Map.addLayer(beforeF, {min: -25, max: 0}, 'before VH');
-Map.addLayer(afterF,  {min: -25, max: 0}, 'after VH');</code></pre></li>
+<pre><code class="language-javascript">var smoothRadiusM = 50;                        // speckle filter radius in metres
+var sarBeforeSmooth = sarBefore.focal_mean(smoothRadiusM, 'circle', 'meters');
+var sarAfterSmooth  = sarAfter.focal_mean(smoothRadiusM, 'circle', 'meters');
+Map.addLayer(sarBeforeSmooth, {min: -25, max: 0}, 'before VH');
+Map.addLayer(sarAfterSmooth,  {min: -25, max: 0}, 'after VH');</code></pre></li>
 <li><strong>Read values with the Inspector</strong> over known water and known land: the histogram is bimodal, with a water peak around −22 dB and a land peak around −12 dB. Choose VH for floods in open land (bigger land/water contrast) and VV for flooded vegetation (double bounce).</li>
 </ol>
 <div class="iot-material-callout iot-material-callout--check">

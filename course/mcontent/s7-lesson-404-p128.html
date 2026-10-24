@@ -18,7 +18,7 @@
 <ol class="iot-material-steps">
 <li><strong>Export the result</strong> at the end of your script (every GEO2 script already has it). Choose the CRS and the scale explicitly – QGIS will believe whatever is in the file:
 <pre class="iot-material-code"><code class="language-javascript">Export.image.toDrive({image: severity.toByte(), description: 'M6_dnbr_classes',
-  folder: 'GEE_exports', region: AOI, scale: 20, crs: 'EPSG:2180',   // Poland: PL-1992
+  folder: 'GEE_exports', region: aoi, scale: 20, crs: 'EPSG:2180',   // Poland: PL-1992
   maxPixels: 1e10, fileFormat: 'GeoTIFF'});
 Export.table.toDrive({collection: areaTable, description: 'M6_area_ha',
   folder: 'GEE_exports', fileFormat: 'CSV'});

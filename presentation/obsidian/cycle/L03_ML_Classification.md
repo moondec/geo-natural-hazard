@@ -150,7 +150,7 @@ A decision tree asks one question per node ("is NIR > 0.3?"), splits the pixels,
 ::: block <!-- element style="font-size: 36px;" align="left" drag="42 75" drop="58 15" bg="#e8f4f8" pad="15px"-->
 ```javascript
 var classifier = ee.Classifier.smileRandomForest(50)
-  .train({features: training, classProperty: 'landcover',
+  .train({features: labelledPixels, classProperty: 'landcover',
           inputProperties: composite.bandNames()});
 var classified = composite.classify(classifier);
 ```
@@ -184,8 +184,8 @@ source: Breiman, L. (2001). Random Forests. *Machine Learning* 45, 5–32.
 
 ::: block <!-- element style="font-size: 36px;" align="left" drag="45 75" drop="55 15" bg="#e8f4f8" pad="15px"-->
 ```javascript
-var sample = composite.sample({region: aoi, scale: 10, numPixels: 5000});
-var clusterer = ee.Clusterer.wekaKMeans(4).train(sample);
+var clusterSample = composite.sample({region: aoi, scale: 10, numPixels: 5000});
+var clusterer = ee.Clusterer.wekaKMeans(4).train(clusterSample);
 var clusters = composite.cluster(clusterer);
 ```
 - cluster **numbers mean nothing** – cluster 2 is not "forest" until you look at the map and say so
@@ -218,13 +218,13 @@ Rules:
 
 ::: block <!-- element style="font-size: 32px;" align="left" drag="45 78" drop="53 15" bg="#e8f4f8" pad="15px"-->
 ```javascript
-var training = composite.addBands(clusters).sampleRegions({  // bands + k-means cluster
-  collection: gcps,        // your 4 merged FeatureCollections
+var labelledPixels = composite.addBands(clusters).sampleRegions({  // bands + k-means cluster
+  collection: trainingSamples,        // your 4 merged FeatureCollections
   properties: ['landcover'],
   scale: 10
 });
 // keep 30 % aside for validation
-var withRandom = training.randomColumn('random');
+var withRandom = labelledPixels.randomColumn('random');
 var trainSet = withRandom.filter(ee.Filter.lt('random', 0.7));
 var testSet  = withRandom.filter(ee.Filter.gte('random', 0.7));
 ```
@@ -258,13 +258,13 @@ Overall accuracy = diagonal / total = 176 / 200 = **88 %**
 
 ::: block <!-- element style="font-size: 27px;" align="left" drag="45 78" drop="53 15" bg="#e8f4f8" pad="15px"-->
 ```javascript
-var test = testSet.classify(classifier);
-var cm = test.errorMatrix('landcover', 'classification');
-print('confusion matrix', cm);
-print('overall accuracy', cm.accuracy());
-print('kappa', cm.kappa());
-print('producer accuracy', cm.producersAccuracy());
-print('consumer accuracy', cm.consumersAccuracy());
+var testClassified = testSet.classify(classifier);
+var confusionMatrix = testClassified.errorMatrix('landcover', 'classification');
+print('confusion matrix', confusionMatrix);
+print('overall accuracy', confusionMatrix.accuracy());
+print('kappa', confusionMatrix.kappa());
+print('producer accuracy', confusionMatrix.producersAccuracy());
+print('consumer accuracy', confusionMatrix.consumersAccuracy());
 ```
 - **Producer's accuracy** (recall): of the real crops, how many did we find?
 - **User's accuracy** (precision): of the pixels we called crops, how many are crops?

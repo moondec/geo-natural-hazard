@@ -465,15 +465,15 @@ var s1 = ee.ImageCollection('COPERNICUS/S1_GRD')
   .filterBounds(aoi)
   .select('VH');
 
-var before = s1.filterDate('2024-08-20', '2024-09-10').mosaic();
-var after  = s1.filterDate('2024-09-15', '2024-09-25').mosaic();
+var sarBefore = s1.filterDate('2024-08-20', '2024-09-10').mosaic();
+var sarAfter  = s1.filterDate('2024-09-15', '2024-09-25').mosaic();
 
 // speckle filter: 50 m focal mean (circle)
-var smooth = 50;
-var beforeF = before.focal_mean(smooth, 'circle', 'meters');
-var afterF  = after.focal_mean(smooth, 'circle', 'meters');
-Map.addLayer(beforeF, {min: -25, max: 0}, 'before VH');
-Map.addLayer(afterF,  {min: -25, max: 0}, 'after VH');
+var smoothRadiusM = 50;
+var sarBeforeSmooth = sarBefore.focal_mean(smoothRadiusM, 'circle', 'meters');
+var sarAfterSmooth  = sarAfter.focal_mean(smoothRadiusM, 'circle', 'meters');
+Map.addLayer(sarBeforeSmooth, {min: -25, max: 0}, 'before VH');
+Map.addLayer(sarAfterSmooth,  {min: -25, max: 0}, 'after VH');
 ```
 Choose VH for floods in open land (bigger contrast land/water); VV for flooded vegetation (double bounce).
 </div>
@@ -616,23 +616,23 @@ Two strategies: (a) **single image** – everything darker than a threshold is w
 <!-- .element: style="font-size: 26px; background-color: #e8f4f8; padding: 15px; box-sizing: border-box; position: absolute; left: 53%; top: 15%; height: 78%; width: 45%; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" class="has-light-background" align="left" -->
 ```javascript
 // difference in dB and the UN-SPIDER style ratio
-var diff = afterF.subtract(beforeF);          // dB
-var flooded = diff.lt(-3);                    // became ≥ 3 dB darker
+var diffDb = sarAfterSmooth.subtract(sarBeforeSmooth);          // dB
+var flooded = diffDb.lt(-3);                    // became ≥ 3 dB darker
 // UN-SPIDER style (ratio of dB images):
-// var ratio = afterF.divide(beforeF); var flooded = ratio.gt(1.25);
+// var ratio = sarAfterSmooth.divide(sarBeforeSmooth); var flooded = ratio.gt(1.25);
 
 // masks
-var jrc = ee.Image('JRC/GSW1_4/GlobalSurfaceWater').select('seasonality');
-var permanent = jrc.gte(10);                   // water ≥ 10 months/yr
+var gsw = ee.Image('JRC/GSW1_4/GlobalSurfaceWater').select('seasonality');
+var permanentWater = gsw.gte(10);                   // water ≥ 10 months/yr
 var dem = ee.Image('WWF/HydroSHEDS/03VFDEM');
 var slope = ee.Terrain.slope(dem);
-flooded = flooded.updateMask(permanent.not())
+flooded = flooded.updateMask(permanentWater.not())
                  .updateMask(slope.lt(5))
                  .updateMask(flooded.connectedPixelCount(25).gte(8)); // specks, as UN-SPIDER
 
-var area_ha = flooded.multiply(ee.Image.pixelArea()).divide(1e4)
+var floodAreaHa = flooded.multiply(ee.Image.pixelArea()).divide(1e4)
   .reduceRegion({reducer: ee.Reducer.sum(), geometry: aoi, scale: 10, maxPixels: 1e10});
-print('flooded area [ha]', area_ha);
+print('flooded area [ha]', floodAreaHa);
 ```
 </div>
 

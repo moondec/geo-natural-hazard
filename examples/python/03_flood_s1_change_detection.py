@@ -1,9 +1,9 @@
 """03 - Sentinel-1 flood extent by change detection (lab 4 in Python).
 
 Mirrors the updated UN-SPIDER script from lab 4, step by step:
-  1. Sentinel-1 GRD, IW mode, VH, one orbit direction, before/after mosaics
+  1. Sentinel-1 GRD, IW mode, VH, one orbit direction, sar_before/sar_after mosaics
   2. speckle filter (50 m focal mean)
-  3. change: after - before < -3 dB  (the cleaner equivalent of ratio > 1.25)
+  3. change: sar_after - sar_before < -3 dB  (the cleaner equivalent of ratio > 1.25)
   4. masks: permanent water (JRC GSW seasonality >= 10), slope >= 5 deg
      (NASADEM), isolated specks (< 8 connected pixels)
   5. flooded area in hectares (pixelArea + reduceRegion)
@@ -61,17 +61,17 @@ print('before scenes:', s1_before.size().getInfo())
 print('after scenes :', s1_after.size().getInfo())
 # If one of them is 0: widen the dates or switch ORBIT_PASS.
 
-before = s1_before.mosaic().clip(aoi)
-after = s1_after.mosaic().clip(aoi)
+sar_before = s1_before.mosaic().clip(aoi)
+sar_after = s1_after.mosaic().clip(aoi)
 
 # -------------------------------------------------------- 2. speckle filter
-before_f = before.focal_mean(SMOOTH_RADIUS_M, 'circle', 'meters')
-after_f = after.focal_mean(SMOOTH_RADIUS_M, 'circle', 'meters')
+sar_before_smooth = sar_before.focal_mean(SMOOTH_RADIUS_M, 'circle', 'meters')
+sar_after_smooth = sar_after.focal_mean(SMOOTH_RADIUS_M, 'circle', 'meters')
 
 # ------------------------------------------------------ 3. change detection
 # Both images are in dB, so the difference is the honest measure.
 # UN-SPIDER uses after.divide(before).gt(1.25) - roughly the same as -3 dB.
-difference = after_f.subtract(before_f).rename('diff_dB')
+difference = sar_after_smooth.subtract(sar_before_smooth).rename('diff_dB')
 flooded_raw = difference.lt(DIFF_THRESHOLD_DB).rename('flooded')
 
 # ------------------------------------------------------------------ 4. masks
@@ -88,10 +88,10 @@ flooded = (flooded_raw
            .updateMask(flooded_raw.connectedPixelCount(25).gte(MIN_CONNECTED_PIXELS)))
 
 # ------------------------------------------------------- 5. area in hectares
-area_ha = (flooded.multiply(ee.Image.pixelArea()).divide(1e4)
+floodAreaHa = (flooded.multiply(ee.Image.pixelArea()).divide(1e4)
            .reduceRegion(reducer=ee.Reducer.sum(), geometry=aoi,
                          scale=EXPORT_SCALE, maxPixels=1e10))
-print('flooded area [ha]:', round(area_ha.get('flooded').getInfo(), 1))
+print('flooded area [ha]:', round(floodAreaHa.get('flooded').getInfo(), 1))
 
 # --------------------------------------------------- sensitivity (optional)
 # Rerun the threshold for the M4-style table: threshold vs flooded area.
@@ -108,8 +108,8 @@ for thr in (-2.0, -3.0, -4.0):
 # import geemap
 # m = geemap.Map()
 # m.centerObject(aoi, 11)
-# m.addLayer(before_f, {'min': -25, 'max': 0}, 'before VH')
-# m.addLayer(after_f, {'min': -25, 'max': 0}, 'after VH')
+# m.addLayer(sar_before_smooth, {'min': -25, 'max': 0}, 'before VH')
+# m.addLayer(sar_after_smooth, {'min': -25, 'max': 0}, 'after VH')
 # m.addLayer(difference, {'min': -10, 'max': 10, 'palette': ['red', 'white', 'blue']}, 'diff dB', False)
 # m.addLayer(flooded, {'palette': ['0000FF']}, 'flooded')
 # m

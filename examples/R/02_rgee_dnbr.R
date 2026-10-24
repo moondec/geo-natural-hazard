@@ -46,12 +46,12 @@ s2_after <- s2_masked(POST_START, POST_END)
 cat("pre scenes :", s2_before$size()$getInfo(), "\n")
 cat("post scenes:", s2_after$size()$getInfo(), "\n")
 
-pre  <- s2_before$median()$clip(aoi)
-post <- s2_after$median()$clip(aoi)
+median_pre  <- s2_before$median()$clip(aoi)
+median_post <- s2_after$median()$clip(aoi)
 
 # -------------------------------------------------------------- NBR, dNBR
 nbr <- function(img) img$normalizedDifference(c("B8", "B12"))$rename("NBR")
-dnbr <- nbr(pre)$subtract(nbr(post))$multiply(1000)$rename("dNBR")
+dnbr <- nbr(median_pre)$subtract(nbr(median_post))$multiply(1000)$rename("dNBR")
 
 # --------------------------------------------------------------- classes
 severity <- ee$Image$constant(0)$rename("severity")
@@ -75,8 +75,8 @@ cat("total [ha]:", round(sum(areas$ha)), "\n")
 # -------------------------------------------------------------------- map
 rgb <- list(min = 0, max = 3000, bands = c("B4", "B3", "B2"))
 Map$centerObject(aoi, 11)
-Map$addLayer(pre, rgb, "pre-fire true colour") +
-  Map$addLayer(post, rgb, "post-fire true colour") +
+Map$addLayer(median_pre, rgb, "pre-fire true colour") +
+  Map$addLayer(median_post, rgb, "post-fire true colour") +
   Map$addLayer(severity, list(min = 0, max = 6, palette = CLASS_PALETTE),
                "burn severity (USGS)")
 

@@ -300,11 +300,11 @@ var addNDVI = function(image) {
 };
 
 var s2ndvi = s2.map(addNDVI);            // applied to every scene
-var ndviMed = s2ndvi.select('NDVI').median();  // one band, one image
+var ndviMedian = s2ndvi.select('NDVI').median();  // one band, one image
 
 var ndviVis = {min: -0.2, max: 0.8,
                palette: ['blue', 'white', 'yellow', 'green', 'darkgreen']};
-Map.addLayer(ndviMed.clip(aoi), ndviVis, 'NDVI median');
+Map.addLayer(ndviMedian.clip(aoi), ndviVis, 'NDVI median');
 ```
 :::
 
@@ -326,17 +326,17 @@ Use the **Inspector** to click on a field, a lake and a forest and check that th
 ::: block <!-- element style="font-size:34px" align="left" drag="55 80" drop="0 15"-->
 ```javascript
 // 1) one class = one boolean image × its code (the manual way)
-var water = ndviMed.lte(0.0).multiply(1);
-var bare  = ndviMed.gt(0.0).and(ndviMed.lte(0.2)).multiply(2);
-var shrub = ndviMed.gt(0.2).and(ndviMed.lte(0.4)).multiply(3);
-var green = ndviMed.gt(0.4).multiply(4);
-var classes = water.add(bare).add(shrub).add(green).rename('class');
+var water = ndviMedian.lte(0.0).multiply(1);
+var bare  = ndviMedian.gt(0.0).and(ndviMedian.lte(0.2)).multiply(2);
+var shrub = ndviMedian.gt(0.2).and(ndviMedian.lte(0.4)).multiply(3);
+var green = ndviMedian.gt(0.4).multiply(4);
+var classesManual = water.add(bare).add(shrub).add(green).rename('class');
 
 // 2) the same in one line: count how many thresholds the pixel exceeds
 var thresholds = ee.Image([0.0, 0.2, 0.4]);
-var classes2 = ndviMed.gt(thresholds).reduce(ee.Reducer.sum()).add(1).toInt();
+var classified = ndviMedian.gt(thresholds).reduce(ee.Reducer.sum()).add(1).toInt();
 
-Map.addLayer(classes2.clip(aoi),
+Map.addLayer(classified.clip(aoi),
   {min: 1, max: 4, palette: ['blue', 'burlywood', 'yellowgreen', 'darkgreen']},
   'NDVI classes');
 ```
@@ -358,9 +358,9 @@ Map.addLayer(classes2.clip(aoi),
 
 ::: block <!-- element style="font-size:32px" align="left" drag="55 80" drop="0 15"-->
 ```javascript
-var areaImage = ee.Image.pixelArea().addBands(classes2);  // band 0 = m² of each pixel, band 1 = class
+var areaImage = ee.Image.pixelArea().addBands(classified);  // band 0 = m² of each pixel, band 1 = class
 
-var areas = areaImage.reduceRegion({
+var areaGroups = areaImage.reduceRegion({
   reducer: ee.Reducer.sum().group({groupField: 1, groupName: 'class'}),
   geometry: aoi,
   scale: 10,          // Sentinel-2 native resolution, in metres
@@ -368,13 +368,13 @@ var areas = areaImage.reduceRegion({
 });
 
 // convert the list of dictionaries into a readable table in hectares
-var list = ee.List(areas.get('groups'));
-var table = ee.FeatureCollection(list.map(function(d) {
+var areaList = ee.List(areaGroups.get('groups'));
+var areaTable = ee.FeatureCollection(areaList.map(function(d) {
   d = ee.Dictionary(d);
   return ee.Feature(null, {class: d.get('class'),
                            ha: ee.Number(d.get('sum')).divide(1e4).round()});
 }));
-print('area per class [ha]:', table);
+print('area per class [ha]:', areaTable);
 ```
 :::
 

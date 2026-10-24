@@ -21,17 +21,18 @@ var composite = s2.select(['B2', 'B3', 'B4', 'B8', 'B11', 'B12']).median().clip(
 Map.addLayer(composite, {bands: ['B4', 'B3', 'B2'], min: 0, max: 3000}, 'composite');</code></pre></li>
 <li><strong>Create one layer per class.</strong> In the Code Editor open the geometry tools, add a new layer for each class (e.g. <code>water</code>, <code>urban</code>, <code>crops</code>, <code>forest</code>). In <em>Geometry Imports</em> change <em>Import as</em> from <code>Geometry</code> to <code>FeatureCollection</code> and add the property <code>landcover</code> with the values 0, 1, 2, 3.</li>
 <li><strong>Draw the samples.</strong> Draw polygons (or points) inside pure patches: inside a lake, inside a forest – not on edges. Spread them over the whole area and give every class a similar total area.</li>
-<li><strong>Merge and sample.</strong> Merge the four collections into <code>gcps</code> and extract the band values of the pixels:
-<pre><code class="language-javascript">var gcps = water.merge(urban).merge(crops).merge(forest);
-var training = composite.sampleRegions({
-  collection: gcps,          // your 4 merged FeatureCollections
+<li><strong>Merge and sample.</strong> Merge the four collections into <code>trainingSamples</code> and extract the band values of the pixels:
+<pre><code class="language-javascript">var trainingSamples = water.merge(urban).merge(crops).merge(forest);   // four drawn FeatureCollections
+// sampleRegions reads the band values of every pixel inside the samples and keeps the landcover label
+var labelledPixels = composite.sampleRegions({
+  collection: trainingSamples,
   properties: ['landcover'],
   scale: 10,
   geometries: true           // keep the point geometry – needed again for k-means
 });</code></pre>
 <code>sampleRegions</code> drops the geometries by default; <code>geometries: true</code> keeps them, so the same test points can be used to check the k-means map on the next page.</li>
 <li><strong>Split 70 / 30.</strong> Keep 30 % of the samples aside for validation – the model must never see them during training:
-<pre><code class="language-javascript">var withRandom = training.randomColumn('random');
+<pre><code class="language-javascript">var withRandom = labelledPixels.randomColumn('random');
 var trainSet = withRandom.filter(ee.Filter.lt('random', 0.7));
 var testSet  = withRandom.filter(ee.Filter.gte('random', 0.7));</code></pre></li>
 <li><strong>Train the Random Forest and classify.</strong> 50 trees is enough for a start:
@@ -42,13 +43,13 @@ var classified = composite.classify(classifier);
 Map.addLayer(classified, {min: 0, max: 3,
   palette: ['blue', 'gray', 'yellow', 'green']}, 'RF classification');</code></pre></li>
 <li><strong>Assess the accuracy.</strong> Classify the test set and compare predicted with true classes:
-<pre><code class="language-javascript">var test = testSet.classify(classifier);
-var cm = test.errorMatrix('landcover', 'classification');
-print('confusion matrix', cm);
-print('overall accuracy', cm.accuracy());
-print('kappa', cm.kappa());
-print('producer accuracy', cm.producersAccuracy());
-print('consumer accuracy', cm.consumersAccuracy());</code></pre>
+<pre><code class="language-javascript">var testClassified = testSet.classify(classifier);              // adds the predicted 'classification' property
+var confusionMatrix = testClassified.errorMatrix('landcover', 'classification');   // rows = truth, columns = predicted
+print('confusion matrix', confusionMatrix);
+print('overall accuracy', confusionMatrix.accuracy());
+print('kappa', confusionMatrix.kappa());
+print('producer accuracy', confusionMatrix.producersAccuracy());
+print('consumer accuracy', confusionMatrix.consumersAccuracy());</code></pre>
 Copy the matrix and the two numbers into your report.</li>
 <li><strong>Export the map.</strong> <code>Export.image.toDrive({image: classified, description: 'RF_classification', region: aoi, scale: 10, maxPixels: 1e10})</code> – run the task in the <em>Tasks</em> tab; the GeoTIFF becomes the report figure.</li>
 <li><strong>Save the script</strong> and copy its shareable link (<em>Get Link</em>) – you will paste it in the report.</li>

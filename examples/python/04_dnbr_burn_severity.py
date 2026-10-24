@@ -1,7 +1,7 @@
 """04 - Burn severity with dNBR (lab 6 in Python).
 
 Mirrors the course copy of the UN-SPIDER burn severity script:
-  1. Sentinel-2 L2A pre- and post-fire collections (S2_SR_HARMONIZED)
+  1. Sentinel-2 L2A median_pre- and median_post-fire collections (S2_SR_HARMONIZED)
   2. per-pixel cloud mask: SCL (default) or Cloud Score+ (set a flag)
   3. NBR = (B8 - B12) / (B8 + B12) on the median composites
   4. dNBR = NBR_pre - NBR_post, scaled x 1000
@@ -10,7 +10,7 @@ Mirrors the course copy of the UN-SPIDER burn severity script:
 
 Default event: Landiras fire, Gironde, France, 12-25 July 2022
 (about 14 000 ha of pine forest; a second fire reignited nearby on
-9 August 2022, so the post window ends before that).
+9 August 2022, so the median_post window ends before that).
 """
 
 import ee
@@ -82,8 +82,8 @@ print('pre scenes :', s2_before.size().getInfo())
 print('post scenes:', s2_after.size().getInfo())
 # 0 scenes -> widen the window (Sentinel-2 revisit is 5 days).
 
-pre = s2_before.median().clip(aoi)
-post = s2_after.median().clip(aoi)
+median_pre = s2_before.median().clip(aoi)
+median_post = s2_after.median().clip(aoi)
 
 
 # ------------------------------------------------------------------- 3. NBR
@@ -92,8 +92,8 @@ def nbr(img):
     return img.normalizedDifference(['B8', 'B12']).rename('NBR')
 
 
-nbr_pre = nbr(pre)
-nbr_post = nbr(post)
+nbr_pre = nbr(median_pre)
+nbr_post = nbr(median_post)
 
 # ------------------------------------------------------------------ 4. dNBR
 dnbr = nbr_pre.subtract(nbr_post).multiply(1000).rename('dNBR')
