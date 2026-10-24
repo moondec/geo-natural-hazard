@@ -20,7 +20,7 @@ PROJECT = 'ee-your-project'
 
 # Area of interest: rectangle around Nysa and the Nysa Klodzka valley
 # [west, south, east, north] in degrees (WGS84).
-ROI_BBOX = [17.05, 50.38, 17.75, 50.62]
+AOI_BBOX = [17.05, 50.38, 17.75, 50.62]
 
 BEFORE_START, BEFORE_END = '2024-08-20', '2024-09-10'   # normal conditions
 AFTER_START, AFTER_END = '2024-09-16', '2024-09-25'     # flood peak onwards
@@ -45,24 +45,24 @@ except Exception:
     ee.Authenticate()
     ee.Initialize(project=PROJECT)
 
-roi = ee.Geometry.Rectangle(ROI_BBOX)
+aoi = ee.Geometry.Rectangle(AOI_BBOX)
 
 # ------------------------------------------------- 1. Sentinel-1 collection
 s1 = (ee.ImageCollection('COPERNICUS/S1_GRD')
       .filter(ee.Filter.eq('instrumentMode', 'IW'))
       .filter(ee.Filter.listContains('transmitterReceiverPolarisation', POLARISATION))
       .filter(ee.Filter.eq('orbitProperties_pass', ORBIT_PASS))
-      .filterBounds(roi)
+      .filterBounds(aoi)
       .select(POLARISATION))
 
-before_col = s1.filterDate(BEFORE_START, BEFORE_END)
-after_col = s1.filterDate(AFTER_START, AFTER_END)
-print('before scenes:', before_col.size().getInfo())
-print('after scenes :', after_col.size().getInfo())
+s1_before = s1.filterDate(BEFORE_START, BEFORE_END)
+s1_after = s1.filterDate(AFTER_START, AFTER_END)
+print('before scenes:', s1_before.size().getInfo())
+print('after scenes :', s1_after.size().getInfo())
 # If one of them is 0: widen the dates or switch ORBIT_PASS.
 
-before = before_col.mosaic().clip(roi)
-after = after_col.mosaic().clip(roi)
+before = s1_before.mosaic().clip(aoi)
+after = s1_after.mosaic().clip(aoi)
 
 # -------------------------------------------------------- 2. speckle filter
 before_f = before.focal_mean(SMOOTH_RADIUS_M, 'circle', 'meters')
@@ -89,7 +89,7 @@ flooded = (flooded_raw
 
 # ------------------------------------------------------- 5. area in hectares
 area_ha = (flooded.multiply(ee.Image.pixelArea()).divide(1e4)
-           .reduceRegion(reducer=ee.Reducer.sum(), geometry=roi,
+           .reduceRegion(reducer=ee.Reducer.sum(), geometry=aoi,
                          scale=EXPORT_SCALE, maxPixels=1e10))
 print('flooded area [ha]:', round(area_ha.get('flooded').getInfo(), 1))
 
@@ -100,14 +100,14 @@ for thr in (-2.0, -3.0, -4.0):
          .updateMask(permanent_water.unmask(0).Not())
          .updateMask(slope.lt(MAX_SLOPE_DEG)))
     ha = (f.multiply(ee.Image.pixelArea()).divide(1e4)
-          .reduceRegion(ee.Reducer.sum(), roi, EXPORT_SCALE, maxPixels=1e10)
+          .reduceRegion(ee.Reducer.sum(), aoi, EXPORT_SCALE, maxPixels=1e10)
           .get('diff_dB').getInfo())
     print('threshold %.1f dB -> %.0f ha' % (thr, ha))
 
 # ----------------------------------------------------------- map (notebook)
 # import geemap
 # m = geemap.Map()
-# m.centerObject(roi, 11)
+# m.centerObject(aoi, 11)
 # m.addLayer(before_f, {'min': -25, 'max': 0}, 'before VH')
 # m.addLayer(after_f, {'min': -25, 'max': 0}, 'after VH')
 # m.addLayer(difference, {'min': -10, 'max': 10, 'palette': ['red', 'white', 'blue']}, 'diff dB', False)
@@ -120,7 +120,7 @@ task = ee.batch.Export.image.toDrive(
     description='flood_nysa_klodzka_2024-09_VH_m3dB',
     folder=DRIVE_FOLDER,
     scale=EXPORT_SCALE,
-    region=roi,
+    region=aoi,
     crs=EXPORT_CRS,
     maxPixels=1e10,
 )

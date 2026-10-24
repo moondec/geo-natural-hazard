@@ -23,8 +23,8 @@
               .copyProperties(image, ['system:time_start']);  // keep the date (filterDate needs it)
 }
 var s2clean = s2.filter(ee.Filter.lt('CLOUDY_PIXEL_PERCENTAGE', 60)).map(maskSCL);
-Map.addLayer(s2.median().clip(roi), rgb, 'median, no mask', false);
-Map.addLayer(s2clean.median().clip(roi), rgb, 'median, SCL mask');
+Map.addLayer(s2.median().clip(aoi), rgb, 'median, no mask', false);
+Map.addLayer(s2clean.median().clip(aoi), rgb, 'median, SCL mask');
 </code></pre></li>
 <li><strong>Cloud Score+</strong> – the better mask, three more lines. The score collection is joined to the scenes with <code>linkCollection</code>:
 <pre class="iot-material-code"><code class="language-javascript">var csPlus = ee.ImageCollection('GOOGLE/CLOUD_SCORE_PLUS/V1/S2_HARMONIZED');
@@ -32,7 +32,7 @@ function maskCS(image) {
   return image.updateMask(image.select('cs_cdf').gte(0.6));   // 0.5 loose … 0.65 strict
 }
 var s2cs = s2.linkCollection(csPlus, ['cs_cdf']).map(maskCS);
-Map.addLayer(s2cs.median().clip(roi), rgb, 'median, Cloud Score+');
+Map.addLayer(s2cs.median().clip(aoi), rgb, 'median, Cloud Score+');
 </code></pre></li>
 <li><strong>Compare the three medians</strong> on the map and with the Inspector: where the unmasked median is milky white or dark, the masked ones show the ground. Print how many valid observations each pixel keeps: <code>s2cs.select('B4').count()</code>.</li>
 <li><strong>Use it from now on.</strong> Every later script in this course (classification, floods, fires) starts with a masked collection. The ready version with all three variants is <a href="https://code.earthengine.google.com/?scriptPath=users%2Fmarekurbaniak%2FGEO2%3A02_code_editor%2F05_cloud_masking_SCL_CloudScorePlus" target="_blank" rel="noopener">GEO2 › 02_code_editor › 05_cloud_masking_SCL_CloudScorePlus</a>.</li>

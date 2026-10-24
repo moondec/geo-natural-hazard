@@ -13,8 +13,8 @@ import ee
 
 # ---------------------------------------------------------------- parameters
 PROJECT = 'ee-your-project'          # the Cloud project id from lab 1
-ROI_LON, ROI_LAT = 16.93, 52.41      # Poznan, Poland
-ROI_BUFFER_M = 5000                  # radius of the study area in metres
+AOI_LON, AOI_LAT = 16.93, 52.41      # Poznan, Poland
+AOI_BUFFER_M = 5000                  # radius of the study area in metres
 DATE_START, DATE_END = '2025-05-01', '2025-09-30'
 MAX_CLOUD_PCT = 30                   # scene-level filter (CLOUDY_PIXEL_PERCENTAGE)
 
@@ -31,11 +31,11 @@ except Exception:
 print(ee.String('Hello from Earth Engine').getInfo())
 
 # ----------------------------------------------------------------- the recipe
-roi = ee.Geometry.Point(ROI_LON, ROI_LAT).buffer(ROI_BUFFER_M)
+aoi = ee.Geometry.Point(AOI_LON, AOI_LAT).buffer(AOI_BUFFER_M)
 
 s2 = (ee.ImageCollection('COPERNICUS/S2_SR_HARMONIZED')
       .filterDate(DATE_START, DATE_END)
-      .filterBounds(roi)
+      .filterBounds(aoi)
       .filter(ee.Filter.lt('CLOUDY_PIXEL_PERCENTAGE', MAX_CLOUD_PCT)))
 
 # s2.size() is a server object; .getInfo() brings the value to Python.
@@ -52,8 +52,8 @@ ndvi = s2.map(add_ndvi).select('NDVI').median()
 # One small dictionary -> getInfo is fine. Images never go through getInfo.
 stats = ndvi.reduceRegion(
     reducer=ee.Reducer.mean(),
-    geometry=roi,
+    geometry=aoi,
     scale=10,
     maxPixels=1e9,
 )
-print('mean NDVI in the ROI:', stats.getInfo())
+print('mean NDVI in the AOI:', stats.getInfo())

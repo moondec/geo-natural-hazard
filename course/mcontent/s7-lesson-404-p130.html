@@ -22,18 +22,18 @@ from ee_plugin import Map
 <pre class="iot-material-code"><code class="language-python">import ee
 from ee_plugin import Map            # the plugin's Map replaces geemap.Map
 
-roi = ee.Geometry.Point(16.93, 52.41).buffer(5000)          # change to your area
+aoi = ee.Geometry.Point(16.93, 52.41).buffer(5000)          # change to your area
 s2 = (ee.ImageCollection('COPERNICUS/S2_SR_HARMONIZED')
-        .filterBounds(roi).filterDate('2025-05-01', '2025-09-30')
+        .filterBounds(aoi).filterDate('2025-05-01', '2025-09-30')
         .filter(ee.Filter.lt('CLOUDY_PIXEL_PERCENTAGE', 30)))
 ndvi = s2.map(lambda i: i.normalizedDifference(['B8', 'B4']).rename('NDVI')).median()
 print('Scenes:', s2.size().getInfo())                       # printed in the console
 
-Map.addLayer(s2.median().clip(roi), {'bands': ['B4', 'B3', 'B2'], 'min': 0, 'max': 3000},
+Map.addLayer(s2.median().clip(aoi), {'bands': ['B4', 'B3', 'B2'], 'min': 0, 'max': 3000},
              'S2 median true colour', False)
-Map.addLayer(ndvi.clip(roi), {'min': -0.2, 'max': 0.8,
+Map.addLayer(ndvi.clip(aoi), {'min': -0.2, 'max': 0.8,
              'palette': ['blue', 'white', 'yellow', 'green', 'darkgreen']}, 'NDVI median 2025')
-Map.centerObject(roi, 11)
+Map.centerObject(aoi, 11)
 </code></pre>
 <figure class="iot-material-figure"><img src="@@PLUGINFILE@@/visualization4.png" alt="An Earth Engine layer added from the console appears in the Layers panel" width="1000" height="654"><figcaption>A layer added with Map.addLayer appears in the Layers panel like any other (here the plugin documentation's climate example).</figcaption></figure></li>
 <li><strong>What you got</strong>: two layers in the <em>Layers</em> panel. They are streamed from Earth Engine as tiles (a WMS-like data provider): zoom and pan recompute them on the fly, you can change the order and the opacity, overlay your own vectors, save them in the project. You <em>cannot</em> edit them, run zonal statistics on them or measure them – for that you export (QGIS page 3 and 4). Turn the true-colour layer on and off to see the NDVI over the real image.</li>

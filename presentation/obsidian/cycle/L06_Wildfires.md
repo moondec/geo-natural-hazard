@@ -108,13 +108,13 @@ source: [NASA FIRMS](https://firms.modaps.eosdis.nasa.gov/); [EFFIS](https://for
 ```javascript
 var firms = ee.ImageCollection('FIRMS')
   .filterDate('2025-07-01', '2025-08-31')
-  .filterBounds(roi)
+  .filterBounds(aoi)
   .select('T21');                       // brightness temperature, K
 var hot = firms.max().gt(300);          // any detection in the window
 Map.addLayer(hot.selfMask(), {palette: ['red']}, 'FIRMS hotspots');
 // a chart of detections per day gives the fire timeline
 print(ui.Chart.image.series(firms.map(function(i){return i.gt(0);}),
-      roi, ee.Reducer.sum(), 1000));
+      aoi, ee.Reducer.sum(), 1000));
 ```
 <!-- TODO image: Planck curves at 300 K and 800 K with MWIR/TIR bands marked (public-domain figure, e.g. from NASA ARSET or draw in Excalidraw). -->
 :::
@@ -187,7 +187,7 @@ var thresholds = ee.Image([-250, -100, 100, 270, 440, 660]);
 var severity = dNBR.gt(thresholds).reduce('sum').toInt();   // 0..6
 var sevVis = {min: 0, max: 6, palette:
   ['7a8737','acbe4d','0ae042','fff70b','ffaf38','ff641b','a41fd6']};
-Map.addLayer(severity.clip(roi), sevVis, 'burn severity');
+Map.addLayer(severity.clip(aoi), sevVis, 'burn severity');
 ```
 Caveats:
 - thresholds were derived for US forests; in Mediterranean shrub or Polish pine they shift – **calibrate** with field data or at least report them as "USGS proposed"

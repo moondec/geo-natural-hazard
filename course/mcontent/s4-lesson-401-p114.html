@@ -35,7 +35,7 @@
   .filter(ee.Filter.eq('instrumentMode', 'IW'))
   .filter(ee.Filter.listContains('transmitterReceiverPolarisation', 'VH'))
   .filter(ee.Filter.eq('orbitProperties_pass', 'DESCENDING'))
-  .filterBounds(roi)
+  .filterBounds(aoi)
   .select('VH');</code></pre></li>
 <li><strong>Make a before and an after mosaic</strong> around the flood peak:
 <pre><code class="language-javascript">var before = s1.filterDate('2024-08-20', '2024-09-10').mosaic();

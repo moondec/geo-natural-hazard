@@ -18,7 +18,7 @@ import ee
 # ---------------------------------------------------------------- parameters
 PROJECT = 'ee-your-project'
 
-ROI_BBOX = [-0.70, 44.38, -0.30, 44.65]        # Landiras / Hostens, Gironde
+AOI_BBOX = [-0.70, 44.38, -0.30, 44.65]        # Landiras / Hostens, Gironde
 PRE_START, PRE_END = '2022-06-15', '2022-07-10'    # before ignition, same season
 POST_START, POST_END = '2022-07-26', '2022-08-08'  # smoke gone, ash still there
 
@@ -45,7 +45,7 @@ except Exception:
     ee.Authenticate()
     ee.Initialize(project=PROJECT)
 
-roi = ee.Geometry.Rectangle(ROI_BBOX)
+aoi = ee.Geometry.Rectangle(AOI_BBOX)
 
 
 # ------------------------------------------------------------ 2. cloud masks
@@ -63,27 +63,27 @@ def mask_cs_plus(img):
 
 
 def s2_masked(start, end):
-    col = (ee.ImageCollection('COPERNICUS/S2_SR_HARMONIZED')
+    s2 = (ee.ImageCollection('COPERNICUS/S2_SR_HARMONIZED')
            .filterDate(start, end)
-           .filterBounds(roi)
+           .filterBounds(aoi)
            .filter(ee.Filter.lt('CLOUDY_PIXEL_PERCENTAGE', MAX_CLOUD_PCT)))
     if USE_CLOUD_SCORE_PLUS:
         cs_plus = ee.ImageCollection('GOOGLE/CLOUD_SCORE_PLUS/V1/S2_HARMONIZED')
         # linkCollection joins by system:index and adds the cs_cdf band
-        col = col.linkCollection(cs_plus, ['cs_cdf']).map(mask_cs_plus)
+        s2 = s2.linkCollection(cs_plus, ['cs_cdf']).map(mask_cs_plus)
     else:
-        col = col.map(mask_scl)
-    return col
+        s2 = s2.map(mask_scl)
+    return s2
 
 
-pre_col = s2_masked(PRE_START, PRE_END)
-post_col = s2_masked(POST_START, POST_END)
-print('pre scenes :', pre_col.size().getInfo())
-print('post scenes:', post_col.size().getInfo())
+s2_before = s2_masked(PRE_START, PRE_END)
+s2_after = s2_masked(POST_START, POST_END)
+print('pre scenes :', s2_before.size().getInfo())
+print('post scenes:', s2_after.size().getInfo())
 # 0 scenes -> widen the window (Sentinel-2 revisit is 5 days).
 
-pre = pre_col.median().clip(roi)
-post = post_col.median().clip(roi)
+pre = s2_before.median().clip(aoi)
+post = s2_after.median().clip(aoi)
 
 
 # ------------------------------------------------------------------- 3. NBR
@@ -109,7 +109,7 @@ severity = severity.updateMask(dnbr.mask()).toByte()
 area_img = ee.Image.pixelArea().divide(1e4).addBands(severity)
 grouped = area_img.reduceRegion(
     reducer=ee.Reducer.sum().group(groupField=1, groupName='class'),
-    geometry=roi,
+    geometry=aoi,
     scale=EXPORT_SCALE,
     maxPixels=1e10,
 )
@@ -122,10 +122,10 @@ for g in groups:
     print('%2d  %-28s %10.0f' % (g['class'], CLASS_NAMES[g['class']], ha))
 print('    %-28s %10.0f' % ('total', total))
 
-# dNBR histogram over the ROI (bimodal with the unburned peak near 0?)
+# dNBR histogram over the AOI (bimodal with the unburned peak near 0?)
 hist = dnbr.reduceRegion(
     reducer=ee.Reducer.fixedHistogram(-500, 1300, 36),
-    geometry=roi, scale=100, maxPixels=1e10).get('dNBR').getInfo()
+    geometry=aoi, scale=100, maxPixels=1e10).get('dNBR').getInfo()
 print('\ndNBR histogram (bin start, count) at 100 m:')
 for lo, n in hist:
     print('%6.0f %8.0f' % (lo, n))
@@ -133,7 +133,7 @@ for lo, n in hist:
 # ----------------------------------------------------------- map (notebook)
 # import geemap
 # m = geemap.Map()
-# m.centerObject(roi, 11)
+# m.centerObject(aoi, 11)
 # rgb = {'min': 0, 'max': 3000, 'bands': ['B4', 'B3', 'B2']}
 # m.addLayer(pre, rgb, 'pre-fire true colour')
 # m.addLayer(post, rgb, 'post-fire true colour')
@@ -148,7 +148,7 @@ task = ee.batch.Export.image.toDrive(
     description='dnbr_severity_landiras_2022-07',
     folder=DRIVE_FOLDER,
     scale=EXPORT_SCALE,
-    region=roi,
+    region=aoi,
     crs=EXPORT_CRS,
     maxPixels=1e10,
 )

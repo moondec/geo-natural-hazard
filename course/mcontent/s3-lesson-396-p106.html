@@ -11,7 +11,7 @@
 <h3 class="iot-material-divider">Step by step</h3>
 <ol class="iot-material-steps">
 <li><strong>Sample the composite.</strong> k-means needs a table of pixels, not polygons:
-<pre><code class="language-javascript">var sample = composite.sample({region: roi, scale: 10, numPixels: 5000});</code></pre></li>
+<pre><code class="language-javascript">var sample = composite.sample({region: aoi, scale: 10, numPixels: 5000});</code></pre></li>
 <li><strong>Train the clusterer with k = 4</strong> – the same number as your supervised classes – and cluster the image:
 <pre><code class="language-javascript">var clusterer = ee.Clusterer.wekaKMeans(4).train(sample);
 var clusters = composite.cluster(clusterer);

@@ -35,7 +35,7 @@ MODULES = [
          route=[('Watch lecture 2', 'Client/server, data model, filter → map → reduce, indices, reduceRegion', mod('page', 424)),
                 ('Lesson: GEE step by step', 'Sign-up check, End-to-End repository, collections, clouds first, NDVI, areas, quizzes', mod('lesson', 391)),
                 ('Lab 2 – build the script', 'Line by line on your own AOI; verify three pixels with the Inspector', mod('lesson', 391)),
-                ('Homework "index areas"', 'A different index, your own ROI and thresholds; submit the script link', mod('assign', 392)),
+                ('Homework "index areas"', 'A different index, your own AOI and thresholds; submit the script link', mod('assign', 392)),
                 ('Prepare lab 3', 'Pick an area of 60–100 km² with four clearly different surfaces', None)],
          links=[('Lecture 2 (slides)', mod('page', 424)), ('Lesson: Google Earth Engine', mod('lesson', 391)), ('Course scripts: add the GEO2 repository', 'https://code.earthengine.google.com/?accept_repo=users/marekurbaniak/GEO2'), ('Homework: index areas', mod('assign', 392)),
                 ('End-to-End GEE course', 'https://courses.spatialthoughts.com/end-to-end-gee.html'), ('Earth Engine data catalogue', 'https://developers.google.com/earth-engine/datasets')],

@@ -167,7 +167,7 @@ var s1 = ee.ImageCollection('COPERNICUS/S1_GRD')
   .filter(ee.Filter.eq('instrumentMode', 'IW'))
   .filter(ee.Filter.listContains('transmitterReceiverPolarisation', 'VH'))
   .filter(ee.Filter.eq('orbitProperties_pass', 'DESCENDING'))
-  .filterBounds(roi)
+  .filterBounds(aoi)
   .select('VH');
 
 var before = s1.filterDate('2024-08-20', '2024-09-10').mosaic();
@@ -234,7 +234,7 @@ flooded = flooded.updateMask(permanent.not())
                  .updateMask(flooded.connectedPixelCount(25).gte(8)); // specks, as UN-SPIDER
 
 var area_ha = flooded.multiply(ee.Image.pixelArea()).divide(1e4)
-  .reduceRegion({reducer: ee.Reducer.sum(), geometry: roi, scale: 10, maxPixels: 1e10});
+  .reduceRegion({reducer: ee.Reducer.sum(), geometry: aoi, scale: 10, maxPixels: 1e10});
 print('flooded area [ha]', area_ha);
 ```
 :::

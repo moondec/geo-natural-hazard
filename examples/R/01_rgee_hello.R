@@ -15,8 +15,8 @@ library(rgee)
 
 # ------------------------------------------------------------------ parameters
 PROJECT <- "ee-your-project"       # Cloud project id from lab 1
-ROI_LON <- 16.93; ROI_LAT <- 52.41 # Poznan
-ROI_BUFFER_M <- 5000
+AOI_LON <- 16.93; AOI_LAT <- 52.41 # Poznan
+AOI_BUFFER_M <- 5000
 DATE_START <- "2025-05-01"; DATE_END <- "2025-09-30"
 MAX_CLOUD_PCT <- 30
 
@@ -27,11 +27,11 @@ ee_Initialize(project = PROJECT, drive = TRUE)
 print(ee$String("Hello from Earth Engine")$getInfo())
 
 # ----------------------------------------------------------------- recipe
-roi <- ee$Geometry$Point(ROI_LON, ROI_LAT)$buffer(ROI_BUFFER_M)
+aoi <- ee$Geometry$Point(AOI_LON, AOI_LAT)$buffer(AOI_BUFFER_M)
 
 s2 <- ee$ImageCollection("COPERNICUS/S2_SR_HARMONIZED")$
   filterDate(DATE_START, DATE_END)$
-  filterBounds(roi)$
+  filterBounds(aoi)$
   filter(ee$Filter$lt("CLOUDY_PIXEL_PERCENTAGE", MAX_CLOUD_PCT))
 
 cat("scenes:", s2$size()$getInfo(), "\n")
@@ -41,17 +41,17 @@ add_ndvi <- function(img) {
   img$addBands(img$normalizedDifference(c("B8", "B4"))$rename("NDVI"))
 }
 
-ndvi <- s2$map(add_ndvi)$select("NDVI")$median()$clip(roi)
+ndvi <- s2$map(add_ndvi)$select("NDVI")$median()$clip(aoi)
 
 # ------------------------------------------------------------------ map
-Map$centerObject(roi, 11)
+Map$centerObject(aoi, 11)
 Map$addLayer(ndvi,
              list(min = -0.2, max = 0.8,
                   palette = c("blue", "white", "yellow", "green", "darkgreen")),
              "NDVI median")
 
 # ------------------------------------------------------- one number out
-stats <- ndvi$reduceRegion(reducer = ee$Reducer$mean(), geometry = roi,
+stats <- ndvi$reduceRegion(reducer = ee$Reducer$mean(), geometry = aoi,
                            scale = 10, maxPixels = 1e9)
 print(stats$getInfo())
 
@@ -59,14 +59,14 @@ print(stats$getInfo())
 # via = "getDownloadURL" is synchronous and fine for a few MB;
 # via = "drive" (default) handles big images in the background.
 library(terra)
-r <- ee_as_rast(ndvi, region = roi, scale = 10, via = "getDownloadURL")
+r <- ee_as_rast(ndvi, region = aoi, scale = 10, via = "getDownloadURL")
 print(r)
 plot(r, main = "NDVI median, Poznan 2025")
 writeRaster(r, "ndvi_poznan_2025.tif", overwrite = TRUE)
 
 # Alternative: a stars object
 # library(stars)
-# st <- ee_as_stars(ndvi, region = roi, scale = 10, via = "getDownloadURL")
+# st <- ee_as_stars(ndvi, region = aoi, scale = 10, via = "getDownloadURL")
 
 # ----------------------------------------- time series -> data.frame
 # ee_extract: NDVI per image for a few points -> one row per point,

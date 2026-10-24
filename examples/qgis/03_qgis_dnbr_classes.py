@@ -7,7 +7,7 @@ import ee
 from ee_plugin import Map
 
 # ---------------------------------------------------------------- PARAMETERS
-AOI = ee.Geometry.Rectangle([-0.62, 44.36, -0.20, 44.64])
+aoi = ee.Geometry.Rectangle([-0.62, 44.36, -0.20, 44.64])
 PRE = ('2022-06-15', '2022-07-11')
 POST = ('2022-07-26', '2022-08-08')
 MAX_CLOUD = 40
@@ -24,10 +24,10 @@ def mask_scl(img):
     return img.updateMask(good).copyProperties(img, ['system:time_start'])
 
 
-s2 = (ee.ImageCollection('COPERNICUS/S2_SR_HARMONIZED').filterBounds(AOI)
+s2 = (ee.ImageCollection('COPERNICUS/S2_SR_HARMONIZED').filterBounds(aoi)
         .filter(ee.Filter.lt('CLOUDY_PIXEL_PERCENTAGE', MAX_CLOUD)).map(mask_scl))
-pre = s2.filterDate(*PRE).median().clip(AOI)
-post = s2.filterDate(*POST).median().clip(AOI)
+pre = s2.filterDate(*PRE).median().clip(aoi)
+post = s2.filterDate(*POST).median().clip(aoi)
 print('Scenes pre / post:', s2.filterDate(*PRE).size().getInfo(), s2.filterDate(*POST).size().getInfo())
 
 
@@ -41,7 +41,7 @@ severity = dnbr.gt(ee.Image.constant(THRESHOLDS)).reduce(ee.Reducer.sum()).toInt
 # hectares per class (0..6)
 groups = ee.List(ee.Image.pixelArea().divide(1e4).addBands(severity).reduceRegion(
     reducer=ee.Reducer.sum().group(groupField=1, groupName='class'),
-    geometry=AOI, scale=20, maxPixels=1e10).get('groups')).getInfo()
+    geometry=aoi, scale=20, maxPixels=1e10).get('groups')).getInfo()
 for g in groups:
     print('%-24s %8.0f ha' % (CLASS_NAMES[g['class']], g['sum']))
 
@@ -49,5 +49,5 @@ for g in groups:
 Map.addLayer(post, {'bands': ['B12', 'B8', 'B4'], 'min': 0, 'max': 4000}, 'S2 post-fire SWIR composite', False)
 Map.addLayer(dnbr, {'min': -500, 'max': 1000, 'palette': ['00ff00', 'ffffff', 'ff0000']}, 'dNBR x1000', False)
 Map.addLayer(severity, {'min': 0, 'max': 6, 'palette': PALETTE}, 'Burn severity (USGS classes)')
-Map.centerObject(AOI, 11)
+Map.centerObject(aoi, 11)
 # For the map: export severity as a Byte GeoTIFF (EPSG:2180 in Poland) and style it as Paletted in QGIS.

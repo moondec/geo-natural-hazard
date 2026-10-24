@@ -13,13 +13,11 @@
 <h3 class="iot-material-divider">Step by step</h3>
 <ol class="iot-material-steps">
 <li><strong>Build the composite.</strong> Filter <code>COPERNICUS/S2_SR_HARMONIZED</code> to your AOI and one season, keep scenes with little cloud, select the reflectance bands only and take the median – then <code>composite.bandNames()</code> is clean (no <code>SCL</code>, <code>AOT</code>, <code>QA</code> bands):
-<pre><code class="language-javascript">var composite = ee.ImageCollection('COPERNICUS/S2_SR_HARMONIZED')
-  .filterBounds(roi)
+<pre><code class="language-javascript">var s2 = ee.ImageCollection('COPERNICUS/S2_SR_HARMONIZED')
+  .filterBounds(aoi)
   .filterDate('2025-05-01', '2025-09-30')
-  .filter(ee.Filter.lt('CLOUDY_PIXEL_PERCENTAGE', 20))
-  .select(['B2', 'B3', 'B4', 'B8', 'B11', 'B12'])   // or .select('B.*')
-  .median()
-  .clip(roi);
+  .filter(ee.Filter.lt('CLOUDY_PIXEL_PERCENTAGE', 20));
+var composite = s2.select(['B2', 'B3', 'B4', 'B8', 'B11', 'B12']).median().clip(aoi);   // or .select('B.*')
 Map.addLayer(composite, {bands: ['B4', 'B3', 'B2'], min: 0, max: 3000}, 'composite');</code></pre></li>
 <li><strong>Create one layer per class.</strong> In the Code Editor open the geometry tools, add a new layer for each class (e.g. <code>water</code>, <code>urban</code>, <code>crops</code>, <code>forest</code>). In <em>Geometry Imports</em> change <em>Import as</em> from <code>Geometry</code> to <code>FeatureCollection</code> and add the property <code>landcover</code> with the values 0, 1, 2, 3.</li>
 <li><strong>Draw the samples.</strong> Draw polygons (or points) inside pure patches: inside a lake, inside a forest – not on edges. Spread them over the whole area and give every class a similar total area.</li>
@@ -52,7 +50,7 @@ print('kappa', cm.kappa());
 print('producer accuracy', cm.producersAccuracy());
 print('consumer accuracy', cm.consumersAccuracy());</code></pre>
 Copy the matrix and the two numbers into your report.</li>
-<li><strong>Export the map.</strong> <code>Export.image.toDrive({image: classified, description: 'RF_classification', region: roi, scale: 10, maxPixels: 1e10})</code> – run the task in the <em>Tasks</em> tab; the GeoTIFF becomes the report figure.</li>
+<li><strong>Export the map.</strong> <code>Export.image.toDrive({image: classified, description: 'RF_classification', region: aoi, scale: 10, maxPixels: 1e10})</code> – run the task in the <em>Tasks</em> tab; the GeoTIFF becomes the report figure.</li>
 <li><strong>Save the script</strong> and copy its shareable link (<em>Get Link</em>) – you will paste it in the report.</li>
 </ol>
 <h3 class="iot-material-divider">Reading the confusion matrix</h3>

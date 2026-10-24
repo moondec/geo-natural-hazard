@@ -188,18 +188,18 @@ Two different reductions: `.median()` reduces **time** (many images → one), `.
 ```javascript
 // area of interest: a point with a buffer, or a drawn polygon
 var poi = ee.Geometry.Point(16.93, 52.41);
-var roi = poi.buffer(5000);          // 5 km around Poznań centre
-Map.centerObject(roi, 11);
+var aoi = poi.buffer(5000);          // 5 km around Poznań centre
+Map.centerObject(aoi, 11);
 
 var s2 = ee.ImageCollection('COPERNICUS/S2_SR_HARMONIZED')
   .filterDate('2025-05-01', '2025-09-30')             // when
-  .filterBounds(roi)                                   // where
+  .filterBounds(aoi)                                   // where
   .filter(ee.Filter.lt('CLOUDY_PIXEL_PERCENTAGE', 30)); // how cloudy
 
 print('scenes:', s2.size());         // a number, not the whole list
 
 var rgb = {bands: ['B4', 'B3', 'B2'], min: 0, max: 3000};
-Map.addLayer(s2.median().clip(roi), rgb, 'S2 median RGB');
+Map.addLayer(s2.median().clip(aoi), rgb, 'S2 median RGB');
 ```
 :::
 
@@ -304,7 +304,7 @@ var ndviMed = s2ndvi.select('NDVI').median();  // one band, one image
 
 var ndviVis = {min: -0.2, max: 0.8,
                palette: ['blue', 'white', 'yellow', 'green', 'darkgreen']};
-Map.addLayer(ndviMed.clip(roi), ndviVis, 'NDVI median');
+Map.addLayer(ndviMed.clip(aoi), ndviVis, 'NDVI median');
 ```
 :::
 
@@ -336,7 +336,7 @@ var classes = water.add(bare).add(shrub).add(green).rename('class');
 var thresholds = ee.Image([0.0, 0.2, 0.4]);
 var classes2 = ndviMed.gt(thresholds).reduce(ee.Reducer.sum()).add(1).toInt();
 
-Map.addLayer(classes2.clip(roi),
+Map.addLayer(classes2.clip(aoi),
   {min: 1, max: 4, palette: ['blue', 'burlywood', 'yellowgreen', 'darkgreen']},
   'NDVI classes');
 ```
@@ -362,7 +362,7 @@ var areaImage = ee.Image.pixelArea().addBands(classes2);  // band 0 = m² of eac
 
 var areas = areaImage.reduceRegion({
   reducer: ee.Reducer.sum().group({groupField: 1, groupName: 'class'}),
-  geometry: roi,
+  geometry: aoi,
   scale: 10,          // Sentinel-2 native resolution, in metres
   maxPixels: 1e10
 });
@@ -382,7 +382,7 @@ print('area per class [ha]:', table);
 - `ee.Image.pixelArea()` gives the true area of every pixel in m² (it changes with latitude)
 - `group` splits the sum by the value of band 1 → one sum per class
 - **`scale`** must match the data (10 m). `scale: 1` forces a billion samples and the error *"Too many pixels"* or a wrong, over-smoothed answer
-- the sum of all classes must equal the ROI area – check it, it is your first sanity test
+- the sum of all classes must equal the AOI area – check it, it is your first sanity test
 - a chart instead of a table: `ui.Chart.feature.byFeature(table, 'class', 'ha')`
 :::
 
@@ -405,7 +405,7 @@ var admin2 = ee.FeatureCollection('FAO/GAUL/2025/level2');
 var poznan = admin2.filter(ee.Filter.eq('GAUL2_NAME', 'Poznanski'));
 Map.addLayer(poznan, {color: 'red'}, 'Poznań district');
 
-var roi = poznan.geometry();   // use it exactly like the buffer before
+var aoi = poznan.geometry();   // use it exactly like the buffer before
 ```
 :::
 
@@ -444,7 +444,7 @@ var roi = poznan.geometry();   // use it exactly like the buffer before
 2. Build the script from this lecture **line by line** on your own AOI (point + buffer or a GAUL district): filter → median RGB → NDVI → classes → area table
 3. Verify with the Inspector: 3 pixels (water, field, forest), write down their NDVI
 4. Save the script, `Get Link`, paste the link in the quizzes of the lesson
-5. **Homework (assignment in Moodle)**: repeat for a *different* index (EVI, NDWI, SAVI, NDMI…), your own ROI (a city, a district, a national park), your own thresholds with justification. Deliverable: the **script link** + a short note with the area table
+5. **Homework (assignment in Moodle)**: repeat for a *different* index (EVI, NDWI, SAVI, NDMI…), your own AOI (a city, a district, a national park), your own thresholds with justification. Deliverable: the **script link** + a short note with the area table
 :::
 
 ---

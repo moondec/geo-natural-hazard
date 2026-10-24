@@ -43,7 +43,7 @@
 
 <h3 class="iot-material-divider">3. The same for your hazard</h3>
 <ol class="iot-material-steps" start="10">
-<li><strong>Run a hazard script in the console</strong>: <a href="https://github.com/moondec/geo-natural-hazard/blob/main/examples/qgis/02_qgis_flood_mask.py" target="_blank" rel="noopener">examples/qgis/02_qgis_flood_mask.py</a> (Sentinel-1 flood mask, lab 4 method) or <a href="https://github.com/moondec/geo-natural-hazard/blob/main/examples/qgis/03_qgis_dnbr_classes.py" target="_blank" rel="noopener">03_qgis_dnbr_classes.py</a> (dNBR classes, lab 6 method). Set the ROI and dates to your event; the console prints the hectares.</li>
+<li><strong>Run a hazard script in the console</strong>: <a href="https://github.com/moondec/geo-natural-hazard/blob/main/examples/qgis/02_qgis_flood_mask.py" target="_blank" rel="noopener">examples/qgis/02_qgis_flood_mask.py</a> (Sentinel-1 flood mask, lab 4 method) or <a href="https://github.com/moondec/geo-natural-hazard/blob/main/examples/qgis/03_qgis_dnbr_classes.py" target="_blank" rel="noopener">03_qgis_dnbr_classes.py</a> (dNBR classes, lab 6 method). Set the AOI and dates to your event; the console prints the hectares.</li>
 <li><strong>Export the result layer</strong> with <em>Export Image to GeoTIFF</em> (scale 10 or 20, EPSG:2180, canvas extent). Class rasters come out as integers – exactly what the map on page 4 needs.</li>
 <li><strong>Compare</strong> with the GeoTIFF you exported from the Code Editor in lab 4 or 6: load both, use the identify tool or <em>Raster calculator</em> (<code>"a@1" - "b@1"</code>). The extents should be similar; where they differ, name the reason (masks, speckle filter, threshold).</li>
 </ol>

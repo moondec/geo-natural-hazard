@@ -32,7 +32,7 @@ flooded = flooded.updateMask(permanent.not())
                  .updateMask(flooded.connectedPixelCount(25).gte(8)); // remove specks</code></pre></li>
 <li><strong>Read the flooded area</strong> (and, in the script, the exposed population and cropland):
 <pre><code class="language-javascript">var area_ha = flooded.multiply(ee.Image.pixelArea()).divide(1e4)
-  .reduceRegion({reducer: ee.Reducer.sum(), geometry: roi, scale: 10, maxPixels: 1e10});
+  .reduceRegion({reducer: ee.Reducer.sum(), geometry: aoi, scale: 10, maxPixels: 1e10});
 print('flooded area [ha]', area_ha);</code></pre></li>
 <li><strong>Sensitivity test.</strong> Change the threshold to 1.15 and 1.40 and the speckle filter radius (e.g. 30 m and 100 m); write down the flooded area for each run in a small table – this is the uncertainty of your map.</li>
 <li><strong>Validate.</strong> Compare your map with the Global Flood Monitoring product (<a href="https://global-flood.emergency.copernicus.eu/" target="_blank" rel="noopener">global-flood.emergency.copernicus.eu</a>) or a Copernicus EMS map of the same event; write one paragraph of agreement and disagreement and say what you compared against.</li>

@@ -19,7 +19,7 @@ in labs 2–6; compare them line by line with your JavaScript.
 | `R/01_rgee_hello.R` | rgee: `ee_Initialize(project=...)`, NDVI median, `Map$addLayer`, `ee_as_rast`, `ee_extract` |
 | `R/02_rgee_dnbr.R` | dNBR burn severity in R with rgee, hectares per class, raster to terra |
 
-All parameters (project id, ROI, dates, thresholds) sit at the top of each
+All parameters (project id, AOI, dates, thresholds) sit at the top of each
 file. Replace `ee-your-project` with the Cloud project id you registered in
 lab 1 (copy the **id**, not the project name, from the Cloud console).
 

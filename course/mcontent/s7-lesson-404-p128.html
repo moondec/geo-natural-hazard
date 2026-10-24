@@ -74,12 +74,12 @@ ee_install(py_env = "rgee")        # once: Miniconda + earthengine-api (~200 MB)
 ee_check()                         # Python? earthengine-api? credentials?
 ee_Initialize(project = "your-project-id", drive = TRUE)   # every session
 
-roi  &lt;- ee$Geometry$Point(16.93, 52.41)$buffer(5000)
-ndvi &lt;- ee$ImageCollection("COPERNICUS/S2_SR_HARMONIZED")$filterBounds(roi)$
+aoi  &lt;- ee$Geometry$Point(16.93, 52.41)$buffer(5000)
+ndvi &lt;- ee$ImageCollection("COPERNICUS/S2_SR_HARMONIZED")$filterBounds(aoi)$
           filterDate("2025-05-01", "2025-09-30")$
           map(function(i) i$normalizedDifference(c("B8", "B4")))$median()
-Map$centerObject(roi, 11); Map$addLayer(ndvi, list(min = -0.2, max = 0.8), "NDVI")
-r &lt;- ee_as_rast(ndvi$clip(roi), region = roi, scale = 10)   # terra SpatRaster
+Map$centerObject(aoi, 11); Map$addLayer(ndvi, list(min = -0.2, max = 0.8), "NDVI")
+r &lt;- ee_as_rast(ndvi$clip(aoi), region = aoi, scale = 10)   # terra SpatRaster
 </code></pre>
 <p><strong>Traps – R:</strong></p>
 <ul class="iot-material-list">

@@ -282,10 +282,10 @@ ee.Initialize(project='your-project-id')  # from lab 1
 
 <!-- .element: style="font-size: 24px; background-color: #e8f4f8; padding: 12px; box-sizing: border-box; position: absolute; left: 53%; top: 15%; height: 80%; width: 47%; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" class="has-light-background" align="left" -->
 ```python
-roi = ee.Geometry.Point(16.93, 52.41).buffer(5000)
+aoi = ee.Geometry.Point(16.93, 52.41).buffer(5000)
 s2 = (ee.ImageCollection('COPERNICUS/S2_SR_HARMONIZED')
         .filterDate('2025-05-01', '2025-09-30')
-        .filterBounds(roi)
+        .filterBounds(aoi)
         .filter(ee.Filter.lt('CLOUDY_PIXEL_PERCENTAGE', 30)))
 print('scenes:', s2.size().getInfo())
 
@@ -295,7 +295,7 @@ def add_ndvi(img):
 ndvi = s2.map(add_ndvi).select('NDVI').median()
 
 m = geemap.Map(center=[52.41, 16.93], zoom=11)
-m.addLayer(ndvi.clip(roi), {'min': -0.2, 'max': 0.8,
+m.addLayer(ndvi.clip(aoi), {'min': -0.2, 'max': 0.8,
            'palette': ['blue', 'white', 'yellow', 'green', 'darkgreen']}, 'NDVI')
 m
 ```
@@ -524,17 +524,17 @@ source: [Earth Engine – client vs. server](https://developers.google.com/earth
 # 1) a time series as a pandas DataFrame (small: one value per date)
 ts = s2.map(add_ndvi).select('NDVI').map(lambda i: ee.Feature(None, {
         'date': i.date().format('YYYY-MM-dd'),
-        'ndvi': i.reduceRegion(ee.Reducer.mean(), roi, 10).get('NDVI')}))
+        'ndvi': i.reduceRegion(ee.Reducer.mean(), aoi, 10).get('NDVI')}))
 df = geemap.ee_to_df(ee.FeatureCollection(ts))      # -> pandas
 df.plot(x='date', y='ndvi')
 
 # 2) a raster to Google Drive (big: runs in the background, Tasks tab / task.status())
-task = ee.batch.Export.image.toDrive(image=ndvi.clip(roi), description='ndvi_poznan',
-         folder='gee', scale=10, region=roi, crs='EPSG:2180', maxPixels=1e10)
+task = ee.batch.Export.image.toDrive(image=ndvi.clip(aoi), description='ndvi_poznan',
+         folder='gee', scale=10, region=aoi, crs='EPSG:2180', maxPixels=1e10)
 task.start()
 
 # 3) a small raster straight to the notebook / disk
-geemap.ee_export_image(ndvi.clip(roi), filename='ndvi.tif', scale=10, region=roi)
+geemap.ee_export_image(ndvi.clip(aoi), filename='ndvi.tif', scale=10, region=aoi)
 
 # 4) a vector table to Drive
 ee.batch.Export.table.toDrive(collection=table, description='areas', fileFormat='CSV').start()
@@ -633,13 +633,13 @@ Earth Engine computes, QGIS makes the map – the format of M4–M7.
 *Plugins → Manage and Install → "Google Earth Engine"* → sign in → paste your Cloud project (Code Editor → *Project Info*)
 <pre><code class="language-python">import ee
 from ee_plugin import Map              # instead of geemap.Map
-roi = ee.Geometry.Point(16.93, 52.41).buffer(5000)
+aoi = ee.Geometry.Point(16.93, 52.41).buffer(5000)
 s2 = (ee.ImageCollection('COPERNICUS/S2_SR_HARMONIZED')
-        .filterBounds(roi).filterDate('2025-05-01', '2025-09-30'))
+        .filterBounds(aoi).filterDate('2025-05-01', '2025-09-30'))
 ndvi = s2.map(lambda i: i.normalizedDifference(['B8', 'B4'])).median()
-Map.addLayer(ndvi.clip(roi), {'min': -0.2, 'max': 0.8,
+Map.addLayer(ndvi.clip(aoi), {'min': -0.2, 'max': 0.8,
    'palette': ['blue', 'white', 'yellow', 'green', 'darkgreen']}, 'NDVI')
-Map.centerObject(roi, 11)
+Map.centerObject(aoi, 11)
 </code></pre>
 No code: *Data Catalog*, Processing → *Add EE Image / Image Collection / Feature Collection*, *Export GeoTIFF*. Layers are tiles: look and overlay, export to measure.
 </div>

@@ -24,7 +24,7 @@
 <li><strong>Pick the event.</strong> In the <a href="https://browser.dataspace.copernicus.eu/" target="_blank" rel="noopener">Copernicus Browser</a> find a flood (e.g. south-west Poland, September 2024) and note a clear Sentinel-2 date before and the first clear date after the peak.</li>
 <li><strong>Compute MNDWI for both dates</strong> (reuse your lab 2 script):
 <pre><code class="language-javascript">var s2 = ee.ImageCollection('COPERNICUS/S2_SR_HARMONIZED')
-  .filterBounds(roi)
+  .filterBounds(aoi)
   .filter(ee.Filter.lt('CLOUDY_PIXEL_PERCENTAGE', 20));
 var before = s2.filterDate('2024-08-20', '2024-09-10').median();
 var after  = s2.filterDate('2024-09-16', '2024-09-30').median();
@@ -37,7 +37,7 @@ Map.addLayer(mndwiAfter, {min: -1, max: 1, palette: ['brown', 'white', 'blue']},
 var waterBefore = mndwiBefore.gt(0);
 var floodOptical = waterAfter.and(waterBefore.not()).selfMask();
 var areaHa = floodOptical.multiply(ee.Image.pixelArea()).divide(1e4)
-  .reduceRegion({reducer: ee.Reducer.sum(), geometry: roi, scale: 20, maxPixels: 1e10});
+  .reduceRegion({reducer: ee.Reducer.sum(), geometry: aoi, scale: 20, maxPixels: 1e10});
 print('optical flood area [ha]', areaHa);</code></pre></li>
 </ol>
 <div class="iot-material-callout iot-material-callout--warn">

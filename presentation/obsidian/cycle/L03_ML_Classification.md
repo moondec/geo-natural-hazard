@@ -184,7 +184,7 @@ source: Breiman, L. (2001). Random Forests. *Machine Learning* 45, 5–32.
 
 ::: block <!-- element style="font-size: 36px;" align="left" drag="45 75" drop="55 15" bg="#e8f4f8" pad="15px"-->
 ```javascript
-var sample = composite.sample({region: roi, scale: 10, numPixels: 5000});
+var sample = composite.sample({region: aoi, scale: 10, numPixels: 5000});
 var clusterer = ee.Clusterer.wekaKMeans(4).train(sample);
 var clusters = composite.cluster(clusterer);
 ```
