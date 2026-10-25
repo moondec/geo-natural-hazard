@@ -237,7 +237,7 @@ QUIZ_ANSWERS = [  # (answer id, label, correct, feedback text)
     (329, 'BLUE and SWIR', False, 'NDVI uses NIR and RED (Sentinel-2 B8 and B4). Learn more: <a href="https://en.wikipedia.org/wiki/Normalized_difference_vegetation_index">NDVI on Wikipedia</a>.'),
     (330, 'Google Earth', True, 'Google Earth shows high-resolution imagery for exploration; Earth Engine is the analysis platform.'),
     (331, 'Google Earth Engine', False, 'Google Earth Engine is primarily an analytics platform for low and medium resolution public-domain remote sensing datasets.'),
-    (332, 'Google Earth Timelapse', False, 'Google Earth Timelapse is created from medium resolution Landsat and Sentinel datasets.'),
+    (332, 'Earth Engine Explorer', False, 'Earth Engine Explorer is a lightweight web app for browsing the Earth Engine catalogue (medium-resolution data), not for exploring high-resolution imagery. Timelapse, once a separate site, is today a feature inside Google Earth (Landsat and Sentinel-2 mosaics 1984–2022).'),
     (333, 'Public Data Catalog', False, 'All of them – the platform is the data catalogue, the co-located storage and computation, the APIs and the Code Editor together. Learn more at <a href="https://earthengine.google.com/platform/">earthengine.google.com/platform</a>.'),
     (334, 'Co-located Data Storage and Computation', False, 'All of them – the platform is the data catalogue, the co-located storage and computation, the APIs and the Code Editor together. Learn more at <a href="https://earthengine.google.com/platform/">earthengine.google.com/platform</a>.'),
     (335, 'Javascript and Python API', False, 'All of them – the platform is the data catalogue, the co-located storage and computation, the APIs and the Code Editor together. Learn more at <a href="https://earthengine.google.com/platform/">earthengine.google.com/platform</a>.'),
@@ -246,8 +246,8 @@ QUIZ_ANSWERS = [  # (answer id, label, correct, feedback text)
     (338, 'Data is downloaded, pre-processed and co-located with computational resources', True, 'Removing the need for downloading and pre-processing data, together with the parallel computing architecture, makes Google Earth Engine a very scalable system for data processing.'),
     (339, 'It supports only low-resolution datasets', False, 'While most datasets in the public data catalogue are low and medium resolution imagery, Google Earth Engine is equally capable of processing high-resolution imagery.'),
     (340, 'The API takes advantage of parallel processing', True, 'The computation is distributed over many machines in parallel.'),
-    (341, "Google Earth Engine is integrated with Google's AI Platform", False, "Google Earth Engine can use Google's AI platform for deep learning, but that is not the reason for its data processing speed."),
-    (342, 'Google Earth Engine User Guide', True, 'All of them. See all the support channels at <a href="https://developers.google.com/earth-engine/help">developers.google.com/earth-engine/help</a>.'),
+    (341, "Google Earth Engine is integrated with Google's AI Platform", False, "Earth Engine can call models hosted on Vertex AI (formerly AI Platform), but that integration is not the reason for its data processing speed."),
+    (342, 'Earth Engine Developer Guide', True, 'All of them. See all the support channels at <a href="https://developers.google.com/earth-engine/help">developers.google.com/earth-engine/help</a>.'),
     (343, 'GIS Stack Exchange', True, 'All of them. See all the support channels at <a href="https://developers.google.com/earth-engine/help">developers.google.com/earth-engine/help</a>.'),
     (344, 'Earth Engine Developer Forum', True, 'All of them. See all the support channels at <a href="https://developers.google.com/earth-engine/help">developers.google.com/earth-engine/help</a>.'),
 ]
@@ -260,7 +260,7 @@ QUIZ_ANSWERS += [
     (403, 'Python', True, 'Google provides the official Earth Engine API for JavaScript and Python.'),
     (404, 'R', True, 'R support comes from the community: <a href="https://github.com/r-spatial/rgee">rgee</a> wraps the Python API.'),
     (405, 'Javascript', True, 'Google provides the official Earth Engine API for JavaScript and Python (the Code Editor uses JavaScript).'),
-    (406, 'Julia', True, 'Julia support comes from the community: <a href="https://docs.juliahub.com/EarthEngine/">EarthEngine.jl</a> wraps the Python API.'),
+    (406, 'Julia', True, 'Julia support came from the community: <a href="https://docs.juliahub.com/EarthEngine/">EarthEngine.jl</a> wraps the Python API, but it has not been updated since 2023 – for new work use Python or R.'),
 ]
 # Multi-answer pages: Moodle shows the feedback of EVERY ticked option, and the question counts as correct only when
 # exactly the correct set is ticked – so the green feedback must say how many answers are expected.
