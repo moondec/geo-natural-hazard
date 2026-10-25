@@ -142,7 +142,7 @@ A decision tree asks one question per node ("is NIR > 0.3?"), splits the pixels,
 
 ::: block <!-- element style="font-size: 46px; " align="left" drag="55 75" drop="0 15"-->
 1. Take the **training set**; draw a random sample of pixels with replacement (bootstrap)
-2. Grow a decision tree on that sample, choosing at **each split** from a random subset of the bands (`variablesPerSplit`, default √bands)
+2. Grow a decision tree on that sample, choosing at **each split** from a random subset of the bands (`variablesPerSplit`; the default is the square root of the number of bands)
 3. Repeat for `numberOfTrees` (e.g. 50–200) trees – each one slightly different
 4. For a new pixel every tree votes; the class with the **majority vote** wins
 :::
