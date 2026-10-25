@@ -35,7 +35,8 @@ ASSIGN = {
               'Method': ['the index formula and its bands', 'the cloud mask you applied (SCL, Cloud Score+)', 'the thresholds and the class codes', 'the <code>scale</code> used in <code>reduceRegion</code>'],
               'Results': ['the index map and the class map with a legend', 'the area table per class in hectares'],
               'Validation and uncertainty': ['three pixels checked with the Inspector (field, forest, water) and whether they fall in the expected class', 'what happens to the areas when a threshold moves by ±0.05']},
-    check='The script link opens without error in a private browser window; the area table sums up to the AOI area; the thresholds in the text are the ones in the code.'),
+    check='The script link opens without error in a private browser window; the area table sums up to the AOI area; the thresholds in the text are the ones in the code.',
+    extra=pathlib.Path(__file__).with_name('fragments').joinpath('m2_indices.html').read_text(encoding='utf-8')),   # index list with Sentinel Hub custom-script links (kept from the old description)
  3: dict(cmid=398, lesson=('Classifiers', 396),
     lead='Milestone M3 – the classification report from lab 3 (30.11), due <strong>7.12, at the start of lab 4</strong>. Submit one .pdf or .docx file with the maps, the accuracy tables and the links to both scripts from the lesson <em>Classifiers</em>, written to the template below.',
     submit=[
@@ -124,6 +125,7 @@ for n, a in ASSIGN.items():
             '<ol class="iot-material-list">', *[f'<li>{s}</li>' for s in a['submit']], '</ol>',
             f'<p>The step-by-step instructions are in the lesson <a href="{mod("lesson", lcm)}">{esc(lname)}</a>.</p>', '</div>',
             template_html(a),
+            a.get('extra', ''),
             '<div class="iot-material-callout iot-material-callout--check">', '<p class="iot-material-callout-title">Before you upload</p>',
             f'<p>{a["check"]}</p>', '</div>', '</div>']
     (OUT / f's{n}-assign-{a["cmid"]}.intro.html').write_text('\n'.join(body) + '\n', encoding='utf-8', newline='\n')
