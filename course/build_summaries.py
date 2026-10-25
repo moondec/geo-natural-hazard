@@ -174,6 +174,7 @@ intro = f'''<div class="iot-course-intro">
   <div class="iot-note iot-note--info">
     <p class="iot-note-title">How you are graded</p>
     <p>Six homework reports (M2–M7) make <strong>60 %</strong> of the course grade (10 % each) and the <strong>final test</strong> (30 questions from the seven lessons, 40 min, two attempts, the better one counts) makes <strong>40 %</strong>. Every report is marked out of 100 against the report template in its assignment; the lesson quizzes are self-checks and do not count. You pass from <strong>60 %</strong>, in each piece and overall. The grade: <strong>5.0</strong> from 92 %, <strong>4.5</strong> from 84 %, <strong>4.0</strong> from 76 %, <strong>3.5</strong> from 68 %, <strong>3.0</strong> from 60 %, <strong>2.0</strong> below. Late homework stays open and is marked as late.</p>
+    <p><strong>The grade of the whole course</strong> is not this number alone: the course has two parts, taught by two lecturers. The final grade is the weighted mean of the grade from this part and the grade from the other lecturer's part, each weighted by the number of teaching hours of that part. Both parts have to be passed.</p>
   </div>
 
   <div class="iot-note iot-note--info">
