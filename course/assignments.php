@@ -10,6 +10,7 @@ define('CLI_SCRIPT', true);
 require '/var/www/html/config.php';
 require_once($CFG->dirroot . '/course/modlib.php');
 require_once($CFG->dirroot . '/mod/assign/locallib.php');
+require_once($CFG->dirroot . '/mod/assign/lib.php');
 
 $courseid = (int)($argv[1] ?? 15);
 $schedule = json_decode(file_get_contents($argv[2] ?? '/backups/schedule.json'), true) or die("cannot read schedule.json\n");
@@ -56,6 +57,7 @@ foreach ($schedule['homework'] as $n => $h) {
     $cm = get_coursemodule_from_id('assign', $existing->cmid, $courseid, false, MUST_EXIST);
     $assign = new assign(context_module::instance($cm->id), $cm, $course);
     $assign->update_calendar($cm->id);
+    assign_grade_item_update($DB->get_record('assign', ['id' => $existing->id]));   // sync the grade item name with the new name
     echo "UPDATED M$n cm{$existing->cmid}: {$h['name']} | due ", userdate($due, '%Y-%m-%d %H:%M', $schedule['timezone']), "\n";
 }
 // course start date = first lecture: the anchor for the date shift when the .mbz is restored for the next term

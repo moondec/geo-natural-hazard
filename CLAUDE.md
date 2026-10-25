@@ -38,6 +38,8 @@ Rozmawiaj z użytkownikiem po polsku; treść kursu jest po angielsku.
 - **Bez dat w treści kursu** (kurs odtwarzany co rok dla nowej grupy): strony piszą „at the start of lab N”, nigdy konkretnej daty.
   Daty semestru są tylko w `course/schedule.json`; `course/assignments.php COURSEID /backups/schedule.json` ustawia terminy zadań
   (bez cut-off – spóźnione oddania dozwolone) i datę startu kursu (kotwica przesunięcia dat przy restore); opisy zadań z `course/build_assign_intros.py`.
+- Ocenianie: `course/grading.php COURSEID` (idempotentny) – litery 5.0/4.5/4.0/3.5/3.0/2.0 od 92/84/76/68/60 %, suma kursu = średnia ważona
+  (M2–M7 po 10 %, Final test cm435 40 %, lekcje waga 0 i ukryte), próg 60, wyświetlanie „punkty (ocena)”; quiz Final test ukryty (30 losowych pytań z banku).
   Push do Moodle: skopiuj `course/mcontent/` do WSL `/home/marek/.hermes/build/mcontent-geo-work/` i uruchom `gpush.sh` (dry) / `gpush.sh --apply`;
   pull: `gpull.sh` (→ `mcontent-geo/`). Baner kursu (overviewfiles) zostaje bez zmian.
 

@@ -103,8 +103,9 @@ MODULES = [
                 ('Lab 7 – GEE in QGIS', 'Four pages: plugin and sign-in, Python Console layer, no-code tools and export, the finished map', mod('lesson', 404)),
                 ('Lab 7 – capstone', 'Pick flood, landslide or fire and rerun it as a notebook or a QGIS project with a map', mod('lesson', 404)),
                 ('Homework M7 – capstone', 'Notebook link + files, or QGIS project + PDF map; report template in the assignment', mod('assign', 434)),
-                ('Lecture 8 – wrap-up', 'One workflow, sources of error, uncertainty, what next, assessment', mod('page', 430))],
-         links=[('Lecture 7 (slides)', mod('page', 429)), ('Lecture 8 – wrap-up (slides)', mod('page', 430)), ('Lesson: APIs for GEE', mod('lesson', 404)), ('Homework M7: capstone', mod('assign', 434)), ('Python, QGIS and R examples (GitHub)', 'https://github.com/moondec/geo-natural-hazard/tree/main/examples'),
+                ('Lecture 8 – wrap-up', 'One workflow, sources of error, uncertainty, what next, assessment', mod('page', 430)),
+                ('Final test', '30 questions drawn from the seven lessons, 40 min, two attempts; 40 % of the course grade – opened by the lecturer at the end of the course', None)],
+         links=[('Lecture 7 (slides)', mod('page', 429)), ('Lecture 8 – wrap-up (slides)', mod('page', 430)), ('Lesson: APIs for GEE', mod('lesson', 404)), ('Homework M7: capstone', mod('assign', 434)), ('Final test (opens at the end of the course)', mod('quiz', 435)), ('Python, QGIS and R examples (GitHub)', 'https://github.com/moondec/geo-natural-hazard/tree/main/examples'),
                 ('Earth Engine Python quickstart', 'https://developers.google.com/earth-engine/guides/quickstart_python'), ('geemap', 'https://geemap.org/'), ('QGIS Earth Engine plugin – user guide', 'https://gee-community.github.io/qgis-earthengine-plugin/'), ('rgee (R volunteers)', 'https://r-spatial.github.io/rgee/'), ('For the curious: CDSE JupyterLab (free, on request)', 'https://dataspace.copernicus.eu/analyse/jupyterlab'), ('openEO Python client – documentation', 'https://open-eo.github.io/openeo-python-client/')],
          extra=''),
 ]
@@ -171,6 +172,11 @@ intro = f'''<div class="iot-course-intro">
   </div>
 
   <div class="iot-note iot-note--info">
+    <p class="iot-note-title">How you are graded</p>
+    <p>Six homework reports (M2–M7) make <strong>60 %</strong> of the course grade (10 % each) and the <strong>final test</strong> (30 questions from the seven lessons, 40 min, two attempts, the better one counts) makes <strong>40 %</strong>. Every report is marked out of 100 against the report template in its assignment; the lesson quizzes are self-checks and do not count. You pass from <strong>60 %</strong>, in each piece and overall. The grade: <strong>5.0</strong> from 92 %, <strong>4.5</strong> from 84 %, <strong>4.0</strong> from 76 %, <strong>3.5</strong> from 68 %, <strong>3.0</strong> from 60 %, <strong>2.0</strong> below. Late homework stays open and is marked as late.</p>
+  </div>
+
+  <div class="iot-note iot-note--info">
     <p class="iot-note-title">How to use this page</p>
     <p>Each module below has the same layout: <strong>Milestone</strong> (what you hand in and when), <strong>Your path</strong> (the order of lecture, lesson, lab and homework) and the materials. Deadlines: the milestone of module N is due at the start of lab N+1; the exact dates and times are on the assignment pages and in the course calendar. The capstone date is set in lecture 8. Questions go to the <a href="{mod('forum', 388)}">Announcements forum</a>.</p>
   </div>
@@ -182,6 +188,7 @@ intro = f'''<div class="iot-course-intro">
 for m in MODULES:
     (OUT / f's{m["n"]}-summary.html').write_text(module_html(m), encoding='utf-8', newline='\n')
 
+(OUT / 's7-quiz-435.intro.html').write_text('<div class="iot-material iot-material--label" data-iot-material="v1"><p>The final test of the course: <strong>30 questions</strong> drawn at random from the seven lesson categories (4–5 per lesson: data and accounts, Earth Engine basics, classifiers, floods, landslides, wildfires, APIs), <strong>40 minutes</strong>, <strong>two attempts</strong> – the better one counts. It makes 40 % of the course grade; you pass from 60 %. The questions are the same kind as the self-check quizzes in the lessons, so revise the lesson pages and the lecture summaries. The test is opened by the lecturer at the end of the course.</p></div>\n', encoding='utf-8', newline='\n')
 (OUT / 's0-forum-388.intro.html').write_text('<div class="iot-material iot-material--label" data-iot-material="v1"><p>Announcements, deadlines and questions about the labs. Enrolment key for this course: <code>GEO</code>.</p></div>\n', encoding='utf-8', newline='\n')
 
 ops = [
@@ -200,7 +207,7 @@ ops = [
     ('sequence', 4, '426,401,399,400,431'),
     ('sequence', 5, '427,402,432'),
     ('sequence', 6, '428,403,433'),
-    ('sequence', 7, '429,404,430,434'),
+    ('sequence', 7, '429,404,430,434,435'),  # 435 = Final test (quiz, hidden until the test day)
     ('hide', 422),  # intro presentation retired 22.10.2026 (duplicated lecture 1); delete the module in the UI
     ('rename', 390, 'Homework after lecture 1: accounts and webinars'),
     ('rename', 391, 'Lesson 2: Google Earth Engine step by step'),
