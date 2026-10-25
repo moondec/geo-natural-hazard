@@ -47,6 +47,9 @@ var vegetation = ndviMedian.gt(0.4).rename('Green').multiply(4);                
 <pre class="iot-material-code"><code class="language-javascript">// ---- Step 6, cell 3: Stack the four class bands onto the NDVI image ----
 // One image with five bands: NDVI, Water, Bare, Shrub, Green (addBands accepts a list)
 var ndviWithClasses = ndviMedian.addBands([water, bare, shrub, vegetation]);
+// Which bands does an image have? bandNames() lists them in the Console:
+// print(ndviWithClasses.bandNames());        // ["NDVI", "Water", "Bare", "Shrub", "Green"]
+// For a collection ask the first image: print(s2MaskedCS.first().bandNames());
 // ---- end of Step 6, cell 3 ----
 </code></pre>
 
