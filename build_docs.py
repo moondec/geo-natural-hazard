@@ -12,14 +12,14 @@ ROOT = pathlib.Path(__file__).parent
 EXPORT = ROOT / 'presentation' / 'export'
 DOCS = ROOT / 'docs'
 DECKS = [  # zip stem, slug, title, date
-    ('ApplicationHazards_GEO_2026_extended_01_Kickoff', '01-kickoff', 'Lecture 1 · Natural hazards and Earth observation: course kick-off', '9.11.2026'),
-    ('ApplicationHazards_GEO_2026_extended_02_GEE_CodeEditor', '02-gee-code-editor', 'Lecture 2 · Google Earth Engine: the Code Editor', '16.11.2026'),
-    ('ApplicationHazards_GEO_2026_extended_03_ML_Classification', '03-ml-classification', 'Lecture 3 · Machine learning for land cover classification', '23.11.2026'),
-    ('ApplicationHazards_GEO_2026_extended_04_Floods', '04-floods', 'Lecture 4 · Flood mapping: optical indices and SAR', '30.11.2026'),
-    ('ApplicationHazards_GEO_2026_extended_05_Landslides', '05-landslides', 'Lecture 5 · Landslide mapping with satellite data', '7.12.2026'),
-    ('ApplicationHazards_GEO_2026_extended_06_Wildfires', '06-wildfires', 'Lecture 6 · Wildfire detection and burn severity', '14.12.2026'),
-    ('ApplicationHazards_GEO_2026_extended_07_APIs', '07-apis', 'Lecture 7 · GEE beyond the Code Editor: Python, Colab, geemap, rgee', '21.12.2026'),
-    ('ApplicationHazards_GEO_2026_extended_08_Wrapup', '08-wrapup', 'Lecture 8 · From pixels to hazard maps: wrap-up', '11.01.2027'),
+    ('ApplicationHazards_GEO_2026_extended_01_Kickoff', '01-kickoff', 'Lecture 1 · Natural hazards and Earth observation: course kick-off', '1 h'),
+    ('ApplicationHazards_GEO_2026_extended_02_GEE_CodeEditor', '02-gee-code-editor', 'Lecture 2 · Google Earth Engine: the Code Editor', '2 h'),
+    ('ApplicationHazards_GEO_2026_extended_03_ML_Classification', '03-ml-classification', 'Lecture 3 · Machine learning for land cover classification', '2 h'),
+    ('ApplicationHazards_GEO_2026_extended_04_Floods', '04-floods', 'Lecture 4 · Flood mapping: optical indices and SAR', '2 h'),
+    ('ApplicationHazards_GEO_2026_extended_05_Landslides', '05-landslides', 'Lecture 5 · Landslide mapping with satellite data', '2 h'),
+    ('ApplicationHazards_GEO_2026_extended_06_Wildfires', '06-wildfires', 'Lecture 6 · Wildfire detection and burn severity', '2 h'),
+    ('ApplicationHazards_GEO_2026_extended_07_APIs', '07-apis', 'Lecture 7 · GEE beyond the Code Editor: Python, Colab, geemap, rgee', '2 h'),
+    ('ApplicationHazards_GEO_2026_extended_08_Wrapup', '08-wrapup', 'Lecture 8 · From pixels to hazard maps: wrap-up', '1 h'),
 ]
 LIB_DIRS = ('css/', 'dist/', 'plugin/')
 # links that changed after the decks were exported (applied to every deck)
@@ -105,7 +105,7 @@ footer{{margin-top:28px;color:var(--muted);font-size:.85rem}}
 <body>
 <main>
 <h1>Application of geoinformatics to natural hazards mapping and monitoring</h1>
-<p class="lead">Lecture slides (reveal.js) · Geoinformation and Spatial Management, 2nd year, winter 2026/27 · Poznań University of Life Sciences · Marek Urbaniak. In a deck: arrows move between slides, <kbd>F</kbd> full screen, <kbd>?</kbd> help, <kbd>Esc</kbd> overview.</p>
+<p class="lead">Lecture slides (reveal.js) · Geoinformation and Spatial Management, 2nd year, winter semester · Poznań University of Life Sciences · Marek Urbaniak. In a deck: arrows move between slides, <kbd>F</kbd> full screen, <kbd>?</kbd> help, <kbd>Esc</kbd> overview.</p>
 <ul>{items}</ul>
 <footer>Course materials in Moodle (UPP e-learning); sources and build scripts on <a href="https://github.com/moondec/geo-natural-hazard">GitHub</a>. Licence CC BY 4.0 unless stated otherwise on a slide.</footer>
 </main>

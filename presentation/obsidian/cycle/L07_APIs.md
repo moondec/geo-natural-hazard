@@ -356,7 +356,7 @@ Everything in this course can be done in all of them (R users: rgee, community-m
 ---
 <!-- slide template="[[tpl-geo-default-slide]]" -->
 ::: title
-## In the lab (11.01, 4 h)
+## In the lab (4 h)
 :::
 <grid drag="13 26" drop="80 53" bg="#ffB73F"/>
 
@@ -377,7 +377,7 @@ Everything in this course can be done in all of them (R users: rgee, community-m
 <grid drag="13 26" drop="87 75" bg="#00ced1" rotate="-15"/>
 
 ::: block <!-- element style="font-size:42px" align="left" drag="95 75" drop="0 15"-->
-- [ ] Make sure `ee.Initialize(project=...)` works in Colab **before** 11.01 (two minutes at home saves twenty in the lab)
+- [ ] Make sure `ee.Initialize(project=...)` works in Colab **before** lab 7 (two minutes at home saves twenty in the lab)
 - [ ] Install QGIS ≥ 3.44 and the **Google Earth Engine** plugin at home, sign in once; R volunteers: `install.packages("rgee")`, gcloud CLI, `ee_install()`
 - [ ] Decide which hazard your capstone notebook will reproduce; have the AOI and dates ready
 - [ ] Optional reading: [End-to-End GEE – Python module](https://courses.spatialthoughts.com/end-to-end-gee.html#python-api); [geemap tutorials](https://geemap.org/tutorials/); [QGIS plugin user guide](https://gee-community.github.io/qgis-earthengine-plugin/); [Geocomputation with R](https://r.geocompx.org/) ch. 1–2 for R volunteers

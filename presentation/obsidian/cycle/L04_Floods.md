@@ -308,7 +308,7 @@ Use them as **reference data** for your own map in the report – and know that 
 ---
 <!-- slide template="[[tpl-geo-default-slide]]" -->
 ::: title
-## In the lab (7.12, 3 h)
+## In the lab (3 h)
 :::
 <grid drag="13 26" drop="80 53" bg="#ffB73F"/>
 

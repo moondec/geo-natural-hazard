@@ -47,14 +47,14 @@ if ($apply) {
 
 // 2) new lecture resources
 $lectures = [
-    ['01_Kickoff', 1, 'Lecture 1 – Natural hazards and Earth observation: course kick-off (9.11)'],
-    ['02_GEE_CodeEditor', 2, 'Lecture 2 – Google Earth Engine: the Code Editor (16.11)'],
-    ['03_ML_Classification', 3, 'Lecture 3 – Machine learning for land cover classification (23.11)'],
-    ['04_Floods', 4, 'Lecture 4 – Flood mapping: optical indices and SAR (30.11)'],
-    ['05_Landslides', 5, 'Lecture 5 – Landslide mapping with satellite data (7.12)'],
-    ['06_Wildfires', 6, 'Lecture 6 – Wildfire detection and burn severity (14.12)'],
-    ['07_APIs', 7, 'Lecture 7 – GEE beyond the Code Editor: Python, Colab, geemap, rgee (21.12)'],
-    ['08_Wrapup', 7, 'Lecture 8 – From pixels to hazard maps: wrap-up (11.01)'],
+    ['01_Kickoff', 1, 'Lecture 1 – Natural hazards and Earth observation: course kick-off'],
+    ['02_GEE_CodeEditor', 2, 'Lecture 2 – Google Earth Engine: the Code Editor'],
+    ['03_ML_Classification', 3, 'Lecture 3 – Machine learning for land cover classification'],
+    ['04_Floods', 4, 'Lecture 4 – Flood mapping: optical indices and SAR'],
+    ['05_Landslides', 5, 'Lecture 5 – Landslide mapping with satellite data'],
+    ['06_Wildfires', 6, 'Lecture 6 – Wildfire detection and burn severity'],
+    ['07_APIs', 7, 'Lecture 7 – GEE beyond the Code Editor: Python, Colab, geemap, rgee'],
+    ['08_Wrapup', 7, 'Lecture 8 – From pixels to hazard maps: wrap-up'],
 ];
 foreach ($lectures as [$key, $section, $name]) {
     $zip = "$zipdir/ApplicationHazards_GEO_2026_extended_$key.zip";

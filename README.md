@@ -1,7 +1,7 @@
 # Application of geoinformatics to natural hazards mapping and monitoring
 
 Course materials (lecture slides, Moodle lab content and build tooling) for the course taught at
-Poznań University of Life Sciences (Geoinformation and Spatial Management, 2nd year, winter 2026/27).
+Poznań University of Life Sciences (Geoinformation and Spatial Management, 2nd year, taught every winter semester).
 Author: Marek Urbaniak. Licence: CC BY 4.0 unless stated otherwise on a slide.
 
 **Lectures online:** https://moondec.github.io/geo-natural-hazard/

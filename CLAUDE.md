@@ -35,6 +35,9 @@ Rozmawiaj z użytkownikiem po polsku; treść kursu jest po angielsku.
   W Moodle wykłady to moduły URL (cm 413–421), nie pliki.
 - Treść kursu: `course/mcontent/` (pola tekstowe Moodle, styl IoT z niebieską paletą `course/geo.scss`, CSS wstawia `course/inline-iot-css.py geo.scss mcontent`);
   `course/build_summaries.py` generuje podsumowania sekcji, intro URL-i i `ops.tsv`; reguły edycji `course/RULES-geo.md`.
+- **Bez dat w treści kursu** (kurs odtwarzany co rok dla nowej grupy): strony piszą „at the start of lab N”, nigdy konkretnej daty.
+  Daty semestru są tylko w `course/schedule.json`; `course/assignments.php COURSEID /backups/schedule.json` ustawia terminy zadań
+  (bez cut-off – spóźnione oddania dozwolone) i datę startu kursu (kotwica przesunięcia dat przy restore); opisy zadań z `course/build_assign_intros.py`.
   Push do Moodle: skopiuj `course/mcontent/` do WSL `/home/marek/.hermes/build/mcontent-geo-work/` i uruchom `gpush.sh` (dry) / `gpush.sh --apply`;
   pull: `gpull.sh` (→ `mcontent-geo/`). Baner kursu (overviewfiles) zostaje bez zmian.
 

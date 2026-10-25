@@ -281,7 +281,7 @@ source: Moodle section *Landslides mapping approaches* – summary
 ---
 <!-- slide template="[[tpl-geo-default-slide]]" -->
 ::: title
-## In the lab (14.12, 3 h)
+## In the lab (3 h)
 :::
 <grid drag="13 26" drop="87 75" bg="#00ced1" rotate="-15"/>
 
@@ -305,7 +305,7 @@ source: Moodle section *Landslides mapping approaches* – summary
 - [ ] Finish the landslide heatmap note (parameters + one figure + link)
 - [ ] Next week: **wildfires**. Read the Moodle lesson *Fire detection and severity estimation*, pages 1–3 (15 min)
 - [ ] Read the UN-SPIDER [burn severity recommended practice – "In detail"](https://un-spider.org/advisory-support/recommended-practices/recommended-practice-burn-severity/in-detail) and note the dNBR classes table
-- [ ] Find one fire in Copernicus Browser *Highlights* (or EFFIS) with pre- and post-fire cloud-free Sentinel-2 dates – you will need them on Monday
+- [ ] Find one fire in Copernicus Browser *Highlights* (or EFFIS) with pre- and post-fire cloud-free Sentinel-2 dates – you will need them in the lab
 :::
 
 ---

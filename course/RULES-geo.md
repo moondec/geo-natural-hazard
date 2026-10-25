@@ -15,7 +15,12 @@ must stand out. Course content language: **English**. Keep the facts; improve st
   "In the lab" and "Before next class"; the lab pages you restyle must match those steps. Lecture sources (markdown) are in
   `C:\Users\marek.urbaniak\Documents\geo-natural-hazard\presentation\obsidian\cycle\L0N_*.md` — read the one for your section
   (slides "In the lab …" and "Before next class") and make the lesson pages the step-by-step counterpart of those slides.
-- Schedule (Mondays, room 15): lecture of week N introduces the lab of week N+1.
+- **No calendar dates in any text** (pages, summaries, assignment descriptions, module names, slides): the course is restored
+  every year for a new group with a new timetable. Write "at the start of lab N", "before the first lab", "a few days before the lab"
+  – never "30.11", "Monday", "winter 2026/27". The real dates live only in `course/schedule.json` (applied to the assignment
+  due dates and the course start date by `course/assignments.php`) and Moodle shows them itself (activity dates, calendar).
+  Late submissions stay open (no cut-off date); they are only marked late.
+- Schedule of the 2026/27 run (reference only – do not copy these dates into content): lecture of week N introduces the lab of week N+1.
   L1 9.11 → Lab 1 16.11 (Copernicus Browser, CDSE account, GEE registration, first script);
   L2 16.11 → Lab 2 23.11 (GEE JS: collections, filters, NDVI, classes, areas; homework "index areas");
   L3 23.11 → Lab 3 30.11 (RF + k-means, accuracy, report);

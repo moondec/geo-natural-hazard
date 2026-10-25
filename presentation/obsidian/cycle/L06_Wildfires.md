@@ -277,7 +277,7 @@ That is why every lab report in this course has: data, dates, method, thresholds
 ---
 <!-- slide template="[[tpl-geo-default-slide]]" -->
 ::: title
-## In the lab (21.12, 3 h)
+## In the lab (3 h)
 :::
 <grid drag="13 26" drop="87 75" bg="#00ced1" rotate="-15"/>
 

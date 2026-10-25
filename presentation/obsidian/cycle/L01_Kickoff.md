@@ -293,7 +293,7 @@ A custom script is a few lines of JavaScript that tells the browser how to combi
 ---
 <!-- slide template="[[tpl-geo-default-slide]]" -->
 ::: title 
-## In the lab next week (16.11, 3 h)
+## In the lab next week (3 h)
 :::
 <grid drag="13 26" drop="87 75" bg="#00ced1" rotate="-15"/>
 
@@ -313,14 +313,14 @@ A custom script is a few lines of JavaScript that tells the browser how to combi
 
 ::: block <!-- element style="font-size:42px" align="left" drag="95 75" drop="0 15"-->
 - [ ] Create a free account at [dataspace.copernicus.eu](https://dataspace.copernicus.eu/) and log in to [Copernicus Browser](https://browser.dataspace.copernicus.eu/)
-- [ ] Register for Google Earth Engine with your Google account: [how to get access](https://developers.google.com/earth-engine/guides/access) → create a Cloud project → register it for **noncommercial (education)** use. Access is enabled immediately, but the Cloud project, the Earth Engine API and the eligibility questionnaire take 20–30 min and sometimes fail – **do it before Friday**
+- [ ] Register for Google Earth Engine with your Google account: [how to get access](https://developers.google.com/earth-engine/guides/access) → create a Cloud project → register it for **noncommercial (education)** use. Access is enabled immediately, but the Cloud project, the Earth Engine API and the eligibility questionnaire take 20–30 min and sometimes fail – **do it a few days before the lab**
 - [ ] Watch: [A short guide to Copernicus Browser](https://www.youtube.com/watch?v=F0lIn5r6ZWk) (10 min) and, optionally, [Introduction to CDSE](https://www.youtube.com/watch?v=GecNCdilbig)
 - [ ] Bring to the lab: one hazard event you are curious about (place + approximate date)
 - [ ] Optional, for the curious: while logged in at CDSE, request access to the free [JupyterLab](https://dataspace.copernicus.eu/analyse/jupyterlab) (approved in ~2 working days) – used only on an optional page of lesson 7
 :::
 
 ::: block <!-- element style="font-size:34px" drag="95 12" drop="0 88" bg="#fff3cd" pad="10px 20px"-->
-Problems with registration? Write on the course forum before Friday – not on Monday.
+Problems with registration? Write on the course forum a few days before the lab – not on the morning of the lab.
 :::
 
 ---
