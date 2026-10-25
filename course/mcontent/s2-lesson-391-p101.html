@@ -73,7 +73,7 @@ print(greenAreaGroups);
 
 <div class="iot-material-callout iot-material-callout--warn">
 <p class="iot-material-callout-title">scale: 10, not scale: 1</p>
-<p>Older versions of this script used <code>scale: 1</code> ("sample the geometry at 1 m intervals"). Sentinel-2 pixels are 10 m; <code>scale: 1</code> forces a hundred times more samples, ends with the error <em>Too many pixels in the region</em> or gives an over-smoothed answer. The <code>scale</code> must match the data: 10 for Sentinel-2, 30 for Landsat (see Lecture 2, "From classes to hectares").</p>
+<p>Why not use <code>scale: 1</code> ("sample the geometry at 1 m intervals"). Sentinel-2 pixels are 10 m; <code>scale: 1</code> forces a hundred times more samples, ends with the error <em>Too many pixels in the region</em> or gives an over-smoothed answer. The <code>scale</code> must match the data: 10 for Sentinel-2, 30 for Landsat (see Lecture 2, "From classes to hectares").</p>
 </div>
 
 <h3 class="iot-material-divider">4. Let's make it better – thresholds</h3>
