@@ -100,18 +100,50 @@ $coursecat->update();
 $total = $coursecat->get_grade_item();
 $total->display = GRADE_DISPLAY_TYPE_LETTER; $total->decimals = 0; $total->gradepass = 60; $total->grademax = 100; $total->grademin = 0; $total->update();   // weighted mean: the total is 0-100 (was 200 from the natural sum)
 
+// Two parts of the subject, weighted by teaching hours (20 h lecture + 40 h lab = 60 h):
+//   part A – the other lecturer, first weeks: 6 h lecture + 18 h lab = 24 h -> 40 %   (a manual grade item, filled in by hand)
+//   part B – this Moodle course:            14 h lecture + 22 h lab = 36 h -> 60 %   (a grade category: homework 10 % each, final test 40 %)
+$PARTA = 'Part A: grade from the first weeks of the semester (other lecturer, 24 h)';
+$PARTB = 'Part B: satellite hazard mapping – this course (36 h)';
+$partb = grade_category::fetch(['courseid' => $courseid, 'fullname' => $PARTB]);
+if (!$partb) {
+    $partb = new grade_category(['courseid' => $courseid, 'fullname' => $PARTB, 'parent' => $coursecat->id], false);
+    $partb->aggregation = GRADE_AGGREGATE_WEIGHTED_MEAN; $partb->aggregateonlygraded = 1;
+    $partb->insert();
+    echo "created grade category: $PARTB\n";
+} else {
+    $partb->aggregation = GRADE_AGGREGATE_WEIGHTED_MEAN; $partb->aggregateonlygraded = 1; $partb->update();
+}
+$bitem = $partb->get_grade_item();
+$bitem->aggregationcoef = 60; $bitem->grademax = 100; $bitem->grademin = 0; $bitem->gradepass = 60;
+$bitem->display = GRADE_DISPLAY_TYPE_REAL_LETTER; $bitem->decimals = 0; $bitem->update();
+
+$aitem = grade_item::fetch(['courseid' => $courseid, 'itemtype' => 'manual', 'itemname' => $PARTA]);
+if (!$aitem) {
+    $aitem = new grade_item(['courseid' => $courseid, 'itemtype' => 'manual', 'itemname' => $PARTA, 'categoryid' => $coursecat->id,
+        'gradetype' => GRADE_TYPE_VALUE, 'grademax' => 100, 'grademin' => 0,
+        'iteminfo' => 'Grade (0-100) of the first weeks of the semester, entered by the lecturer; weight 24/60 of the teaching hours.'], false);
+    $aitem->insert();
+    echo "created manual grade item: $PARTA\n";
+}
+$aitem->aggregationcoef = 40; $aitem->gradepass = 60; $aitem->display = GRADE_DISPLAY_TYPE_REAL_LETTER; $aitem->decimals = 0; $aitem->hidden = 0;
+$aitem->categoryid = $coursecat->id; $aitem->update();
+
 $items = grade_item::fetch_all(['courseid' => $courseid, 'itemtype' => 'mod']);
 foreach ($items as $gi) {
     if ($gi->itemmodule === 'assign' && preg_match('/^Homework M\d/', $gi->itemname)) {
+        $gi->categoryid = $partb->id;
         $gi->aggregationcoef = 10; $gi->gradepass = 60; $gi->display = GRADE_DISPLAY_TYPE_REAL_LETTER; $gi->decimals = 0; $gi->hidden = 0;
     } else if ($gi->itemmodule === 'quiz') {
+        $gi->categoryid = $partb->id;
         $gi->aggregationcoef = 40; $gi->gradepass = 60; $gi->display = GRADE_DISPLAY_TYPE_REAL_LETTER; $gi->decimals = 0; $gi->hidden = 0;
     } else {   // lesson self-checks and anything else: no weight, not shown to students
         $gi->aggregationcoef = 0; $gi->hidden = 1;
     }
     $gi->update();
-    printf("  %-8s w=%2d pass=%2d hidden=%d | %s\n", $gi->itemmodule, $gi->aggregationcoef, $gi->gradepass, $gi->hidden, $gi->itemname);
+    printf("  %-8s cat=%d w=%2d pass=%2d hidden=%d | %s\n", $gi->itemmodule, $gi->categoryid, $gi->aggregationcoef, $gi->gradepass, $gi->hidden, $gi->itemname);
 }
+echo "course total = 40 % part A (manual) + 60 % part B (category)\n";
 grade_regrade_final_grades($courseid);
 rebuild_course_cache($courseid, true);
 purge_all_caches();
