@@ -34,8 +34,8 @@ Map.centerObject(aoi, 12);
 // ---- end of Step 4, cell 3 ----
 </code></pre>
 <pre class="iot-material-code"><code class="language-javascript">// ---- Step 4, cell 4: Area of interest, variant B: a point with a 100 m buffer ----
-// point
-var poi = ee.Geometry.Point(16.79,52.9);
+// point: roughly the centre of the rectangle above
+var poi = ee.Geometry.Point(16.92, 52.44);
 var aoi = poi.buffer(100); // 100 m around poi
 Map.centerObject(aoi, 16);
 // ---- end of Step 4, cell 4 ----
