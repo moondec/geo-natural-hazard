@@ -23,7 +23,7 @@ Map.addLayer(composite, {bands: ['B4', 'B3', 'B2'], min: 0, max: 3000}, 'composi
 // ---- end of Supervised, cell 1 ----
 </code></pre></li>
 <li><strong>Create one layer per class.</strong> In the Code Editor open the geometry tools, add a new layer for each class (e.g. <code>water</code>, <code>urban</code>, <code>crops</code>, <code>forest</code>). In <em>Geometry Imports</em> change <em>Import as</em> from <code>Geometry</code> to <code>FeatureCollection</code> and add the property <code>landcover</code> with the values 0, 1, 2, 3.</li>
-<li><strong>Draw the samples.</strong> Draw polygons (or points) inside pure patches: inside a lake, inside a forest – not on edges. Spread them over the whole area and give every class a similar total area.</li>
+<li><strong>Draw the samples.</strong> Draw <em>small</em> polygons (a few hundred metres across, roughly 50–500 pixels each) or points inside pure patches: inside a lake, inside a forest – not on edges. Spread them over the whole area and give every class a similar <em>number of pixels</em> – aim at 500–2000 sampled pixels per class, not at a large area. Large polygons are the usual cause of memory errors in the next step: one polygon of 1 km² alone is 10 000 pixels at 10 m.</li>
 <li><strong>Merge and sample.</strong> Merge the four collections into <code>trainingSamples</code> and extract the band values of the pixels:
 <pre class="iot-material-code"><code class="language-javascript">// ---- Supervised, cell 2: Merge the drawn classes and sample the composite ----
 var trainingSamples = water.merge(urban).merge(crops).merge(forest);   // four drawn FeatureCollections
@@ -34,6 +34,9 @@ var labelledPixels = composite.sampleRegions({
   scale: 10,
   geometries: true           // keep the point geometry – needed again for k-means
 });
+// How many pixels per class? Aim at 500–2000 each; above ~50 000 in total shrink the polygons
+// (in a test ~200 000 pixels still trained, ~800 000 failed with "Computed value is too large")
+print('sampled pixels per class', labelledPixels.aggregate_histogram('landcover'));
 // ---- end of Supervised, cell 2 ----
 </code></pre>
 <code>sampleRegions</code> drops the geometries by default; <code>geometries: true</code> keeps them, so the same test points can be used to check the k-means map on the next page.</li>
@@ -101,6 +104,22 @@ Copy the matrix and the two numbers into your report.</li>
 <li>Classes numbered 1, 2, 3, 4 in one layer and 0…3 in another – use 0…3 everywhere.</li>
 <li>Samples drawn on a single date instead of the median composite – they do not represent the season.</li>
 <li>Training and validation on the same pixels – the accuracy is then meaningless.</li>
+<li>Polygons too large – <em>User memory limit exceeded</em> or <em>Computed value is too large</em> when the classifier is trained or the matrix is printed. Every pixel inside a polygon becomes one row of the training table. Shrink the polygons, or keep them and draw an equal random sample from each class instead of all pixels:
+<pre class="iot-material-code"><code class="language-javascript">// ---- Supervised, option: equal random samples per class from large polygons (replaces cell 2) ----
+var trainingSamples = water.merge(urban).merge(crops).merge(forest);
+// paint the class codes into an image band (pixels outside the polygons stay masked)
+var classImage = ee.Image().byte().paint(trainingSamples, 'landcover').rename('landcover');
+// stratifiedSample draws the same number of pixels from every class, whatever the polygon sizes
+var labelledPixels = composite.addBands(classImage).stratifiedSample({
+  numPoints: 1000,                       // pixels per class
+  classBand: 'landcover',
+  region: trainingSamples.geometry(),
+  scale: 10,
+  geometries: true,
+  seed: 42
+});
+print('sampled pixels per class', labelledPixels.aggregate_histogram('landcover'));
+// ---- end of option ----</code></pre></li>
 </ul>
 </div>
 <p>Next page: <em>Unsupervised Classification</em> (button below).</p>
