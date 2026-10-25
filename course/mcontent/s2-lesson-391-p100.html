@@ -22,9 +22,15 @@ var s2 = ee.ImageCollection("COPERNICUS/S2_SR_HARMONIZED");
 
 <h3 class="iot-material-divider">2. Specific location and zoom level</h3>
 <pre class="iot-material-code"><code class="language-javascript">// ---- Step 4, cell 3: Area of interest, variant A: a polygon (use A or B) ----
-// polygon
-var aoi = ee.Geometry.Polygon([16.79,52.98,16.5,52.98,16.5,52.4,16.79,52.4]);
-Map.centerObject(aoi, 9);
+// polygon: a rectangle over Poznan, about 10 x 9 km (list of [longitude, latitude] corners)
+var aoi = ee.Geometry.Polygon([
+  [16.845879649499924, 52.40291604298497],
+  [16.994881724695237, 52.40291604298497],
+  [16.994881724695237, 52.48076743977753],
+  [16.845879649499924, 52.48076743977753],
+  [16.845879649499924, 52.40291604298497]
+]);
+Map.centerObject(aoi, 12);
 // ---- end of Step 4, cell 3 ----
 </code></pre>
 <pre class="iot-material-code"><code class="language-javascript">// ---- Step 4, cell 4: Area of interest, variant B: a point with a 100 m buffer ----
