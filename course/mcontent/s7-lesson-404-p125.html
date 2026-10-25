@@ -23,7 +23,8 @@
 <h3 class="iot-material-divider">Steps</h3>
 <ol class="iot-material-steps">
 <li><strong>Import geemap</strong> (it is installed on demand in Colab) after <code>ee.Initialize(project=...)</code> from page 1:
-<pre class="iot-material-code"><code class="language-python">try:
+<pre class="iot-material-code"><code class="language-python"># ---- JS to Python, cell 1: Import geemap (install it first in Colab) ----
+try:
     import geemap
 except ModuleNotFoundError:
     if 'google.colab' in str(get_ipython()):
@@ -34,9 +35,11 @@ except ModuleNotFoundError:
         print('geemap not found, please install via conda in your environment')
 
 # The automatic conversion of code is done by calling the
+# ---- end of JS to Python, cell 1 ----
 </code></pre></li>
 <li><strong>Paste the JavaScript</strong> as a Python string. Start with this example, then replace it with your own lab 2 script:
-<pre class="iot-material-code"><code class="language-python">javascript_code = """
+<pre class="iot-material-code"><code class="language-python"># ---- JS to Python, cell 2: The Code Editor script as a Python string ----
+javascript_code = """
 var geometry = ee.Geometry.Point([107.61303468448624, 12.130969369851766]);
 Map.centerObject(geometry, 12)
 var s2 = ee.ImageCollection('COPERNICUS/S2_SR_HARMONIZED')
@@ -81,13 +84,16 @@ var palette = [
 var ndviVis = {min:0, max:0.5, palette: palette }
 Map.addLayer(withNdvi.select('ndvi'), ndviVis, 'NDVI Composite')
 """
+# ---- end of JS to Python, cell 2 ----
 </code></pre></li>
 <li><strong>Translate</strong> it with geemap and print the result:
-<pre class="iot-material-code"><code class="language-python">lines = geemap.js_snippet_to_py(
+<pre class="iot-material-code"><code class="language-python"># ---- JS to Python, cell 3: Convert the snippet to Python and print it ----
+lines = geemap.js_snippet_to_py(
     javascript_code, add_new_cell=False,
     import_ee=True, import_geemap=True, show_map=True)
 for line in lines:
     print(line.rstrip())
+# ---- end of JS to Python, cell 3 ----
 </code></pre></li>
 <li><strong>Copy the printed Python</strong> into a new cell and run it. Fix what the translator missed: quoted dictionary keys, <code>.And()</code>, <code>getInfo()</code> on anything you print. The <code>geemap.Map</code> should appear below the cell.</li>
 <li><strong>Check the content</strong>, not only the syntax: NDVI from <code>B8</code> and <code>B4</code>, the L2A collection <code>COPERNICUS/S2_SR_HARMONIZED</code> as in labs 2–6, and the date and point of your own area.</li>

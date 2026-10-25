@@ -13,43 +13,58 @@
 <h3 class="iot-material-divider">Step by step</h3>
 <ol class="iot-material-steps">
 <li><strong>Build the composite.</strong> Filter <code>COPERNICUS/S2_SR_HARMONIZED</code> to your AOI and one season, keep scenes with little cloud, select the reflectance bands only and take the median – then <code>composite.bandNames()</code> is clean (no <code>SCL</code>, <code>AOT</code>, <code>QA</code> bands):
-<pre><code class="language-javascript">var s2 = ee.ImageCollection('COPERNICUS/S2_SR_HARMONIZED')
+<pre><code class="language-javascript">// ---- Supervised, cell 1: Build the median composite (reflectance bands only) ----
+var s2 = ee.ImageCollection('COPERNICUS/S2_SR_HARMONIZED')
   .filterBounds(aoi)
   .filterDate('2025-05-01', '2025-09-30')
   .filter(ee.Filter.lt('CLOUDY_PIXEL_PERCENTAGE', 20));
 var composite = s2.select(['B2', 'B3', 'B4', 'B8', 'B11', 'B12']).median().clip(aoi);   // or .select('B.*')
-Map.addLayer(composite, {bands: ['B4', 'B3', 'B2'], min: 0, max: 3000}, 'composite');</code></pre></li>
+Map.addLayer(composite, {bands: ['B4', 'B3', 'B2'], min: 0, max: 3000}, 'composite');
+// ---- end of Supervised, cell 1 ----
+</code></pre></li>
 <li><strong>Create one layer per class.</strong> In the Code Editor open the geometry tools, add a new layer for each class (e.g. <code>water</code>, <code>urban</code>, <code>crops</code>, <code>forest</code>). In <em>Geometry Imports</em> change <em>Import as</em> from <code>Geometry</code> to <code>FeatureCollection</code> and add the property <code>landcover</code> with the values 0, 1, 2, 3.</li>
 <li><strong>Draw the samples.</strong> Draw polygons (or points) inside pure patches: inside a lake, inside a forest – not on edges. Spread them over the whole area and give every class a similar total area.</li>
 <li><strong>Merge and sample.</strong> Merge the four collections into <code>trainingSamples</code> and extract the band values of the pixels:
-<pre><code class="language-javascript">var trainingSamples = water.merge(urban).merge(crops).merge(forest);   // four drawn FeatureCollections
+<pre><code class="language-javascript">// ---- Supervised, cell 2: Merge the drawn classes and sample the composite ----
+var trainingSamples = water.merge(urban).merge(crops).merge(forest);   // four drawn FeatureCollections
 // sampleRegions reads the band values of every pixel inside the samples and keeps the landcover label
 var labelledPixels = composite.sampleRegions({
   collection: trainingSamples,
   properties: ['landcover'],
   scale: 10,
   geometries: true           // keep the point geometry – needed again for k-means
-});</code></pre>
+});
+// ---- end of Supervised, cell 2 ----
+</code></pre>
 <code>sampleRegions</code> drops the geometries by default; <code>geometries: true</code> keeps them, so the same test points can be used to check the k-means map on the next page.</li>
 <li><strong>Split 70 / 30.</strong> Keep 30 % of the samples aside for validation – the model must never see them during training:
-<pre><code class="language-javascript">var withRandom = labelledPixels.randomColumn('random');
+<pre><code class="language-javascript">// ---- Supervised, cell 3: Split the samples into training (70 %) and test (30 %) sets ----
+var withRandom = labelledPixels.randomColumn('random');
 var trainSet = withRandom.filter(ee.Filter.lt('random', 0.7));
-var testSet  = withRandom.filter(ee.Filter.gte('random', 0.7));</code></pre></li>
+var testSet  = withRandom.filter(ee.Filter.gte('random', 0.7));
+// ---- end of Supervised, cell 3 ----
+</code></pre></li>
 <li><strong>Train the Random Forest and classify.</strong> 50 trees is enough for a start:
-<pre><code class="language-javascript">var classifier = ee.Classifier.smileRandomForest(50)
+<pre><code class="language-javascript">// ---- Supervised, cell 4: Train the random forest and classify the composite ----
+var classifier = ee.Classifier.smileRandomForest(50)
   .train({features: trainSet, classProperty: 'landcover',
           inputProperties: composite.bandNames()});
 var classified = composite.classify(classifier);
 Map.addLayer(classified, {min: 0, max: 3,
-  palette: ['blue', 'gray', 'yellow', 'green']}, 'RF classification');</code></pre></li>
+  palette: ['blue', 'gray', 'yellow', 'green']}, 'RF classification');
+// ---- end of Supervised, cell 4 ----
+</code></pre></li>
 <li><strong>Assess the accuracy.</strong> Classify the test set and compare predicted with true classes:
-<pre><code class="language-javascript">var testClassified = testSet.classify(classifier);              // adds the predicted 'classification' property
+<pre><code class="language-javascript">// ---- Supervised, cell 5: Accuracy assessment on the test set ----
+var testClassified = testSet.classify(classifier);              // adds the predicted 'classification' property
 var confusionMatrix = testClassified.errorMatrix('landcover', 'classification');   // rows = truth, columns = predicted
 print('confusion matrix', confusionMatrix);
 print('overall accuracy', confusionMatrix.accuracy());
 print('kappa', confusionMatrix.kappa());
 print('producer accuracy', confusionMatrix.producersAccuracy());
-print('consumer accuracy', confusionMatrix.consumersAccuracy());</code></pre>
+print('consumer accuracy', confusionMatrix.consumersAccuracy());
+// ---- end of Supervised, cell 5 ----
+</code></pre>
 Copy the matrix and the two numbers into your report.</li>
 <li><strong>Export the map.</strong> <code>Export.image.toDrive({image: classified, description: 'RF_classification', region: aoi, scale: 10, maxPixels: 1e10})</code> – run the task in the <em>Tasks</em> tab; the GeoTIFF becomes the report figure.</li>
 <li><strong>Save the script</strong> and copy its shareable link (<em>Get Link</em>) – you will paste it in the report.</li>

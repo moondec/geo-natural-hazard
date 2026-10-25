@@ -2,20 +2,24 @@
 <div class="iot-material iot-material--label" data-iot-material="v1">
 <h4 class="iot-material-divider iot-material-divider--sub">Administrative borders instead of a drawn polygon</h4>
 <p>Administrative borders you can download from <a href="https://gadm.org/" target="_blank" rel="noopener">GADM</a> (primary source, <a href="https://gadm.org/data.html" target="_blank" rel="noopener">data page</a>) or the <a href="https://simplemaps.com/gis/country/pl" target="_blank" rel="noopener">simplemaps.com</a> website and upload as an asset. In Earth Engine the FAO GAUL borders are already in the catalog – here is a piece of code (<code>ee.FeatureCollection()</code>):</p>
-<pre><code class="language-javascript">// GAUL 2025 has no country table (level0): take the 16 voivodeships of level1 and dissolve them
+<pre><code class="language-javascript">// ---- Borders, cell 1: Option A: Poland from the 16 voivodeships of GAUL level1 ----
+// GAUL 2025 has no country table (level0): take the 16 voivodeships of level1 and dissolve them
 var poland = ee.FeatureCollection("FAO/GAUL/2025/level1")
                   .filter(ee.Filter.eq("GAUL0_NAME", "Poland"));   // GAUL0_NAME = UN country name
 var polandOutline = poland.geometry().dissolve(100);               // one polygon, 100 m tolerance
 Map.addLayer(polandOutline, {color: "blue"}, "Poland");
+// ---- end of Borders, cell 1 ----
 </code></pre>
 <p>or all districts (level2) of one voivodeship, selected by the name of their region (level1) – the pattern of the <a href="https://courses.spatialthoughts.com/end-to-end-gee.html#introduction" target="_blank" rel="noopener">End-to-End</a> course:</p>
-<pre><code class="language-javascript">// simplified borders (500 m) draw faster; names have no diacritics (Wielkopolskie, Poznanski)
+<pre><code class="language-javascript">// ---- Borders, cell 2: Option B: the districts (level2) of one voivodeship ----
+// simplified borders (500 m) draw faster; names have no diacritics (Wielkopolskie, Poznanski)
 var admin2 = ee.FeatureCollection("FAO/GAUL_SIMPLIFIED_500m/2025/level2");
 var wielkopolskie = admin2.filter(ee.Filter.eq("GAUL1_NAME", "Wielkopolskie"));   // 35 districts
 var visParams = {"color": "red"};
 
 Map.addLayer(wielkopolskie, visParams, "Wielkopolskie districts");
 print("districts:", wielkopolskie.size(), wielkopolskie.aggregate_array("GAUL2_NAME"));
+// ---- end of Borders, cell 2 ----
 </code></pre>
 <div class="iot-material-callout">
 <p class="iot-material-callout-title">Note</p>

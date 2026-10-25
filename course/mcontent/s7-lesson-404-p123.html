@@ -19,37 +19,47 @@
 <ol class="iot-material-steps">
 <li><strong>Create a notebook.</strong> Open the Python 3 Colab link above. Cells are either code (<code>Shift+Enter</code> runs them) or text (Markdown) – the report writes itself.</li>
 <li><strong>Authenticate and initialise Earth Engine</strong> once per session with your Cloud project:
-<pre class="iot-material-code"><code class="language-python">import ee, geemap
+<pre class="iot-material-code"><code class="language-python"># ---- Colab, cell 1: Authenticate and initialise Earth Engine ----
+import ee, geemap
 ee.Authenticate()                          # opens a browser window, sign in
 ee.Initialize(project='your-project-id')   # the project from lab 1
 print(ee.String('Hello from Earth Engine').getInfo())
+# ---- end of Colab, cell 1 ----
 </code></pre></li>
 <li><strong>Check it works.</strong> The last line must print the string. If <code>ee.Initialize</code> complains about the project, copy the id exactly from the Cloud console (lab 1), not the project name.</li>
 <li><strong>Optional: R inside the Python kernel.</strong> Load the <code>rpy2</code> extension:
-<pre class="iot-material-code"><code class="language-python">%load_ext rpy2.ipython
+<pre class="iot-material-code"><code class="language-python"># ---- Colab, cell 2: Load the R extension (rpy2) ----
+%load_ext rpy2.ipython
+# ---- end of Colab, cell 2 ----
 </code></pre>
 Then use <code>%%R</code> as a <strong>cell magic</strong> at the very beginning of a cell if you want all its syntax executed in R:
 <pre class="iot-material-code"><code class="language-r">%%R
+# ---- Colab, cell 3: An R cell: a scatter plot with ggplot2 ----
 a&lt;-seq(1,10)
 set.seed(1313) #for reproducible results
 b&lt;-runif(10)*a
 #plot(b~a)
 df&lt;-data.frame('x'=a,'y'=b)
 ggplot(df,aes(x,y))+theme_bw() + geom_point() + geom_smooth(method='lm')
+# ---- end of Colab, cell 3 ----
 </code></pre></li>
 <li><strong>Line magic.</strong> Use <code>%R</code> to execute a single line in R; this is how you copy an R variable to Python:
-<pre class="iot-material-code"><code class="language-python"># py_df - python variable
+<pre class="iot-material-code"><code class="language-python"># ---- Colab, cell 4: Hand the R data frame back to Python ----
+# py_df - python variable
 # df - R variable
 py_df=%R df
 print(py_df)
+# ---- end of Colab, cell 4 ----
 </code></pre></li>
 </ol>
 
 <div class="iot-material-callout iot-material-callout--warn">
 <p class="iot-material-callout-title">If rpy2 throws an error</p>
 <p>Current Colab ships a working <code>rpy2</code>, so <code>%load_ext rpy2.ipython</code> normally works out of the box. As a last resort, reinstall the library and load the extension again:</p>
-<pre class="iot-material-code"><code class="language-python">!pip install -U rpy2
+<pre class="iot-material-code"><code class="language-python"># ---- Colab, cell 5: Only if rpy2 fails: reinstall and reload ----
+!pip install -U rpy2
 %load_ext rpy2.ipython
+# ---- end of Colab, cell 5 ----
 </code></pre>
 </div>
 <div class="iot-material-callout iot-material-callout--check">

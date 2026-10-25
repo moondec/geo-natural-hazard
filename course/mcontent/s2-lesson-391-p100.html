@@ -4,38 +4,50 @@
 
 <h3 class="iot-material-divider">1. Image collections</h3>
 <p>A collection can be added to the script by (1) the <em>Import</em> button on the dataset page or (2) as a variable in the code:</p>
-<pre><code class="language-javascript">// (1) Import: the collection appears in the Imports panel at the top of the script
+<pre><code class="language-javascript">// ---- Step 4, cell 1: Image collection, variant A: the Import button (use A or B, not both) ----
+// (1) Import: the collection appears in the Imports panel at the top of the script
 var s2 = ee.ImageCollection('COPERNICUS/S2_SR_HARMONIZED');
+// ---- end of Step 4, cell 1 ----
 </code></pre>
-<pre><code class="language-javascript">// (2) Variable in the code
+<pre><code class="language-javascript">// ---- Step 4, cell 2: Image collection, variant B: a variable in the code ----
+// (2) Variable in the code
 // This is a comment (description or note)
 // mark text and hit "ctrl+/" or "cmd+/" on Mac
 /*
  This is also a comment (description or note)
 */
 var s2 = ee.ImageCollection("COPERNICUS/S2_SR_HARMONIZED");
+// ---- end of Step 4, cell 2 ----
 </code></pre>
 
 <h3 class="iot-material-divider">2. Specific location and zoom level</h3>
-<pre><code class="language-javascript">// polygon
+<pre><code class="language-javascript">// ---- Step 4, cell 3: Area of interest, variant A: a polygon (use A or B) ----
+// polygon
 var aoi = ee.Geometry.Polygon([16.79,52.98,16.5,52.98,16.5,52.4,16.79,52.4]);
 Map.centerObject(aoi, 9);
+// ---- end of Step 4, cell 3 ----
 </code></pre>
-<pre><code class="language-javascript">// point
+<pre><code class="language-javascript">// ---- Step 4, cell 4: Area of interest, variant B: a point with a 100 m buffer ----
+// point
 var poi = ee.Geometry.Point(16.79,52.9);
 var aoi = poi.buffer(100); // 100 m around poi
 Map.centerObject(aoi, 16);
+// ---- end of Step 4, cell 4 ----
 </code></pre>
 
 <h3 class="iot-material-divider">3. Filtering image collections</h3>
-<pre><code class="language-javascript">var s2Filtered = s2.filterDate('2025-05-01', '2025-09-30')      // filter by date: the 2025 growing season (end date is exclusive)
+<pre><code class="language-javascript">// ---- Step 4, cell 5: Filter the collection by date, cloud cover and area ----
+var s2Filtered = s2.filterDate('2025-05-01', '2025-09-30')      // filter by date: the 2025 growing season (end date is exclusive)
                // pre-filter to get less cloudy granules (Sentinel-2)
                .filter(ee.Filter.lt('CLOUDY_PIXEL_PERCENTAGE', 35))
                .filter(ee.Filter.bounds(aoi));
                // .filterBounds(aoi);   // or use the short-cut for the line above
+// ---- end of Step 4, cell 5 ----
 </code></pre>
-<pre><code class="language-javascript">// check the number of images after filtering
+<pre><code class="language-javascript">// ---- Step 4, cell 6: Check how many images are left ----
+// check the number of images after filtering
 print(s2Filtered.size());
+// ---- end of Step 4, cell 6 ----
 </code></pre>
 
 <div class="iot-material-callout iot-material-callout--check">

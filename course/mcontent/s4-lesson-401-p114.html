@@ -31,22 +31,31 @@
 <p>Sentinel-1 (today 1C and 1D – 1C launched Dec 2024, 1D launched Nov 2025 and operational since May 2026; 1A worked from 2014 to June 2026 – 6-day repeat with two satellites) is in the catalogue as <a href="https://developers.google.com/earth-engine/datasets/catalog/COPERNICUS_S1_GRD" target="_blank" rel="noopener"><code>COPERNICUS/S1_GRD</code></a>, bands <code>VV</code>, <code>VH</code>, <code>angle</code>, values already in dB. Main mode over land: IW (Interferometric Wide), 10 m GRD pixels (amplitude only, terrain-corrected).</p>
 <ol class="iot-material-steps">
 <li><strong>Filter the collection</strong> – one mode, one polarisation, one orbit direction (never mix ascending and descending in change detection):
-<pre><code class="language-javascript">var s1 = ee.ImageCollection('COPERNICUS/S1_GRD')
+<pre><code class="language-javascript">// ---- Sentinel-1, cell 1: Load Sentinel-1 GRD (VH, IW, descending) over the AOI ----
+var s1 = ee.ImageCollection('COPERNICUS/S1_GRD')
   .filter(ee.Filter.eq('instrumentMode', 'IW'))
   .filter(ee.Filter.listContains('transmitterReceiverPolarisation', 'VH'))
   .filter(ee.Filter.eq('orbitProperties_pass', 'DESCENDING'))
   .filterBounds(aoi)
-  .select('VH');</code></pre></li>
+  .select('VH');
+// ---- end of Sentinel-1, cell 1 ----
+</code></pre></li>
 <li><strong>Make a before and an after mosaic</strong> around the flood peak:
-<pre><code class="language-javascript">// mosaic() stitches the scenes of each period into one image (VH backscatter in dB)
+<pre><code class="language-javascript">// ---- Sentinel-1, cell 2: Mosaic the before and after periods into two images ----
+// mosaic() stitches the scenes of each period into one image (VH backscatter in dB)
 var sarBefore = s1.filterDate('2024-08-20', '2024-09-10').mosaic();
-var sarAfter  = s1.filterDate('2024-09-15', '2024-09-25').mosaic();</code></pre></li>
+var sarAfter  = s1.filterDate('2024-09-15', '2024-09-25').mosaic();
+// ---- end of Sentinel-1, cell 2 ----
+</code></pre></li>
 <li><strong>Reduce speckle</strong> with a 50 m focal mean and display both images:
-<pre><code class="language-javascript">var smoothRadiusM = 50;                        // speckle filter radius in metres
+<pre><code class="language-javascript">// ---- Sentinel-1, cell 3: Speckle filter and display ----
+var smoothRadiusM = 50;                        // speckle filter radius in metres
 var sarBeforeSmooth = sarBefore.focal_mean(smoothRadiusM, 'circle', 'meters');
 var sarAfterSmooth  = sarAfter.focal_mean(smoothRadiusM, 'circle', 'meters');
 Map.addLayer(sarBeforeSmooth, {min: -25, max: 0}, 'before VH');
-Map.addLayer(sarAfterSmooth,  {min: -25, max: 0}, 'after VH');</code></pre></li>
+Map.addLayer(sarAfterSmooth,  {min: -25, max: 0}, 'after VH');
+// ---- end of Sentinel-1, cell 3 ----
+</code></pre></li>
 <li><strong>Read values with the Inspector</strong> over known water and known land: the histogram is bimodal, with a water peak around −22 dB and a land peak around −12 dB. Choose VH for floods in open land (bigger land/water contrast) and VV for flooded vegetation (double bounce).</li>
 </ol>
 <div class="iot-material-callout iot-material-callout--check">

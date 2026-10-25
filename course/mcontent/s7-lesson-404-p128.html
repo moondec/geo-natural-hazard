@@ -17,11 +17,13 @@
 <h3 class="iot-material-divider">2. Door A: export from the Code Editor, open in QGIS (always works)</h3>
 <ol class="iot-material-steps">
 <li><strong>Export the result</strong> at the end of your script (every GEO2 script already has it). Choose the CRS and the scale explicitly – QGIS will believe whatever is in the file:
-<pre class="iot-material-code"><code class="language-javascript">Export.image.toDrive({image: severity.toByte(), description: 'M6_dnbr_classes',
+<pre class="iot-material-code"><code class="language-javascript">// ---- Export, cell 1: Export the raster and the table from the Code Editor to Drive ----
+Export.image.toDrive({image: severity.toByte(), description: 'M6_dnbr_classes',
   folder: 'GEE_exports', region: aoi, scale: 20, crs: 'EPSG:2180',   // Poland: PL-1992
   maxPixels: 1e10, fileFormat: 'GeoTIFF'});
 Export.table.toDrive({collection: areaTable, description: 'M6_area_ha',
   folder: 'GEE_exports', fileFormat: 'CSV'});
+// ---- end of Export, cell 1 ----
 </code></pre>
 In the Code Editor open the <em>Tasks</em> tab and press <strong>Run</strong>; in Python use <code>task = ee.batch.Export.image.toDrive(...)</code>; <code>task.start()</code>. Class rasters go as <code>toByte()</code> (small, exact); continuous rasters (dNBR, NDVI) as <code>toFloat()</code>.</li>
 <li class="iot-material-step-note"><div class="iot-material-callout iot-material-callout--task">
@@ -68,7 +70,8 @@ In the Code Editor open the <em>Tasks</em> tab and press <strong>Run</strong>; i
 
 <h3 class="iot-material-divider">5. For volunteers: rgee (Earth Engine from R)</h3>
 <p>If the rest of your thesis is in R (statistics, ggplot2, sf, terra), <a href="https://r-spatial.github.io/rgee/" target="_blank" rel="noopener">rgee</a> calls the Python API through reticulate: the same objects with <code>$</code> instead of <code>.</code>, results straight into terra (<code>ee_as_rast</code>), sf (<code>ee_as_sf</code>) and data frames (<code>ee_extract</code>). Two scripts are in the repository: <a href="https://github.com/moondec/geo-natural-hazard/tree/main/examples/R" target="_blank" rel="noopener">examples/R</a>. Install at home, not in the lab:</p>
-<pre class="iot-material-code"><code class="language-r">install.packages("rgee")
+<pre class="iot-material-code"><code class="language-r"># ---- Export, cell 2: rgee: the same NDVI from R (volunteers) ----
+install.packages("rgee")
 library(rgee)
 ee_install(py_env = "rgee")        # once: Miniconda + earthengine-api (~200 MB), answer Y, restart R
 ee_check()                         # Python? earthengine-api? credentials?
@@ -80,6 +83,7 @@ ndvi &lt;- ee$ImageCollection("COPERNICUS/S2_SR_HARMONIZED")$filterBounds(aoi)$
           map(function(i) i$normalizedDifference(c("B8", "B4")))$median()
 Map$centerObject(aoi, 11); Map$addLayer(ndvi, list(min = -0.2, max = 0.8), "NDVI")
 r &lt;- ee_as_rast(ndvi$clip(aoi), region = aoi, scale = 10)   # terra SpatRaster
+# ---- end of Export, cell 2 ----
 </code></pre>
 <p><strong>Traps – R:</strong></p>
 <ul class="iot-material-list">

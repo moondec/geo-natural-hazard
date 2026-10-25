@@ -23,7 +23,8 @@
 
 <h3 class="iot-material-divider">2. The same NDVI, written for openEO</h3>
 <p>This is the Poznań NDVI median of lesson 2. Compare it with your Code Editor script: the three verbs are still there (load and filter, map, reduce), but the data is a <em>datacube</em> with named dimensions (x, y, t, bands), and nothing is computed until you ask for a download. The full, commented version is in the course repository: <a href="https://github.com/moondec/geo-natural-hazard/blob/main/examples/python/05_cdse_openeo_ndvi.py" target="_blank" rel="noopener">examples/python/05_cdse_openeo_ndvi.py</a>.</p>
-<pre class="iot-material-code"><code class="language-python">import openeo
+<pre class="iot-material-code"><code class="language-python"># ---- openEO, cell 1: openEO: the lesson-2 NDVI median on CDSE, start to GeoTIFF ----
+import openeo
 
 con = openeo.connect("openeo.dataspace.copernicus.eu").authenticate_oidc()   # browser login, CDSE account
 
@@ -40,6 +41,7 @@ ndvi = s2.ndvi(nir="B08", red="B04").mask(clouds)               # per scene, lik
 ndvi_median = ndvi.reduce_dimension(dimension="t", reducer="median")
 
 ndvi_median.download("ndvi_poznan_2025.tiff")   # GeoTIFF in the native UTM grid; open it in QGIS
+# ---- end of openEO, cell 1 ----
 </code></pre>
 <ul class="iot-material-list">
 <li><code>authenticate_oidc()</code> prints a link and a code; log in with the CDSE account from lab 1. In CDSE JupyterLab (kernel <em>OpenEO</em>) the login is one click.</li>

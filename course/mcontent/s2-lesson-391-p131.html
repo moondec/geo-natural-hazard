@@ -16,7 +16,8 @@
 <h3 class="iot-material-divider">2. The function: mask every image, then take the median</h3>
 <ol class="iot-material-steps">
 <li><strong>SCL mask</strong> – add this to the script of step 4 and apply it with <code>map()</code> before the median:
-<pre class="iot-material-code"><code class="language-javascript">function maskSCL(image) {
+<pre class="iot-material-code"><code class="language-javascript">// ---- Step 5, cell 1: SCL mask: mask every image, then take the median ----
+function maskSCL(image) {
   var scl = image.select('SCL');
   var clear = scl.neq(3).and(scl.neq(8)).and(scl.neq(9)).and(scl.neq(10));  // drop shadow, clouds, cirrus
   return image.updateMask(clear)
@@ -27,15 +28,18 @@ var s2MaskedSCL = s2Filtered.map(maskSCL);
 var rgb = {bands: ['B4', 'B3', 'B2'], min: 0, max: 3000};   // true-colour display
 Map.addLayer(s2Filtered.median().clip(aoi), rgb, 'median, no mask', false);
 Map.addLayer(s2MaskedSCL.median().clip(aoi), rgb, 'median, SCL mask');
+// ---- end of Step 5, cell 1 ----
 </code></pre></li>
 <li><strong>Cloud Score+</strong> – the better mask, three more lines. The score collection is joined to the scenes with <code>linkCollection</code>:
-<pre class="iot-material-code"><code class="language-javascript">var csPlus = ee.ImageCollection('GOOGLE/CLOUD_SCORE_PLUS/V1/S2_HARMONIZED');
+<pre class="iot-material-code"><code class="language-javascript">// ---- Step 5, cell 2: Cloud Score+ mask (recommended) – s2MaskedCS is used on the next page ----
+var csPlus = ee.ImageCollection('GOOGLE/CLOUD_SCORE_PLUS/V1/S2_HARMONIZED');
 function maskCS(image) {
   return image.updateMask(image.select('cs_cdf').gte(0.6));   // 0.5 loose … 0.65 strict
 }
 // linkCollection joins the cs_cdf band of the matching Cloud Score+ image to every scene
 var s2MaskedCS = s2Filtered.linkCollection(csPlus, ['cs_cdf']).map(maskCS);
 Map.addLayer(s2MaskedCS.median().clip(aoi), rgb, 'median, Cloud Score+');
+// ---- end of Step 5, cell 2 ----
 </code></pre></li>
 <li><strong>Compare the three medians</strong> on the map and with the Inspector: where the unmasked median is milky white or dark, the masked ones show the ground. Print how many valid observations each pixel keeps: <code>s2MaskedCS.select('B4').count()</code>.</li>
 <li><strong>Use it from now on.</strong> Every later script in this course (classification, floods, fires) starts with a masked collection; the next page continues with <code>s2MaskedCS</code>. The ready version with all three variants is <a href="https://code.earthengine.google.com/?scriptPath=users%2Fmarekurbaniak%2FGEO2%3A02_code_editor%2F05_cloud_masking_SCL_CloudScorePlus" target="_blank" rel="noopener">GEO2 › 02_code_editor › 05_cloud_masking_SCL_CloudScorePlus</a>.</li>
@@ -56,13 +60,15 @@ Map.addLayer(s2MaskedCS.median().clip(aoi), rgb, 'median, Cloud Score+');
 </tbody>
 </table>
 <p>The band value is an integer whose binary digits are the flags: 0 = clear, 1024 = opaque cloud, 2048 = cirrus, 3072 = both. <code>1 &lt;&lt; 10</code> shifts a 1 ten places to the left, which gives 1024; <code>qa.bitwiseAnd(1024)</code> keeps only that bit; <code>.eq(0)</code> tests that the flag is off:</p>
-<pre class="iot-material-code"><code class="language-javascript">function maskQA60(image) {
+<pre class="iot-material-code"><code class="language-javascript">// ---- Step 5, cell 3: Optional: the QA60 bit mask (older approach, for comparison) ----
+function maskQA60(image) {
   var qa = image.select('QA60');
   var cloudBit  = 1 &lt;&lt; 10;
   var cirrusBit = 1 &lt;&lt; 11;
   var clear = qa.bitwiseAnd(cloudBit).eq(0).and(qa.bitwiseAnd(cirrusBit).eq(0));
   return image.updateMask(clear).copyProperties(image, ['system:time_start']);
 }
+// ---- end of Step 5, cell 3 ----
 </code></pre>
 <p>The same trick reads every bitmask: Landsat 8/9 <code>QA_PIXEL</code> (bit 3 cloud, bit 4 shadow, bit 5 snow), MODIS <code>state_1km</code>, VIIRS <code>QF1</code> – look up the bit table on the dataset page in the catalogue, shift, <code>bitwiseAnd</code>, test. In Python the only differences are <code>.And()</code> with a capital letter and the backslash for line continuation (lesson 7).</p>
 <div class="iot-material-callout iot-material-callout--warn">

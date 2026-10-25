@@ -11,7 +11,8 @@
 <li><strong>Post-processing:</strong> a majority filter (<code>focal_mode</code>) removes salt-and-pepper pixels.</li>
 </ol>
 <h3 class="iot-material-divider">Adding indices and terrain to the band stack</h3>
-<pre><code class="language-javascript">var ndvi  = composite.normalizedDifference(['B8', 'B4']).rename('ndvi');
+<pre><code class="language-javascript">// ---- Improvements, cell 1: Add indices and terrain to the band stack; importance; majority filter ----
+var ndvi  = composite.normalizedDifference(['B8', 'B4']).rename('ndvi');
 var mndwi = composite.normalizedDifference(['B3', 'B11']).rename('mndwi');
 var ndbi  = composite.normalizedDifference(['B11', 'B8']).rename('ndbi');
 var dem   = ee.Image('NASA/NASADEM_HGT/001').select('elevation');
@@ -22,7 +23,9 @@ var stack = composite.addBands([ndvi, mndwi, ndbi, dem, slope]);
 // which input mattered?
 print('variable importance', classifier.explain());
 // majority filter
-var smoothed = classified.focal_mode({radius: 1, kernelType: 'square', units: 'pixels'});</code></pre>
+var smoothed = classified.focal_mode({radius: 1, kernelType: 'square', units: 'pixels'});
+// ---- end of Improvements, cell 1 ----
+</code></pre>
 <h3 class="iot-material-divider">Three improved scripts</h3>
 <p>The three links below are Earth Engine share links: they open only when you are logged in to the Code Editor with your registered Google Cloud project (lab 1). Public equivalents of the same workflow are in the End-to-End GEE course (<a href="https://courses.spatialthoughts.com/end-to-end-gee.html#module-3-supervised-classification" target="_blank" rel="noopener">Module 3</a>) and in the GEE guides on <a href="https://developers.google.com/earth-engine/guides/classification" target="_blank" rel="noopener">supervised</a> and <a href="https://developers.google.com/earth-engine/guides/clustering" target="_blank" rel="noopener">unsupervised</a> classification.</p>
 <ol class="iot-material-steps">
