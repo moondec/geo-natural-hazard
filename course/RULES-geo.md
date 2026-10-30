@@ -1,6 +1,6 @@
 # Rules for restyling the Moodle course "Application of geoinformatics to natural hazards mapping and monitoring" (AGeoHazard, test course id=15)
 
-Working copy: `C:\Users\marek.urbaniak\Documents\geo-natural-hazard\course\mcontent\` (one file per Moodle text field).
+Working copy: `C:\Users\marek.urbaniak\Documents\Dydaktyka\geo-natural-hazard\course\mcontent\` (one file per Moodle text field).
 Untouched originals for reference: `...\course\mcontent-orig\`. File naming: `s<section>-<modtype>-<cmid>[-p<lessonpageid>].html`,
 `*.intro.html` = activity description, `s<N>-summary.html` = section summary. `names.tsv` lists activity names, lesson page titles and
 lesson buttons (jumps) — DO NOT edit it. Edit only the files of YOUR section(s). Do not touch any other directory.
@@ -13,7 +13,7 @@ must stand out. Course content language: **English**. Keep the facts; improve st
 ## Context you must respect
 - Lecture decks (reveal.js) already exist as resources "Lecture N – …" (cm 405–412). Each lecture ends with slides
   "In the lab" and "Before next class"; the lab pages you restyle must match those steps. Lecture sources (markdown) are in
-  `C:\Users\marek.urbaniak\Documents\geo-natural-hazard\presentation\obsidian\cycle\L0N_*.md` — read the one for your section
+  `C:\Users\marek.urbaniak\Documents\Dydaktyka\geo-natural-hazard\presentation\obsidian\cycle\L0N_*.md` — read the one for your section
   (slides "In the lab …" and "Before next class") and make the lesson pages the step-by-step counterpart of those slides.
 - **No calendar dates in any text** (pages, summaries, assignment descriptions, module names, slides): the course is restored
   every year for a new group with a new timetable. Write "at the start of lab N", "before the first lab", "a few days before the lab"

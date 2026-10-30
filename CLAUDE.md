@@ -6,7 +6,7 @@ Rozmawiaj z użytkownikiem po polsku; treść kursu jest po angielsku.
 
 ## Źródło
 
-- Kopia kursu (pełna, z użytkownikami, 344 MB): `~/Documents/moodle/backup-moodle2-course-313-ageohazard-20261021-1400.mbz`.
+- Kopia kursu (pełna, z użytkownikami, 344 MB): `~/Documents/Dydaktyka/moodle/backup-moodle2-course-313-ageohazard-20261021-1400.mbz`.
 - Sekcje: Ogłoszenia (forum); lecture: Use GEE, EO Browser and JUPYTER; GEE - javascript editor;
   machine learning classifiers; Flood / Landslides / Wildfire mapping approaches; API for GEE.
   Moduły: 6 lesson, 4 resource, 2 assign, 3 label, 1 page, 1 forum.
@@ -43,7 +43,7 @@ Rozmawiaj z użytkownikiem po polsku; treść kursu jest po angielsku.
   Push do Moodle: skopiuj `course/mcontent/` do WSL `/home/marek/.hermes/build/mcontent-geo-work/` i uruchom `gpush.sh` (dry) / `gpush.sh --apply`;
   pull: `gpull.sh` (→ `mcontent-geo/`). Baner kursu (overviewfiles) zostaje bez zmian.
 
-## Sposób pracy (przejęty z projektu IoT, `~/Documents/iot_lectures`)
+## Sposób pracy (przejęty z projektu IoT, `~/Documents/Dydaktyka/iot_lectures`)
 
 - Edycja treści skryptami PHP: `docker exec -i moodle-lab-web-1 php < skrypt.php`
   (`define('CLI_SCRIPT', true); require '/var/www/html/config.php';` potem API Moodle / `$DB`). Po zmianach purge caches.
