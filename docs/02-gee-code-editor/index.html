@@ -620,17 +620,18 @@ Two different reductions: `.median()` reduces **time** (many images → one), `.
 // area of interest: a point with a buffer, or a drawn polygon
 var poi = ee.Geometry.Point(16.93, 52.41);
 var aoi = poi.buffer(5000);          // 5 km around Poznań centre
-Map.centerObject(aoi, 11);
+Map.centerObject(aoi, 12);
 
-var s2 = ee.ImageCollection('COPERNICUS/S2_SR_HARMONIZED')
-  .filterDate('2025-05-01', '2025-09-30')             // when
-  .filterBounds(aoi)                                   // where
-  .filter(ee.Filter.lt('CLOUDY_PIXEL_PERCENTAGE', 30)); // how cloudy
+var s2 = ee.ImageCollection('COPERNICUS/S2_SR_HARMONIZED');
+var s2Filtered = s2
+  .filterBounds(aoi)                                     // where
+  .filterDate('2025-05-01', '2025-09-30')                // when
+  .filter(ee.Filter.lt('CLOUDY_PIXEL_PERCENTAGE', 35));  // how cloudy
 
-print('scenes:', s2.size());         // a number, not the whole list
+print('Number of scenes after filtering:', s2Filtered.size());
 
-var rgb = {bands: ['B4', 'B3', 'B2'], min: 0, max: 3000};
-Map.addLayer(s2.median().clip(aoi), rgb, 'S2 median RGB');
+var rgbVis = {bands: ['B4', 'B3', 'B2'], min: 0, max: 3000};
+Map.addLayer(s2Filtered.median().clip(aoi), rgbVis, 'S2 median RGB');
 ```
 </div>
 
@@ -701,17 +702,15 @@ Map.addLayer(s2.median().clip(aoi), rgb, 'S2 median RGB');
 <!-- .element: style="font-size: 26px; position: absolute; left: 0%; top: 15%; height: 78%; width: 50%; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" align="left" -->
 Scene-level `CLOUDY_PIXEL_PERCENTAGE` removes cloudy *scenes*. Pixel-level masking uses a **QA band** where each **bit** is a flag:
 
-Sentinel-2 `QA60` (60 m): bit 10 = opaque cloud, bit 11 = cirrus. **Empty for 25 Jan 2022 – 28 Feb 2024** – for those dates use SCL or Cloud Score+. The band value is an integer whose binary digits are the flags: 0 = clear, 1024 = cloud (2¹⁰), 2048 = cirrus (2¹¹), 3072 = both.
+Sentinel-2 `QA60` (60 m): bit 10 = opaque cloud, bit 11 = cirrus. **No flags (all 0) for 25 Jan 2022 – 28 Feb 2024** – a QA60 mask removes nothing there; use SCL or Cloud Score+. The band value is an integer whose binary digits are the flags: 0 = clear, 1024 = cloud (2¹⁰), 2048 = cirrus (2¹¹), 3072 = both.
 
 ```javascript
-function maskS2(img) {
-  var qa = img.select('QA60');
-  var cloud  = 1 << 10;          // 1024
-  var cirrus = 1 << 11;          // 2048
-  var clear = qa.bitwiseAnd(cloud).eq(0).and(qa.bitwiseAnd(cirrus).eq(0));
-  return img.updateMask(clear)
-            .select('B.*')
-            .copyProperties(img, ['system:time_start']);
+function maskQA60(image) {
+  var qa = image.select('QA60');
+  var cloudBit  = 1 << 10;       // 1024
+  var cirrusBit = 1 << 11;       // 2048
+  var clear = qa.bitwiseAnd(cloudBit).eq(0).and(qa.bitwiseAnd(cirrusBit).eq(0));
+  return image.updateMask(clear);   // updateMask keeps the date and other properties
 }
 ```
 `1 << 10` shifts a 1 ten places left = 1024; `bitwiseAnd` keeps only that bit; `.eq(0)` = the flag is off.
@@ -723,12 +722,12 @@ function maskS2(img) {
 
 <!-- .element: style="font-size: 24px; background-color: #e8f4f8; padding: 15px; box-sizing: border-box; position: absolute; left: 53%; top: 15%; height: 78%; width: 45%; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" class="has-light-background" align="left" -->
 Better masks (2026):
-- Sentinel-2 L2A **`SCL`** band (20 m): 3 = cloud shadow, 8–9 = cloud, 10 = cirrus, 11 = snow → keep pixels whose `scl` is not 3, 8, 9 or 10 (shadow, cloud, cirrus)
+- Sentinel-2 L2A **`SCL`** band (20 m): 3 = cloud shadow, 8–9 = cloud, 10 = cirrus, 11 = snow → keep pixels whose `scl` is not 0, 1, 3, 8, 9 or 10 (no data, saturated, shadow, cloud, cirrus)
 - **Cloud Score+** (`GOOGLE/CLOUD_SCORE_PLUS/V1/S2_HARMONIZED`): per-pixel quality 0–1, link by `system:index`, `cs_cdf >= 0.6` – currently the recommended S2 mask
 - Landsat 8/9 `QA_PIXEL`: bit 3 cloud, bit 4 shadow, bit 5 snow – same `bitwiseAnd` trick
 - MODIS `state_1km`, VIIRS `QF1`: multi-bit fields (2 bits = 4 states) → `bitwiseAnd(3)` after a shift
 
-Moodle lesson 2, step 5 (*Clouds first*) has the three masks ready to paste; the Python version differs only by `.And()`.
+Moodle lesson 2, step 5 (*Clouds first*) has the three masks ready to paste; the Python version differs mainly by `.And()`.
 </div>
 
 
@@ -873,15 +872,22 @@ Full list: [Awesome spectral indices](https://github.com/awesome-spectral-indice
 
 <div class="block">
 
-<!-- .element: style="font-size: 34px; position: absolute; left: 0%; top: 15%; height: 80%; width: 55%; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" align="left" -->
+<!-- .element: style="font-size: 28px; position: absolute; left: 0%; top: 15%; height: 80%; width: 55%; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" align="left" -->
 ```javascript
+// clouds first: Cloud Score+ pixel mask (lesson 2, step 5)
+var csPlus = ee.ImageCollection('GOOGLE/CLOUD_SCORE_PLUS/V1/S2_HARMONIZED');
+function maskCS(image) {
+  return image.updateMask(image.select('cs_cdf').gte(0.6));
+}
+var s2MaskedCS = s2Filtered.linkCollection(csPlus, ['cs_cdf']).map(maskCS);
+
 // a function that takes an image and returns it with one more band
 var addNDVI = function(image) {
   var ndvi = image.normalizedDifference(['B8', 'B4']).rename('NDVI');
   return image.addBands(ndvi);
 };
 
-var s2ndvi = s2.map(addNDVI);            // applied to every scene
+var s2ndvi = s2MaskedCS.map(addNDVI);    // applied to every scene
 var ndviMedian = s2ndvi.select('NDVI').median();  // one band, one image
 
 var ndviVis = {min: -0.2, max: 0.8,
@@ -956,19 +962,21 @@ Use the **Inspector** to click on a field, a lake and a forest and check that th
 <!-- .element: style="font-size: 34px; position: absolute; left: 0%; top: 15%; height: 80%; width: 55%; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" align="left" -->
 ```javascript
 // 1) one class = one boolean image × its code (the manual way)
-var water = ndviMedian.lte(0.0).multiply(1);
-var bare  = ndviMedian.gt(0.0).and(ndviMedian.lte(0.2)).multiply(2);
-var shrub = ndviMedian.gt(0.2).and(ndviMedian.lte(0.4)).multiply(3);
-var green = ndviMedian.gt(0.4).multiply(4);
+var water = ndviMedian.lte(0.0).multiply(1).rename('Water');
+var bare  = ndviMedian.gt(0.0).and(ndviMedian.lte(0.2)).multiply(2).rename('Bare');
+var shrub = ndviMedian.gt(0.2).and(ndviMedian.lte(0.4)).multiply(3).rename('Shrub');
+var green = ndviMedian.gt(0.4).multiply(4).rename('Green');
 var classesManual = water.add(bare).add(shrub).add(green).rename('class');
 
 // 2) the same in one line: count how many thresholds the pixel exceeds
 var thresholds = ee.Image([0.0, 0.2, 0.4]);
-var classified = ndviMedian.gt(thresholds).reduce(ee.Reducer.sum()).add(1).toInt();
+var classNames = ['water', 'bare', 'shrub', 'green'];
+var classPalette = ['blue', 'burlywood', 'yellowgreen', 'darkgreen'];
+var classified = ndviMedian.gt(thresholds)
+  .reduce(ee.Reducer.sum()).add(1).toInt().rename('class');
 
 Map.addLayer(classified.clip(aoi),
-  {min: 1, max: 4, palette: ['blue', 'burlywood', 'yellowgreen', 'darkgreen']},
-  'NDVI classes');
+  {min: 1, max: classNames.length, palette: classPalette}, 'Classes - thresholds');
 ```
 </div>
 
@@ -1035,25 +1043,30 @@ Map.addLayer(classified.clip(aoi),
 
 <div class="block">
 
-<!-- .element: style="font-size: 32px; position: absolute; left: 0%; top: 15%; height: 80%; width: 55%; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" align="left" -->
+<!-- .element: style="font-size: 28px; position: absolute; left: 0%; top: 15%; height: 80%; width: 55%; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" align="left" -->
 ```javascript
-var areaImage = ee.Image.pixelArea().addBands(classified);  // band 0 = m² of each pixel, band 1 = class
+var areaImage = ee.Image.pixelArea().addBands(classified);  // band 0 = m², band 1 = class
 
 var areaGroups = areaImage.reduceRegion({
-  reducer: ee.Reducer.sum().group({groupField: 1, groupName: 'class'}),
+  reducer: ee.Reducer.sum().group({groupField: 1, groupName: 'code'}),
   geometry: aoi,
-  scale: 10,          // Sentinel-2 native resolution, in metres
+  scale: 10,        // Sentinel-2 native resolution, in metres
   maxPixels: 1e10
 });
 
 // convert the list of dictionaries into a readable table in hectares
 var areaList = ee.List(areaGroups.get('groups'));
+var names = ee.List(classNames);
 var areaTable = ee.FeatureCollection(areaList.map(function(d) {
   d = ee.Dictionary(d);
-  return ee.Feature(null, {class: d.get('class'),
-                           ha: ee.Number(d.get('sum')).divide(1e4).round()});
+  var code = ee.Number(d.get('code'));
+  return ee.Feature(null, {
+    code: code,
+    name: names.get(code.subtract(1)),
+    ha: ee.Number(d.get('sum')).divide(1e4).round()
+  });
 }));
-print('area per class [ha]:', areaTable);
+print('Area per class [ha]:', areaTable);
 ```
 </div>
 
@@ -1064,9 +1077,9 @@ print('area per class [ha]:', areaTable);
 <!-- .element: style="font-size: 36px; background-color: #e8f4f8; padding: 15px; box-sizing: border-box; position: absolute; left: 58%; top: 15%; height: 80%; width: 42%; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" class="has-light-background" align="left" -->
 - `ee.Image.pixelArea()` gives the true area of every pixel in m² (it changes with latitude)
 - `group` splits the sum by the value of band 1 → one sum per class
-- **`scale`** must match the data (10 m). `scale: 1` forces a billion samples and the error *"Too many pixels"* or a wrong, over-smoothed answer
-- the sum of all classes must equal the AOI area – check it, it is your first sanity test
-- a chart instead of a table: `ui.Chart.feature.byFeature(table, 'class', 'ha')`
+- **`scale`** must match the data (10 m). `scale: 1` gives practically the same area at 100× the computation (≈ 8·10⁷ samples for a 5 km buffer): slow, may time out or stop with *"Too many pixels"*
+- the sum of all classes must be close to the AOI area (gap = edge pixels, pixels cloudy in every scene) – check it, it is your first sanity test
+- a chart instead of a table: `ui.Chart.feature.byFeature(areaTable, 'name', 'ha')`
 </div>
 
 
@@ -1131,11 +1144,11 @@ source: [End-to-End GEE – computing area](https://courses.spatialthoughts.com/
 
 <!-- .element: style="font-size: 34px; position: absolute; left: 0%; top: 15%; height: 75%; width: 55%; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-evenly" align="left" -->
 ```javascript
-// administrative units from FAO GAUL (level 0 = country, 1 = region, 2 = district)
-// FAO GAUL 2025 (the 2015 assets are deprecated); names have no diacritics
+// FAO GAUL 2025 tables level1 (region) and level2 (district); there is no level0 table,
+// the country name is in GAUL0_NAME. 2015 assets are deprecated; names have no diacritics
 var admin2 = ee.FeatureCollection('FAO/GAUL/2025/level2');
-var poznan = admin2.filter(ee.Filter.eq('GAUL2_NAME', 'Poznanski'));
-Map.addLayer(poznan, {color: 'red'}, 'Poznań district');
+var poznan = admin2.filter(ee.Filter.eq('GAUL2_NAME', 'Poznan'));   // city, 261 km²
+Map.addLayer(poznan, {color: 'red'}, 'Poznań (city district)');
 
 var aoi = poznan.geometry();   // use it exactly like the buffer before
 ```
