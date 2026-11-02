@@ -554,7 +554,7 @@
   <question type="multichoice">
     <name><text>L4-10 Masks</text></name>
     <questiontext format="html"><text><![CDATA[<p>Which masks does the UN-SPIDER flood script apply to the change layer? (select all that apply)</p>]]></text></questiontext>
-    <generalfeedback format="html"><text><![CDATA[<p>JRC GSW removes lakes and rivers, the HydroSHEDS DEM slope mask removes shadow on slopes, connectedPixelCount removes specks. There is no built-up mask.</p>]]></text></generalfeedback>
+    <generalfeedback format="html"><text><![CDATA[<p>JRC GSW removes lakes and rivers, the slope mask from the Copernicus DEM (GLO-30) removes shadow on slopes, connectedPixelCount removes specks. There is no built-up mask.</p>]]></text></generalfeedback>
     <defaultgrade>1</defaultgrade><penalty>0.3333333</penalty><hidden>0</hidden>
     <single>false</single><shuffleanswers>true</shuffleanswers><answernumbering>abc</answernumbering>
     <correctfeedback format="html"><text>Correct.</text></correctfeedback>
@@ -568,7 +568,7 @@
   </question>
   <question type="multichoice">
     <name><text>L4-11 Speckle</text></name>
-    <questiontext format="html"><text><![CDATA[<p>Why does the script apply a 50 m focal mean to the SAR images?</p>]]></text></questiontext>
+    <questiontext format="html"><text><![CDATA[<p>Why does the script apply a 50 m focal median filter to the SAR images?</p>]]></text></questiontext>
     <generalfeedback format="html"><text><![CDATA[<p>Speckle must always be filtered before thresholding; the radius is a trade-off between noise and detail (sensitivity test: 30 m vs 100 m).</p>]]></text></generalfeedback>
     <defaultgrade>1</defaultgrade><penalty>0.3333333</penalty><hidden>0</hidden>
     <single>true</single><shuffleanswers>true</shuffleanswers><answernumbering>abc</answernumbering>
@@ -582,8 +582,8 @@
   </question>
   <question type="multichoice">
     <name><text>L4-12 Sensitivity table</text></name>
-    <questiontext format="html"><text><![CDATA[<p>Why does milestone M4 require the flooded area for thresholds 1.15, 1.25 and 1.40?</p>]]></text></questiontext>
-    <generalfeedback format="html"><text><![CDATA[<p>A map whose area changes by less than a factor of two between the thresholds is robust; a large change means the threshold matters more than the data.</p>]]></text></generalfeedback>
+    <questiontext format="html"><text><![CDATA[<p>Why does milestone M4 require the flooded area for the thresholds −2, −3 and −4 dB?</p>]]></text></questiontext>
+    <generalfeedback format="html"><text><![CDATA[<p>The factor between the areas is the uncertainty of the map; a large factor means the threshold matters more than the data, so report and explain it.</p>]]></text></generalfeedback>
     <defaultgrade>1</defaultgrade><penalty>0.3333333</penalty><hidden>0</hidden>
     <single>true</single><shuffleanswers>true</shuffleanswers><answernumbering>abc</answernumbering>
     <correctfeedback format="html"><text>Correct.</text></correctfeedback>

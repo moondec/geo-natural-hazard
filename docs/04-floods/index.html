@@ -859,7 +859,7 @@ source: [ICEYE flood insights](https://www.iceye.com/solutions/government/flood-
 | **International Charter** | free satellite tasking (all agencies) for major disasters | hours | [disasterscharter.org](https://disasterscharter.org/) |
 | **JRC Global Surface Water** | 1984–2021 Landsat water occurrence, seasonality | archive | `JRC/GSW1_4/GlobalSurfaceWater` |
 
-Use them as **reference data** for your own map in the report – and know that the lab script (before/after ratio) is a simplified cousin of the change-detection methods inside GFM, not the same method.
+Use them as **reference data** for your own map in the report – and know that the lab script (before/after difference in dB) is a simplified cousin of the change-detection methods inside GFM, not the same method.
 </div>
 
 
@@ -918,7 +918,7 @@ Use them as **reference data** for your own map in the report – and know that 
 1. Copernicus Browser: find a flood in *Highlights* (or Poland, Sept 2024); compare Sentinel-2 and Sentinel-1 of the same days – see what clouds do
 2. Optical: MNDWI before/after on Sentinel-2, histogram, threshold, water area (20 min; reuse lecture 2 code)
 3. SAR: open the **updated UN-SPIDER script** (Moodle, lesson page 7, link 2): set AOI, before/after dates, orbit; run; read the flooded area and the exposed population / cropland
-4. Change the threshold (1.25 → 1.15 → 1.4) and the speckle filter – write down how the area changes: this is your uncertainty
+4. Change the threshold (−3 → −2 → −4 dB) and the speckle filter – write down how the area changes: this is your uncertainty
 5. Compare with the GFM product or an EMS map for the same event; one paragraph of agreement/disagreement
 6. Reference: S2 (no SAR) example script (Moodle, link 1)
 </div>

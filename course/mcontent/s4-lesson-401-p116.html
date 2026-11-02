@@ -86,7 +86,7 @@ print('STEP 7 - flooded area [ha]:', floodHa);
 Map.addLayer(flooded, {palette: ['0000ff']}, 'FLOODED (final)');
 // ---- end of Flood script, cell 3 ----
 </code></pre></li>
-<li><strong>Sensitivity test.</strong> Change the threshold (<code>RATIO_THRESHOLD</code> 1.15 and 1.40 with <code>USE_RATIO = true</code>, or <code>THRESHOLD_DB</code> −2 and −4) and the speckle filter radius <code>SPECKLE_RADIUS_M</code> (e.g. 30 m and 100 m); write down the flooded area for each run in a small table – this is the uncertainty of your map. Script 4 runs all nine combinations and prints the table (set <code>USE_RATIO</code> there in the same way).</li>
+<li><strong>Sensitivity test.</strong> Change the threshold (<code>THRESHOLD_DB</code> −2 and −4; the UN-SPIDER ratio 1.15 and 1.40 with <code>USE_RATIO = true</code> is an optional extra) and the speckle filter radius <code>SPECKLE_RADIUS_M</code> (e.g. 30 m and 100 m); write down the flooded area for each run in a small table – this is the uncertainty of your map. Script 4 runs all nine combinations and prints the table (set <code>USE_RATIO</code> there in the same way).</li>
 <li><strong>Validate.</strong> Compare your map with the Global Flood Monitoring product (<a href="https://global-flood.emergency.copernicus.eu/" target="_blank" rel="noopener">global-flood.emergency.copernicus.eu</a>) or a Copernicus EMS map of the same event; write one paragraph of agreement and disagreement and say what you compared against.</li>
 <li><strong>Optional:</strong> run script 1 (optical, Sentinel-2) for the same event and compare the two areas.</li>
 </ol>
@@ -96,14 +96,14 @@ Map.addLayer(flooded, {palette: ['0000ff']}, 'FLOODED (final)');
 <li>link to your copy of the flood script;</li>
 <li>a map of the flood extent with the event name and dates;</li>
 <li>the flooded area in hectares;</li>
-<li>a table: threshold (1.15 / 1.25 / 1.40) and filter radius versus flooded area;</li>
+<li>a table: threshold (−2 / −3 / −4 dB) and filter radius versus flooded area, with the factor between the largest and the smallest area;</li>
 <li>one paragraph of comparison with GFM or an EMS map.</li>
 </ul>
 <p>Write it to the report template and submit the .pdf/.docx in the assignment <a href="http://localhost:8088/mod/assign/view.php?id=431">Homework M4</a> below this lesson.</p>
 </div>
 <div class="iot-material-callout iot-material-callout--check">
 <p class="iot-material-callout-title">You are done when…</p>
-<p>…the flood layer lies along the river and not on mountain slopes, the permanent lakes are not counted, and the area changes by less than a factor of two between the thresholds 1.15 and 1.40.</p>
+<p>…the flood layer lies along the river and not on mountain slopes, the permanent lakes are not counted, and you can explain the factor between the −2 dB and −4 dB areas (a large factor means the threshold matters more than the data).</p>
 </div>
 <div class="iot-material-callout iot-material-callout--warn">
 <p class="iot-material-callout-title">Where SAR flood maps go wrong</p>
