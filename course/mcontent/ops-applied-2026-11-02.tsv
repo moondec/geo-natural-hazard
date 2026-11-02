@@ -10,3 +10,5 @@ answerresponse	404	<div style="background:#f8d7da;border-left:6px solid #dc3545;
 jump	406	0
 answerscore	406	0
 answerresponse	406	<div style="background:#f8d7da;border-left:6px solid #dc3545;color:#721c24;padding:10px 16px;border-radius:6px;margin:4px 0"><p style="margin:0 0 4px;font-weight:700">&#10008; Not correct</p><p style="margin:0">Julia support came from the community: <a href="https://docs.juliahub.com/EarthEngine/">EarthEngine.jl</a> wraps the Python API and has not been updated since 2023; it is not an official Google library.</p></div>
+hide	399
+hide	400

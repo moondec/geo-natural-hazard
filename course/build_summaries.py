@@ -49,7 +49,7 @@ MODULES = [
                 ('Lab 3 – classify your area', 'Training polygons, RF (50 trees), k-means (4), confusion matrices, export', mod('lesson', 396)),
                 ('Homework – the report', 'Maps, matrices, justification, conclusions; .pdf or .docx', mod('assign', 398)),
                 ('Prepare lab 4', 'Read the UN-SPIDER flood practice ("In detail" tab)', None)],
-         links=[('Lecture 3 (slides)', mod('page', 425)), ('Lesson: Classifiers', mod('lesson', 396)), ('Short deck: the two classifiers', mod('resource', 397)), ('Homework: classification report', mod('assign', 398)),
+         links=[('Lecture 3 (slides)', mod('page', 425)), ('Lesson: Classifiers', mod('lesson', 396)), ('Homework: classification report', mod('assign', 398)),
                 ('GEE guide: supervised classification', 'https://developers.google.com/earth-engine/guides/classification')],
          extra=''),
     dict(n=4, short='Floods', title='Flood mapping: optical water indices and Sentinel-1 radar',
@@ -64,9 +64,9 @@ MODULES = [
                 ('Prepare lab 5', 'Read Handwerger et al. 2022 (sections 1–3.1)', None)],
          links=[('Lecture 4 (slides)', mod('page', 426)), ('Lesson: flood mapping', mod('lesson', 401)),
                 ('UN-SPIDER: flood mapping with Sentinel-1 in GEE', 'https://www.un-spider.org/advisory-support/recommended-practices/recommended-practice-google-earth-engine-flood-mapping'),
-                ('Global Flood Monitoring', 'https://global-flood.emergency.copernicus.eu/'), ('Quality assessment papers', mod('resource', 399)), ('Homework M4: flood extent map', mod('assign', 431))],
+                ('Global Flood Monitoring', 'https://global-flood.emergency.copernicus.eu/'), ('Olofsson et al. 2014 – good practices for accuracy assessment', 'https://doi.org/10.1016/j.rse.2014.02.015'), ('Homework M4: flood extent map', mod('assign', 431))],
          extra='''<h5 class="iot-h">Error estimation – reading</h5>
-      <p>Two papers on the quality of satellite products are attached to this module: <a href="%s" target="_blank" rel="noopener">A procedure for high-resolution satellite imagery quality assessment</a> (Sensors 2009) and <a href="%s" target="_blank" rel="noopener">TATSSI – quality data assessment of EO products</a> (IJGI 2021). They are the background for the "uncertainty" part of your reports.</p>''' % (mod('resource', 399), mod('resource', 400))),
+      <p>Background for the "validation and uncertainty" chapter of your reports: Olofsson, P., Foody, G. M., Herold, M., Stehman, S. V., Woodcock, C. E. &amp; Wulder, M. A. (2014). <a href="https://doi.org/10.1016/j.rse.2014.02.015" target="_blank" rel="noopener">Good practices for estimating area and assessing accuracy of land change</a>. <em>Remote Sensing of Environment</em> 148, 42–57. Read section 3 (the error matrix, user's and producer's accuracy, area estimates with confidence intervals) – it applies to flood maps and to the classification of lab 3 alike.</p>'''),
     dict(n=5, short='Landslides', title='Landslide mapping with satellite radar',
          lecture=427, hours='3 h',
          lead='A landslide inventory is the input of every susceptibility model, and after a rain or earthquake event it must be produced in days. You run the Sentinel-1 amplitude-change method of Handwerger et al. (2022) that produces landslide density heatmaps in Earth Engine.',
@@ -204,8 +204,8 @@ ops = [
     # lecture first, then lesson/materials, homework last
     ('sequence', 1, '423,390,422'),  # 422 hidden, kept in the sequence until deleted
     ('sequence', 2, '424,391,394,395,392,393'),
-    ('sequence', 3, '425,396,397,398'),
-    ('sequence', 4, '426,401,399,400,431'),
+    ('sequence', 3, '425,396,398'),
+    ('sequence', 4, '426,401,431'),
     ('sequence', 5, '427,402,432'),
     ('sequence', 6, '428,403,433'),
     ('sequence', 7, '429,404,430,434,435'),  # 435 = Final test (quiz, hidden until the test day)
@@ -216,7 +216,6 @@ ops = [
     ('rename', 394, 'Tip: administrative borders as a FeatureCollection'),
     ('rename', 395, 'Other data sources (SAR, DEM, rainfall, soil moisture, land cover, landslides)'),
     ('rename', 396, 'Lesson 3: Classifiers'),
-    ('rename', 397, 'Short deck: Random Forest and k-means'),
     ('rename', 398, 'Homework M3: classification report'),
     ('rename', 431, 'Homework M4: flood extent map + sensitivity table'),
     ('rename', 432, 'Homework M5: landslide heatmap note'),
