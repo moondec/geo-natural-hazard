@@ -3,25 +3,38 @@
 <p class="iot-material-lead">Optional, but this is where the accuracy goes from "acceptable" to "good". This page lists the improvements shown in the lecture and gives three ready scripts that apply them. Use what you need to raise the accuracy of your own classification before writing the report.</p>
 <h3 class="iot-material-divider">Six ways to improve a classification</h3>
 <ol class="iot-material-list">
-<li><strong>Apply cloud masking</strong> per pixel before taking the median: mask the <code>SCL</code> classes 3, 8, 9, 10 (cloud shadow, clouds, cirrus) or, better, use Cloud Score+ (<code>GOOGLE/CLOUD_SCORE_PLUS/V1/S2_HARMONIZED</code>, keep pixels with <code>cs_cdf</code> ≥ 0.6). Do not rely on <code>QA60</code> for scenes from 25 Jan 2022 to 28 Feb 2024 – the band is unpopulated there. Lesson 2, step 5 (<em>Clouds first</em>) explains the three masks and the bitmask.</li>
+<li><strong>Apply cloud masking</strong> per pixel before taking the median: mask the <code>SCL</code> classes 0, 1, 3, 8, 9, 10 (no data, saturated, cloud shadow, clouds, cirrus) or, better, use Cloud Score+ (<code>GOOGLE/CLOUD_SCORE_PLUS/V1/S2_HARMONIZED</code>, keep pixels with <code>cs_cdf</code> ≥ 0.6). Do not rely on <code>QA60</code> for scenes from 25 Jan 2022 to 28 Feb 2024 – the band holds no cloud flags there. Lesson 2, step 5 (<em>Clouds first</em>) explains the three masks and the bitmask.</li>
 <li><strong>Add spectral indices</strong> as extra bands: NDVI (vegetation), NDBI (built-up), MNDWI (water) and BSI (bare soil).</li>
 <li><strong>Add elevation and slope</strong> from a DEM – forests and crops rarely share the same slope.</li>
-<li><strong>Normalise the inputs</strong> to 0–1 (divide each band by its maximum). Machine learning models work best when all inputs have the same scale; it is required for SVM or neural networks and harmless for Random Forest. A <a href="https://courses.spatialthoughts.com/end-to-end-gee.html#image-normalization-and-standardization" target="_blank" rel="noopener">more complete and robust technique</a> is described in the End-to-End course supplement.</li>
+<li><strong>Normalise the inputs</strong> to 0–1 (divide each band by its maximum). Machine learning models work best when all inputs have the same scale; it is required for SVM or neural networks and harmless for Random Forest. It is also needed for <strong>k-means</strong>, which measures distances: elevation in metres and reflectance in 0–10 000 would outweigh the indices (−1…1). The comparison script below uses z-scores (subtract the mean, divide by the standard deviation of each band). A <a href="https://courses.spatialthoughts.com/end-to-end-gee.html#image-normalization-and-standardization" target="_blank" rel="noopener">more complete and robust technique</a> is described in the End-to-End course supplement.</li>
 <li><strong>More trees</strong> (100–200) and more, better-distributed samples.</li>
 <li><strong>Post-processing:</strong> a majority filter (<code>focal_mode</code>) removes salt-and-pepper pixels.</li>
 </ol>
 <h3 class="iot-material-divider">Adding indices and terrain to the band stack</h3>
-<pre class="iot-material-code"><code class="language-javascript">// ---- Improvements, cell 1: Add indices and terrain to the band stack; importance; majority filter ----
-var ndvi  = composite.normalizedDifference(['B8', 'B4']).rename('ndvi');
-var mndwi = composite.normalizedDifference(['B3', 'B11']).rename('mndwi');
-var ndbi  = composite.normalizedDifference(['B11', 'B8']).rename('ndbi');
+<pre class="iot-material-code"><code class="language-javascript">// ---- Improvements, cell 1: Add indices and terrain to the band stack; re-sample; importance; majority filter ----
+var ndvi  = composite.normalizedDifference(['B8', 'B4']).rename('NDVI');     // vegetation
+var mndwi = composite.normalizedDifference(['B3', 'B11']).rename('MNDWI');   // water
+var ndbi  = composite.normalizedDifference(['B11', 'B8']).rename('NDBI');    // built-up
 var dem   = ee.Image('NASA/NASADEM_HGT/001').select('elevation');
 var slope = ee.Terrain.slope(dem).rename('slope');
 var stack = composite.addBands([ndvi, mndwi, ndbi, dem, slope]);
-// then train on stack.bandNames() instead of composite.bandNames()
+
+// The old table labelledPixels has only the composite bands: re-sample the polygons from the stack
+var labelledPixels = stack.sampleRegions({
+  collection: trainingSamples,
+  properties: ['landcover', 'test'],
+  scale: 10,
+  geometries: true
+});
+var trainSet = labelledPixels.filter(ee.Filter.eq('test', 0));
+var testSet  = labelledPixels.filter(ee.Filter.eq('test', 1));
+var classifier = ee.Classifier.smileRandomForest({numberOfTrees: 50, seed: 42})
+  .train({features: trainSet, classProperty: 'landcover',
+          inputProperties: stack.bandNames()});
+var classified = stack.classify(classifier);
 
 // which input mattered?
-print('variable importance', classifier.explain());
+print('variable importance', ee.Dictionary(classifier.explain().get('importance')));
 // majority filter
 var smoothed = classified.focal_mode({radius: 1, kernelType: 'square', units: 'pixels'});
 // ---- end of Improvements, cell 1 ----
@@ -36,11 +49,11 @@ var smoothed = classified.focal_mode({radius: 1, kernelType: 'square', units: 'p
 <p>Open each script, replace the AOI with yours and run it. Compare the accuracy with and without the extra bands – one sentence about it is welcome in the report.</p>
 <div class="iot-material-callout iot-material-callout--check">
 <p class="iot-material-callout-title">You are done when…</p>
-<p>…you can name the two inputs with the highest importance in <code>classifier.explain()</code> and your overall accuracy did not fall after adding them.</p>
+<p>…you can name the two inputs with the highest importance in <code>classifier.explain()</code> and your overall accuracy on the test polygons (cell 5 of the supervised page, run on the new <code>testSet</code>) did not fall after adding them.</p>
 </div>
 <div class="iot-material-callout iot-material-callout--warn">
 <p class="iot-material-callout-title">Common mistake</p>
-<p>Adding the index bands to the image but still training on <code>composite.bandNames()</code> – the classifier then never sees them. Use <code>stack.bandNames()</code> and classify <code>stack</code>.</p>
+<p>Adding the index bands to the image but still training on <code>composite.bandNames()</code> – the classifier then never sees them. Re-sample the polygons from <code>stack</code> (the old table has no index columns), train on <code>stack.bandNames()</code> and classify <code>stack</code>.</p>
 </div>
 <p>Next page: <em>Landslides and wildfire</em> – two advanced examples (button <em>Advanced examples</em> below).</p>
 </div>

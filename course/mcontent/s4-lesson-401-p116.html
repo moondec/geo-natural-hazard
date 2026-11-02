@@ -7,44 +7,86 @@
 <ul class="iot-material-list">
 <li>Script 1 – Sentinel-2 (no SAR) reference example: <a href="https://code.earthengine.google.com/?scriptPath=users%2Fmarekurbaniak%2FGEO2%3A04_floods%2F01_sentinel2_water_indices" target="_blank" rel="noopener">GEO2 › 04_floods › 01_sentinel2_water_indices</a></li>
 <li>Script 2 – updated UN-SPIDER Sentinel-1 flood script: <a href="https://code.earthengine.google.com/?scriptPath=users%2Fmarekurbaniak%2FGEO2%3A04_floods%2F03_sentinel1_flood_change_detection" target="_blank" rel="noopener">GEO2 › 04_floods › 03_sentinel1_flood_change_detection</a></li>
+<li>Script 3 – orbit check (which pass and relative orbit cover your area before and after the flood): <a href="https://code.earthengine.google.com/?scriptPath=users%2Fmarekurbaniak%2FGEO2%3A04_floods%2F02_sentinel1_orbit_check" target="_blank" rel="noopener">GEO2 › 04_floods › 02_sentinel1_orbit_check</a></li>
+<li>Script 4 – sensitivity table for M4 (threshold × filter radius, CSV export): <a href="https://code.earthengine.google.com/?scriptPath=users%2Fmarekurbaniak%2FGEO2%3A04_floods%2F04_threshold_sensitivity" target="_blank" rel="noopener">GEO2 › 04_floods › 04_threshold_sensitivity</a></li>
 <li>Background: <a href="https://www.un-spider.org/advisory-support/recommended-practices/recommended-practice-google-earth-engine-flood-mapping" target="_blank" rel="noopener">UN-SPIDER recommended practice</a> (read the <em>In detail</em> tab).</li>
 <li>An event: a flood from the <em>Highlights</em> of the <a href="https://browser.dataspace.copernicus.eu/" target="_blank" rel="noopener">Copernicus Browser</a>, or south-west Poland, September 2024 (Copernicus EMS activation EMSR756).</li>
 </ul>
 <h3 class="iot-material-divider">Step by step: the UN-SPIDER flood script</h3>
 <ol class="iot-material-steps">
 <li><strong>Compare optical and radar in the Copernicus Browser.</strong> Open Sentinel-2 and Sentinel-1 of the same days over your event and see what the clouds do to the optical image.</li>
-<li><strong>Open script 2</strong> and save a copy in your repository. Draw or import your AOI and assign it to <code>aoi</code> at the top of the script.</li>
-<li><strong>Set the parameters</strong> at the top of the script: before-period and after-period dates (about 2–3 weeks each, the after-period starting at the flood peak), polarisation <code>VH</code>, orbit pass <code>DESCENDING</code> (or ascending – check which one covers your area on the right days), difference threshold <code>1.25</code>.</li>
+<li><strong>Open script 2</strong> and save a copy in your repository. Replace the <code>aoi</code> rectangle at the top of the script with your own area.</li>
+<li><strong>Set the parameters</strong> at the top of the script: before-period and after-period dates (about 2–3 weeks each, the after-period starting at the flood peak), polarisation <code>VH</code>, orbit pass and relative orbit <code>PASS</code>, <code>RELATIVE_ORBIT</code> (script 3 shows which ones cover your area on the right days; for the default event <code>ASCENDING</code>, orbit 175), change threshold <code>THRESHOLD_DB = -3</code> (dB). For the ratio values of the M4 table set <code>USE_RATIO = true</code> and <code>RATIO_THRESHOLD = 1.25</code>.</li>
 <li><strong>Run it</strong> and inspect the layers: before, after, difference, flooded area. The script computes the change like this:
-<pre class="iot-material-code"><code class="language-javascript">// ---- Flood script, cell 1: Change detection: ratio of the after and before images ----
-// UN-SPIDER: ratio of the two dB images, flood where the ratio exceeds 1.25
-var ratio = sarAfterSmooth.divide(sarBeforeSmooth);           // both images are in dB!
-var flooded = ratio.gt(1.25);                 // after value at least 25 % more negative
-// cleaner equivalent: the difference in dB
-// var flooded = sarAfterSmooth.subtract(sarBeforeSmooth).lt(-3);   // at least 3 dB darker
+<pre class="iot-material-code"><code class="language-javascript">// ---- Flood script, cell 1: Change image and threshold (difference in dB) ----
+// The GEE S1_GRD collection is sigma0 in dB, so the natural measure is the
+// DIFFERENCE after - before in dB. Flood = pixels that became darker by more
+// than |THRESHOLD_DB|.
+var THRESHOLD_DB = -3;
+// UN-SPIDER alternative: ratio of the two dB images, flood where
+// after / before &gt; 1.25. Because both values are negative, 1.25 means
+// "the after value is at least 25 % more negative" (-12 -&gt; -15 dB, about
+// 3 dB). It is NOT a physical ratio of backscatter. Set USE_RATIO = true
+// to reproduce the UN-SPIDER result exactly.
+var USE_RATIO = false;
+var RATIO_THRESHOLD = 1.25;
+
+var diffDb = sarAfterSmooth.subtract(sarBeforeSmooth).rename('diff_dB');   // negative = darker
+var ratio  = sarAfterSmooth.divide(sarBeforeSmooth).rename('ratio_dB');    // UN-SPIDER style
+
+var floodRaw = USE_RATIO ? ratio.gt(RATIO_THRESHOLD) : diffDb.lt(THRESHOLD_DB);
+floodRaw = floodRaw.rename('flooded');
+print('STEP 5 - method:', USE_RATIO ? 'ratio &gt; ' + RATIO_THRESHOLD
+                                    : 'difference &lt; ' + THRESHOLD_DB + ' dB');
 // ---- end of Flood script, cell 1 ----
 </code></pre>
-The script divides the <em>dB</em> values, so a ratio of 1.25 means the after value is at least 25 % more negative (e.g. −12 → −15 dB, roughly 3 dB darker for a typical land pixel); it is not a physical ratio of backscatter. The difference in dB does the same more transparently.</li>
-<li><strong>Understand the masks.</strong> Permanent water (JRC), slopes steeper than 5° (radar shadow) and isolated specks (fewer than 8 connected pixels) are removed:
-<pre class="iot-material-code"><code class="language-javascript">// ---- Flood script, cell 2: Remove permanent water (JRC GSW) and isolated pixels ----
-var gsw = ee.Image('JRC/GSW1_4/GlobalSurfaceWater').select('seasonality');   // months with water per year
-var permanentWater = gsw.gte(10);                   // water 10 or more months a year
-var dem = ee.Image('WWF/HydroSHEDS/03VFDEM');
+By default the script takes the difference in dB: −3 dB means that at least half of the backscatter was lost. With <code>USE_RATIO = true</code> it divides the <em>dB</em> values as UN-SPIDER does, so a ratio of 1.25 means the after value is at least 25 % more negative (e.g. −12 → −15 dB, roughly 3 dB darker for a typical land pixel); it is not a physical ratio of backscatter.</li>
+<li><strong>Understand the masks.</strong> Permanent water (JRC), slopes steeper than 5° (radar shadow; slope from the Copernicus DEM GLO-30) and isolated specks (fewer than 8 connected pixels) are removed:
+<pre class="iot-material-code"><code class="language-javascript">// ---- Flood script, cell 2: Masks - permanent water (JRC GSW), slope (Copernicus DEM), specks ----
+var PERMANENT_WATER_MONTHS = 10;   // JRC seasonality &gt;= 10 months = permanent
+var SLOPE_MAX_DEG = 5;             // in DEGREES (5 deg = 8.7 %), UN-SPIDER value
+var MIN_CONNECTED_PIXELS = 8;      // specks smaller than this are removed
+
+// 6a. Permanent water: JRC Global Surface Water seasonality = number of
+//     months per year with water (1984-2021). Rivers and lakes are not flood.
+//     GSW is masked where water was never seen; unmask(0) turns that land
+//     into "not permanent water" - without it updateMask(permanentWater.not())
+//     would delete every flood pixel on land that is normally dry.
+var gsw = ee.Image('JRC/GSW1_4/GlobalSurfaceWater').select('seasonality');
+var permanentWater = gsw.gte(PERMANENT_WATER_MONTHS).unmask(0);
+
+// 6b. Slope: water cannot stand on steep slopes; dark pixels there are
+//     radar shadow. Copernicus DEM GLO-30 is an ImageCollection of tiles,
+//     so we mosaic it and restore a projection so slope can be computed.
+var demCol = ee.ImageCollection('COPERNICUS/DEM/GLO30_2024_1').select('DEM');
+var dem = demCol.mosaic().setDefaultProjection(demCol.first().projection());
 var slope = ee.Terrain.slope(dem);
-flooded = flooded.updateMask(permanentWater.not())
-                 .updateMask(slope.lt(5))
-                 .updateMask(flooded.connectedPixelCount(25).gte(8)); // remove specks
+
+// 6c. Specks: count connected flood pixels (8-neighbourhood, max 25) and
+//     drop groups smaller than MIN_CONNECTED_PIXELS. Done last, so specks
+//     created by the other two masks are removed as well. selfMask() first:
+//     only flood pixels may be counted, not the zeros around them.
+var flooded = floodRaw.selfMask()
+  .updateMask(permanentWater.not())
+  .updateMask(slope.lt(SLOPE_MAX_DEG));
+var connected = flooded.connectedPixelCount(25, true);
+flooded = flooded.updateMask(connected.gte(MIN_CONNECTED_PIXELS));
 // ---- end of Flood script, cell 2 ----
 </code></pre></li>
 <li><strong>Read the flooded area</strong> (and, in the script, the exposed population and cropland):
 <pre class="iot-material-code"><code class="language-javascript">// ---- Flood script, cell 3: Flooded area in hectares ----
+var SCALE = 10;                    // m, S1 GRD pixel spacing
+var MAX_PIXELS = 1e10;
 // sum of the pixel areas of the flooded pixels, in hectares
-var floodAreaHa = flooded.multiply(ee.Image.pixelArea()).divide(1e4)
-  .reduceRegion({reducer: ee.Reducer.sum(), geometry: aoi, scale: 10, maxPixels: 1e10});
-print('flooded area [ha]', floodAreaHa);
+var areaImage = flooded.multiply(ee.Image.pixelArea()).divide(1e4);
+var floodHa = areaImage.reduceRegion({
+  reducer: ee.Reducer.sum(), geometry: aoi, scale: SCALE, maxPixels: MAX_PIXELS
+}).getNumber('flooded').round();
+print('STEP 7 - flooded area [ha]:', floodHa);
+Map.addLayer(flooded, {palette: ['0000ff']}, 'FLOODED (final)');
 // ---- end of Flood script, cell 3 ----
 </code></pre></li>
-<li><strong>Sensitivity test.</strong> Change the threshold to 1.15 and 1.40 and the speckle filter radius (e.g. 30 m and 100 m); write down the flooded area for each run in a small table – this is the uncertainty of your map.</li>
+<li><strong>Sensitivity test.</strong> Change the threshold (<code>RATIO_THRESHOLD</code> 1.15 and 1.40 with <code>USE_RATIO = true</code>, or <code>THRESHOLD_DB</code> −2 and −4) and the speckle filter radius <code>SPECKLE_RADIUS_M</code> (e.g. 30 m and 100 m); write down the flooded area for each run in a small table – this is the uncertainty of your map. Script 4 runs all nine combinations and prints the table (set <code>USE_RATIO</code> there in the same way).</li>
 <li><strong>Validate.</strong> Compare your map with the Global Flood Monitoring product (<a href="https://global-flood.emergency.copernicus.eu/" target="_blank" rel="noopener">global-flood.emergency.copernicus.eu</a>) or a Copernicus EMS map of the same event; write one paragraph of agreement and disagreement and say what you compared against.</li>
 <li><strong>Optional:</strong> run script 1 (optical, Sentinel-2) for the same event and compare the two areas.</li>
 </ol>

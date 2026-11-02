@@ -7,31 +7,31 @@
 <li>The script: <a href="https://code.earthengine.google.com/?scriptPath=users%2Fmarekurbaniak%2FGEO2%3A06_wildfires%2F02_dnbr_burn_severity_sentinel2" target="_blank" rel="noopener">GEO2 › 06_wildfires › 02_dnbr_burn_severity_sentinel2</a> (then <a href="https://code.earthengine.google.com/?scriptPath=users%2Fmarekurbaniak%2FGEO2%3A06_wildfires%2F03_effis_comparison_and_export" target="_blank" rel="noopener">03_effis_comparison_and_export</a>). The link opens only when you are signed in to an Earth Engine account with a registered Cloud project (lab 1).</li>
 <li>Public alternative: the original script on the UN-SPIDER page <a href="https://www.un-spider.org/advisory-support/recommended-practices/recommended-practice-burn-severity/burn-severity-earth-engine" target="_blank" rel="noopener">Burn severity mapping in Google Earth Engine</a> (part of the <a href="https://www.un-spider.org/advisory-support/recommended-practices/recommended-practice-burn-severity/step-by-step" target="_blank" rel="noopener">step-by-step recommended practice</a>) – it offers the code as a Code Editor link and as a downloadable text file. The UN-SPIDER original still uses <code>COPERNICUS/S2</code> (Level-1C TOA) and Landsat Collection 1; the course copy must use <code>COPERNICUS/S2_SR_HARMONIZED</code> (and <code>LANDSAT/LC09/C02/T1_L2</code> with scale/offset for Landsat), so if you start from the original, change the collection lines first.</li>
 <li>Your fire: start and end dates from <a href="https://firms.modaps.eosdis.nasa.gov/" target="_blank" rel="noopener">FIRMS</a> hotspots, cloud-free pre- and post-fire Sentinel-2 dates from Copernicus Browser, the perimeter from <a href="https://forest-fire.emergency.copernicus.eu/" target="_blank" rel="noopener">EFFIS</a> (Europe; burnt areas ≥ 30 ha since 2003, Sentinel-2 based since 2018) or Copernicus EMS.</li>
-<li>Your own area of interest: comment out the <code>var geometry = …</code> line near the top of the script and assign a new <code>geometry</code> – draw it with the editor tools or upload a feature collection (shapefile, GeoJSON) as an asset.</li>
+<li>Your own area of interest: replace the <code>var aoi = …</code> rectangle at the top of the script with your fire area (lonMin, latMin, lonMax, latMax) – read the corners with the Inspector or draw a rectangle with the editor tools and copy its coordinates; a perimeter uploaded as an asset (shapefile, GeoJSON) also works: <code>var aoi = ee.FeatureCollection('projects/…/assets/…').geometry();</code>.</li>
 </ul>
 <figure class="iot-material-figure"><img src="@@PLUGINFILE@@/editor.png" alt="Geometry drawing tools of the Code Editor" width="200" height="54"><figcaption>The geometry tools of the Code Editor (point, line, polygon, rectangle).</figcaption></figure>
 
 <h3 class="iot-material-divider">Steps</h3>
 <ol class="iot-material-steps">
-<li><strong>Set the dates.</strong> Replace the four dates in the <code>SET TIME FRAME</code> block below with your pre-fire and post-fire windows. Each window must be long enough for Sentinel-2 to acquire a cloud-free image (revisit 5 days); if an ImageCollection in the Console has 0 elements, widen the window.
-<pre class="iot-material-code"><code class="language-javascript">//*******************************************************************************************
-//                                     SET TIME FRAME
-// Set start and end dates of a period BEFORE the fire. Make sure it is long enough for
-// Sentinel-2 to acquire an image (repetition rate = 5 days). Adjust these parameters, if
-// your ImageCollections (see Console) do not contain any elements.
+<li><strong>Set the dates.</strong> Replace the four dates <code>PRE_START</code>, <code>PRE_END</code>, <code>POST_START</code>, <code>POST_END</code> in the parameters block (below) with your pre-fire and post-fire windows. Each window must be long enough for Sentinel-2 to acquire a cloud-free image (revisit 5 days); if the Console shows 0 pre-fire or post-fire scenes, widen the window. Set <code>EXPORT_CRS</code> to the UTM zone of your fire.
+<pre class="iot-material-code"><code class="language-javascript">// ---- Burn severity script, cell 1: Parameters (area, dates, export) ----
+var aoi = ee.Geometry.Rectangle([-0.72, 44.40, -0.36, 44.64]);  // Landiras, FR
+var PRE_START = '2022-06-15';    // pre-fire window (ignition 12 July 2022)
+var PRE_END = '2022-07-11';
+var POST_START = '2022-07-26';   // post-fire window (contained ~25 July);
+var POST_END = '2022-08-08';     // stop before the 2nd Landiras fire (9 Aug)
 
-var prefire_start = '2016-12-20';
-var prefire_end = '2017-01-18';
-
-// Now set the same parameters for AFTER the fire.
-var postfire_start = '2017-02-20';
-var postfire_end = '2017-03-28';
-
-//*******************************************************************************************
+var MAX_CLOUD_PCT = 40;          // scene-level filter; the SCL mask does the rest
+var NIR_BAND = 'B8';             // 'B8' (10 m, broad NIR) or 'B8A' (20 m,
+                                 // narrow NIR, the Landsat-like choice)
+var EXPORT_SCALE = 20;           // B12 is 20 m, so the result is 20 m
+var EXPORT_CRS = 'EPSG:32630';   // UTM 30N for Gironde - change with the AOI
+var EXPORT_NAME = 'M6_dNBR_classes_landiras2022';
+// ---- end of Burn severity script, cell 1 ----
 </code></pre></li>
-<li><strong>Set the area</strong> (<code>geometry</code>) and run the script. Check in the Console how many pre and post images were found.</li>
+<li><strong>Set the area</strong> (<code>aoi</code>) and run the script. Check in the Console how many pre and post images were found.</li>
 <li><strong>Inspect</strong> the layers NBR pre, NBR post and dNBR with the Inspector: click unburned forest, an agricultural field and the fire core and note the values.</li>
-<li><strong>Classify</strong> dNBR with the USGS thresholds from page 3 (−250, −100, 100, 270, 440, 660 on the × 1000 scale), add a legend and compute the <strong>area per class in hectares</strong> (the grouped reducer from lab 2).</li>
+<li><strong>Classify</strong> – the script cuts dNBR with the USGS thresholds from page 3 (<code>THRESHOLDS</code> = −250, −100, 100, 270, 440, 660 on the × 1000 scale), adds a legend and prints the <strong>area per class in hectares</strong> (the grouped reducer from lab 2); check the numbers.</li>
 <li><strong>Compare the perimeter</strong> with EFFIS or EMS: where do they disagree and why (clouds, phenology, agricultural fields)?</li>
 <li><strong>Optional:</strong> an NDVI or NBR time series chart (<code>ui.Chart.image.series</code>) over the perimeter for two years after the fire – vegetation recovery.</li>
 <li><strong>Export</strong> the severity map as GeoTIFF (<code>Export.image.toDrive</code>, scale 20 m, your region) and write the report with the checklist from page 3.</li>
@@ -43,11 +43,11 @@ var postfire_end = '2017-03-28';
 </div>
 <div class="iot-material-callout iot-material-callout--check">
 <p class="iot-material-callout-title">You are done when</p>
-<p>the unburned class covers the area outside the perimeter, the dNBR histogram over the perimeter has its unburned peak near 0, and the sum of the class areas equals your AOI area.</p>
+<p>the unburned class covers the area outside the perimeter, the dNBR histogram over the perimeter has its unburned peak near 0, and the sum of the class areas equals your AOI area minus the cloud-masked pixels.</p>
 </div>
 <div class="iot-material-callout iot-material-callout--warn">
 <p class="iot-material-callout-title">Common problems</p>
-<p>High severity everywhere – a cloud in the pre composite; mask per pixel and check the true-colour view. Low severity outside the perimeter – pre and post differ in season (phenology); choose dates closer together. Empty collection – dates or geometry wrong, or <code>CLOUDY_PIXEL_PERCENTAGE</code> filter too strict.</p>
+<p>High severity everywhere – a cloud in the pre composite; mask per pixel and check the true-colour view. Low severity outside the perimeter – pre and post differ in season (phenology); choose dates closer together. Empty collection – dates or <code>aoi</code> wrong, or <code>MAX_CLOUD_PCT</code> (the <code>CLOUDY_PIXEL_PERCENTAGE</code> filter) too strict.</p>
 </div>
 
 <h4 class="iot-material-divider iot-material-divider--sub">Before next class (after the break)</h4>

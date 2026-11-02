@@ -2,14 +2,14 @@
 <div class="iot-material iot-material--page" data-iot-material="v1">
 <p class="iot-material-lead">Step 5: clouds first. Every reflectance index you compute from now on (NDVI, water indices, NBR) is wrong under a cloud and in its shadow. On this page you learn the three ways Sentinel-2 tells you where the clouds are – the scene property, the <code>SCL</code> class band and <strong>Cloud Score+</strong> – and what a <em>bitmask</em> is (the <code>QA60</code> band). At the end you have a function that cleans every image of your collection before the median.</p>
 
-<h3 class="iot-material-divider">1. Three levels of cloud information</h3>
+<h3 class="iot-material-divider">1. Where Sentinel-2 stores cloud information</h3>
 <table class="iot-material-table">
 <thead><tr><th>Level</th><th>What it is</th><th>Use it for</th><th>Weakness</th></tr></thead>
 <tbody>
-<tr><td><code>CLOUDY_PIXEL_PERCENTAGE</code></td><td>one number per scene (metadata)</td><td>throwing away hopeless scenes: <code>.filter(ee.Filter.lt('CLOUDY_PIXEL_PERCENTAGE', 30))</code></td><td>keeps every cloud inside a "30 %" scene</td></tr>
-<tr><td><code>SCL</code> (20 m)</td><td>scene classification per pixel: 3 shadow, 4 vegetation, 5 bare, 6 water, 7 unclassified, 8–9 cloud, 10 cirrus, 11 snow</td><td>the quick per-pixel mask</td><td>misses thin cirrus edges, over-masks bright roofs</td></tr>
+<tr><td><code>CLOUDY_PIXEL_PERCENTAGE</code></td><td>one number per scene (metadata)</td><td>throwing away hopeless scenes: <code>.filter(ee.Filter.lt('CLOUDY_PIXEL_PERCENTAGE', 35))</code></td><td>keeps every cloud inside a "35 %" scene</td></tr>
+<tr><td><code>SCL</code> (20 m)</td><td>scene classification per pixel: 0 no data, 1 saturated/defective, 3 shadow, 4 vegetation, 5 bare, 6 water, 7 unclassified, 8–9 cloud, 10 cirrus, 11 snow</td><td>the quick per-pixel mask</td><td>misses thin cirrus edges, over-masks bright roofs</td></tr>
 <tr><td><strong>Cloud Score+</strong> (<code>GOOGLE/CLOUD_SCORE_PLUS/V1/S2_HARMONIZED</code>)</td><td>a quality score 0–1 per pixel, band <code>cs_cdf</code>, linked to the scene by <code>system:index</code></td><td>the recommended mask in 2026: keep <code>cs_cdf ≥ 0.6</code></td><td>one more collection to join</td></tr>
-<tr><td><code>QA60</code> (60 m)</td><td>a <strong>bitmask</strong>: bit 10 opaque cloud, bit 11 cirrus</td><td>understanding how QA bands work (Landsat, MODIS use the same idea)</td><td><strong>empty for 25 Jan 2022 – 28 Feb 2024</strong>; coarse; no shadows</td></tr>
+<tr><td><code>QA60</code> (60 m)</td><td>a <strong>bitmask</strong>: bit 10 opaque cloud, bit 11 cirrus</td><td>understanding how QA bands work (Landsat, MODIS use the same idea)</td><td><strong>no flags (all 0) for 25 Jan 2022 – 28 Feb 2024</strong>; coarse; no shadows</td></tr>
 </tbody>
 </table>
 
@@ -17,17 +17,18 @@
 <ol class="iot-material-steps">
 <li><strong>SCL mask</strong> – add this to the script of step 4 and apply it with <code>map()</code> before the median:
 <pre class="iot-material-code"><code class="language-javascript">// ---- Step 5, cell 1: SCL mask: mask every image, then take the median ----
+// updateMask() keeps the image properties (date, cloud cover) – no copyProperties() needed
 function maskSCL(image) {
   var scl = image.select('SCL');
-  var clear = scl.neq(3).and(scl.neq(8)).and(scl.neq(9)).and(scl.neq(10));  // drop shadow, clouds, cirrus
-  return image.updateMask(clear)
-              .copyProperties(image, ['system:time_start']);  // keep the date (filterDate needs it)
+  var clear = scl.neq(0).and(scl.neq(1))                      // no data, saturated
+    .and(scl.neq(3)).and(scl.neq(8)).and(scl.neq(9)).and(scl.neq(10));  // shadow, clouds, cirrus
+  return image.updateMask(clear);
 }
 // s2Filtered is the collection of step 4 (your dates, your area, cloudy scenes removed)
 var s2MaskedSCL = s2Filtered.map(maskSCL);
-var rgb = {bands: ['B4', 'B3', 'B2'], min: 0, max: 3000};   // true-colour display
-Map.addLayer(s2Filtered.median().clip(aoi), rgb, 'median, no mask', false);
-Map.addLayer(s2MaskedSCL.median().clip(aoi), rgb, 'median, SCL mask');
+var rgbVis = {bands: ['B4', 'B3', 'B2'], min: 0, max: 3000};   // true-colour display
+Map.addLayer(s2Filtered.median().clip(aoi), rgbVis, '0 median, no pixel mask', false);
+Map.addLayer(s2MaskedSCL.median().clip(aoi), rgbVis, '1 median, SCL mask');
 // ---- end of Step 5, cell 1 ----
 </code></pre></li>
 <li><strong>Cloud Score+</strong> – the better mask, three more lines. The score collection is joined to the scenes with <code>linkCollection</code>:
@@ -38,10 +39,10 @@ function maskCS(image) {
 }
 // linkCollection joins the cs_cdf band of the matching Cloud Score+ image to every scene
 var s2MaskedCS = s2Filtered.linkCollection(csPlus, ['cs_cdf']).map(maskCS);
-Map.addLayer(s2MaskedCS.median().clip(aoi), rgb, 'median, Cloud Score+');
+Map.addLayer(s2MaskedCS.median().clip(aoi), rgbVis, '2 median, Cloud Score+ mask');
 // ---- end of Step 5, cell 2 ----
 </code></pre></li>
-<li><strong>Compare the three medians</strong> on the map and with the Inspector: where the unmasked median is milky white or dark, the masked ones show the ground. Print how many valid observations each pixel keeps: <code>s2MaskedCS.select('B4').count()</code>.</li>
+<li><strong>Compare the three medians</strong> on the map and with the Inspector: where the unmasked median is milky white or dark, the masked ones show the ground. Show how many valid observations each pixel keeps: <code>Map.addLayer(s2MaskedCS.select('B4').count().clip(aoi), {min: 0, max: 20, palette: ['red', 'yellow', 'green']}, 'Valid observations per pixel')</code> – fewer than about 5 and the median becomes unreliable.</li>
 <li><strong>Use it from now on.</strong> Every later script in this course (classification, floods, fires) starts with a masked collection; the next page continues with <code>s2MaskedCS</code>. The ready version with all three variants is <a href="https://code.earthengine.google.com/?scriptPath=users%2Fmarekurbaniak%2FGEO2%3A02_code_editor%2F05_cloud_masking_SCL_CloudScorePlus" target="_blank" rel="noopener">GEO2 › 02_code_editor › 05_cloud_masking_SCL_CloudScorePlus</a>.</li>
 </ol>
 
@@ -60,20 +61,20 @@ Map.addLayer(s2MaskedCS.median().clip(aoi), rgb, 'median, Cloud Score+');
 </tbody>
 </table>
 <p>The band value is an integer whose binary digits are the flags: 0 = clear, 1024 = opaque cloud, 2048 = cirrus, 3072 = both. <code>1 &lt;&lt; 10</code> shifts a 1 ten places to the left, which gives 1024; <code>qa.bitwiseAnd(1024)</code> keeps only that bit; <code>.eq(0)</code> tests that the flag is off:</p>
-<pre class="iot-material-code"><code class="language-javascript">// ---- Step 5, cell 3: Optional: the QA60 bit mask (older approach, for comparison) ----
+<pre class="iot-material-code"><code class="language-javascript">// ---- Step 5, cell 3: Optional: reading a bitmask with QA60 (to understand bits – use Cloud Score+ as your mask) ----
 function maskQA60(image) {
   var qa = image.select('QA60');
   var cloudBit  = 1 &lt;&lt; 10;
   var cirrusBit = 1 &lt;&lt; 11;
   var clear = qa.bitwiseAnd(cloudBit).eq(0).and(qa.bitwiseAnd(cirrusBit).eq(0));
-  return image.updateMask(clear).copyProperties(image, ['system:time_start']);
+  return image.updateMask(clear);
 }
 // ---- end of Step 5, cell 3 ----
 </code></pre>
-<p>The same trick reads every bitmask: Landsat 8/9 <code>QA_PIXEL</code> (bit 3 cloud, bit 4 shadow, bit 5 snow), MODIS <code>state_1km</code>, VIIRS <code>QF1</code> – look up the bit table on the dataset page in the catalogue, shift, <code>bitwiseAnd</code>, test. In Python the only differences are <code>.And()</code> with a capital letter and the backslash for line continuation (lesson 7).</p>
+<p>The same trick reads every bitmask: Landsat 8/9 <code>QA_PIXEL</code> (bit 3 cloud, bit 4 shadow, bit 5 snow), MODIS <code>state_1km</code>, VIIRS <code>QF1</code> – look up the bit table on the dataset page in the catalogue, shift, <code>bitwiseAnd</code>, test. In Python the logic is the same; the visible differences are <code>.And()</code> / <code>.Or()</code> with a capital letter, <code>def</code> instead of <code>function</code> and brackets or a backslash for line continuation (lesson 7).</p>
 <div class="iot-material-callout iot-material-callout--warn">
-<p class="iot-material-callout-title">QA60 is empty for 25 Jan 2022 – 28 Feb 2024</p>
-<p>For scenes from that period the band is fully masked. <code>updateMask()</code> with an empty QA60 masks every pixel and your composite comes out empty – the classic "my map is grey" of old tutorials. For those dates (and in general) use SCL or Cloud Score+.</p>
+<p class="iot-material-callout-title">QA60 has no cloud flags for 25 Jan 2022 – 28 Feb 2024</p>
+<p>For scenes from that period the band is 0 everywhere (ESA stopped producing the cloud polygons). A QA60 mask then removes nothing and your composite stays cloudy – the silent error of old tutorials. Later scenes have QA60 again, but it is coarse and has no shadows. Use Cloud Score+ (or SCL).</p>
 </div>
 
 <div class="iot-material-callout iot-material-callout--check">

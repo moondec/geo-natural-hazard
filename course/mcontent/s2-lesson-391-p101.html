@@ -3,21 +3,26 @@
 <p class="iot-material-lead">Step 6: compute the area inside <code>aoi</code> covered by live, green vegetation. You add an NDVI band to every image, take the median, cut the median into classes and sum the pixel area of each class. At the end the Console prints the area per class – the template for your homework.</p>
 
 <h3 class="iot-material-divider">Before you start</h3>
-<p>Continue in the script from the previous page: the cloud-masked collection <code>s2MaskedCS</code> from step 5 (or <code>s2Filtered</code> from step 4 if you skipped the mask) and the geometry <code>aoi</code> must already exist. Use a buffer of a few kilometres (e.g. <code>poi.buffer(5000)</code>) so that the classes are visible.</p>
+<p>Continue in the script from the previous page: the cloud-masked collection <code>s2MaskedCS</code> from step 5 (or <code>s2Filtered</code> from step 4 if you skipped the mask) and the geometry <code>aoi</code> must already exist – the default <code>poi.buffer(5000)</code> of step 4 is a few kilometres across, so the classes are visible.</p>
 
 <h3 class="iot-material-divider">1. Add NDVI and take the median</h3>
 <pre class="iot-material-code"><code class="language-javascript">// ---- Step 6, cell 1: Add NDVI to every image and take the median ----
 // Function: add an NDVI band to one image. normalizedDifference(A, B) = (A - B) / (A + B)
 var addNDVI = function(image) {
-  return image.addBands(image.normalizedDifference(['B8', 'B4']).rename('NDVI'));
+  var ndvi = image.normalizedDifference(['B8', 'B4']).rename('NDVI');
+  return image.addBands(ndvi);
 };
 
 // map() runs the function on every image of the (cloud-masked) collection
 var s2ndvi = s2MaskedCS.map(addNDVI);
 
 // Keep only the NDVI band, then reduce the time series to one image (median of each pixel)
-var ndviCollection = s2ndvi.select(['NDVI']);
-var ndviMedian = ndviCollection.median();
+var ndviMedian = s2ndvi.select('NDVI').median();
+
+// NDVI is in [-1, 1]: water &lt; 0, bare 0–0.2, shrub 0.2–0.4, dense green vegetation &gt; 0.4
+var ndviVis = {min: -0.2, max: 0.8,
+               palette: ['blue', 'white', 'yellow', 'green', 'darkgreen']};
+Map.addLayer(ndviMedian.clip(aoi), ndviVis, 'NDVI median');
 // ---- end of Step 6, cell 1 ----
 </code></pre>
 
@@ -36,17 +41,17 @@ var ndviMedian = ndviCollection.median();
 <pre class="iot-material-code"><code class="language-javascript">// ---- Step 6, cell 2: Manual classification: one 0/1 band per class (exercise only) ----
 // Manual classification: one 0/1 band per class, multiplied by the class code.
 // Each comparison (lte, gt, and) gives 1 where the condition holds and 0 elsewhere.
-var water      = ndviMedian.lte(0.0).rename('Water').multiply(1);                            // code 1
-var bare       = ndviMedian.gt(0.0).and(ndviMedian.lte(0.2)).rename('Bare').multiply(2);    // code 2
-var shrub      = ndviMedian.gt(0.2).and(ndviMedian.lte(0.4)).rename('Shrub').multiply(3);   // code 3
-var vegetation = ndviMedian.gt(0.4).rename('Green').multiply(4);                            // code 4
+var water = ndviMedian.lte(0.0).multiply(1).rename('Water');                            // code 1
+var bare  = ndviMedian.gt(0.0).and(ndviMedian.lte(0.2)).multiply(2).rename('Bare');    // code 2
+var shrub = ndviMedian.gt(0.2).and(ndviMedian.lte(0.4)).multiply(3).rename('Shrub');   // code 3
+var green = ndviMedian.gt(0.4).multiply(4).rename('Green');                            // code 4
 // print(water);   // uncomment to inspect one of the class bands in the Console
 // ---- end of Step 6, cell 2 ----
 </code></pre>
 <p>Now we can add the new bands to the image:</p>
 <pre class="iot-material-code"><code class="language-javascript">// ---- Step 6, cell 3: Stack the four class bands onto the NDVI image ----
 // One image with five bands: NDVI, Water, Bare, Shrub, Green (addBands accepts a list)
-var ndviWithClasses = ndviMedian.addBands([water, bare, shrub, vegetation]);
+var ndviWithClasses = ndviMedian.addBands([water, bare, shrub, green]);
 // Which bands does an image have? bandNames() lists them in the Console:
 // print(ndviWithClasses.bandNames());        // ["NDVI", "Water", "Bare", "Shrub", "Green"]
 // For a collection ask the first image: print(s2MaskedCS.first().bandNames());
@@ -76,52 +81,60 @@ print(greenAreaGroups);
 
 <div class="iot-material-callout iot-material-callout--warn">
 <p class="iot-material-callout-title">scale: 10, not scale: 1</p>
-<p>Why not use <code>scale: 1</code> ("sample the geometry at 1 m intervals"). Sentinel-2 pixels are 10 m; <code>scale: 1</code> forces a hundred times more samples, ends with the error <em>Too many pixels in the region</em> or gives an over-smoothed answer. The <code>scale</code> must match the data: 10 for Sentinel-2, 30 for Landsat (see Lecture 2, "From classes to hectares").</p>
+<p>Why not use <code>scale: 1</code> ("sample the geometry at 1 m intervals")? Sentinel-2 pixels are 10 m; with <code>scale: 1</code> Earth Engine cuts every pixel into 100 pieces of 1 m². The area comes out practically the same, but the computation is a hundred times larger (about 80 million samples for a 5 km buffer instead of 0.8 million): it runs slowly, may time out or stop with <em>Too many pixels in the region</em>. Use the native resolution of the data: 10 for Sentinel-2, 30 for Landsat (see Lecture 2, "From classes to hectares").</p>
 </div>
 
 <h3 class="iot-material-divider">4. Let's make it better – thresholds</h3>
 <p>The same four classes in one line: count how many thresholds each pixel exceeds and add 1, so the codes are again 1–4. This is the version to use in the homework – change the list of thresholds, nothing else:</p>
 <pre class="iot-material-code"><code class="language-javascript">// ---- Step 6, cell 5: Better: all four classes from three thresholds in one line ----
-var thresholds = ee.Image([0, 0.2, 0.4]);   // class boundaries as a 3-band constant image
+var thresholds = ee.Image([0.0, 0.2, 0.4]);              // class boundaries as a 3-band constant image
+var classNames = ['water', 'bare', 'shrub', 'green'];    // thresholds + 1 names
+var classPalette = ['blue', 'burlywood', 'yellowgreen', 'darkgreen'];
 // gt() compares NDVI with each threshold (three 0/1 bands); the sum counts how many are exceeded;
 // + 1 turns 0..3 into the codes 1..4 of the manual version
-var classified = ndviMedian.gt(thresholds).reduce(ee.Reducer.sum()).add(1).toInt();
-print(classified, 'Classified');
-
-// Define new visualization parameters
-// for the classification: the values range from 1 to 4, one for each class
-var classifiedParams = {min: 1, max: 4, palette: ['blue', 'burlywood', 'yellowgreen', 'darkgreen']};
-Map.addLayer(classified.clip(aoi), classifiedParams, 'Classified');
+var classified = ndviMedian.gt(thresholds)
+  .reduce(ee.Reducer.sum())
+  .add(1)
+  .toInt()
+  .rename('class');
+print('Classified image:', classified);
+Map.addLayer(classified.clip(aoi),
+  {min: 1, max: classNames.length, palette: classPalette}, 'Classes - thresholds');
 // ---- end of Step 6, cell 5 ----
 </code></pre>
 <pre class="iot-material-code"><code class="language-javascript">// ---- Step 6, cell 6: Area of every class with the grouped sum ----
-// The same grouped sum as above, now over the single class band (codes 1-4)
-var areaPerClass = ee.Image.pixelArea().addBands(classified)
-  .reduceRegion({
-    reducer: ee.Reducer.sum().group({
-      groupField: 1,
-      groupName: 'code',
-    }),
-    geometry: aoi,
-    scale: 10,  // Sentinel-2 native resolution, in metres
-    maxPixels: 1e10
-  }).get('groups');
-
-// List of dictionaries {code, sum} in m2
-print('areas of classes:');
-print(areaPerClass);
+// The same grouped sum as above, now over the single class band (codes 1-4):
+// band 0 = pixel area in m2, band 1 = class code
+var areaImage = ee.Image.pixelArea().addBands(classified);
+var areaGroups = areaImage.reduceRegion({
+  reducer: ee.Reducer.sum().group({groupField: 1, groupName: 'code'}),
+  geometry: aoi,
+  scale: 10,        // Sentinel-2 native resolution, in metres
+  maxPixels: 1e10
+});
+var areaList = ee.List(areaGroups.get('groups'));
+print('Raw result (list of dictionaries, m2):', areaList);
 // ---- end of Step 6, cell 6 ----
 </code></pre>
 <p>The result is a list of dictionaries in m². To read it as a table in hectares, convert it as in the lecture:</p>
 <pre class="iot-material-code"><code class="language-javascript">// ---- Step 6, cell 7: Convert the result into a table in hectares ----
-// Convert the list of dictionaries into a table (FeatureCollection without geometry) in hectares
-var areaList = ee.List(areaPerClass);
+// One feature per class, area in hectares (1 ha = 10 000 m2), with the class name attached
+var names = ee.List(classNames);
 var areaTable = ee.FeatureCollection(areaList.map(function(d) {
   d = ee.Dictionary(d);
-  return ee.Feature(null, {code: d.get('code'),
-                           ha: ee.Number(d.get('sum')).divide(1e4).round()});
+  var code = ee.Number(d.get('code'));
+  return ee.Feature(null, {
+    code: code,
+    name: names.get(code.subtract(1)),
+    ha: ee.Number(d.get('sum')).divide(1e4).round()
+  });
 }));
-print('area per class [ha]:', areaTable);
+print('Area per class [ha]:', areaTable);
+
+// Sanity test: the classes must fill the AOI (almost) completely
+var sumClasses = ee.Number(areaTable.aggregate_sum('ha'));
+var aoiHa = aoi.area({maxError: 1}).divide(1e4).round();
+print('Sum of classes [ha]:', sumClasses, ' AOI area [ha]:', aoiHa);
 // ---- end of Step 6, cell 7 ----
 </code></pre>
 <p>The complete, commented script is in the course repository: <a href="https://code.earthengine.google.com/?scriptPath=users%2Fmarekurbaniak%2FGEO2%3A02_code_editor%2F03_ndvi_classes_and_area" target="_blank" rel="noopener">GEO2 › 02_code_editor › 03_ndvi_classes_and_area</a></p>
@@ -133,7 +146,7 @@ print('area per class [ha]:', areaTable);
 
 <div class="iot-material-callout iot-material-callout--check">
 <p class="iot-material-callout-title">You are done when</p>
-<p>The Console shows one sum per class and the map shows the classified layer. Click with the <em>Inspector</em> on water, a field and a forest and write down their NDVI values – they must fall into the classes you see. The sum of all classes must equal the area of <code>aoi</code>; this is your first sanity test.</p>
+<p>The Console shows one sum per class and the map shows the classified layer. Click with the <em>Inspector</em> on water, a field and a forest and write down their NDVI values – they must fall into the classes you see. The sum of all classes must be close to the area of <code>aoi</code> (last line of cell 7); a small gap is normal – edge pixels and pixels cloudy in every scene. This is your first sanity test.</p>
 </div>
 
 <div class="iot-material-callout iot-material-callout--warn">

@@ -3,9 +3,10 @@
 <p class="iot-material-lead">Step 4: the JavaScript basics of every Earth Engine script – load a collection, define an area of interest, filter by date, clouds and location. Type the code line by line into a new script (do not paste the whole block); at the end the Console prints the number of scenes.</p>
 
 <h3 class="iot-material-divider">1. Image collections</h3>
-<p>A collection can be added to the script by (1) the <em>Import</em> button on the dataset page or (2) as a variable in the code:</p>
+<p>A collection can be added to the script by (1) the <em>Import</em> button in the Code Editor search results (type the dataset name in the search bar at the top) or (2) as a variable in the code:</p>
 <pre class="iot-material-code"><code class="language-javascript">// ---- Step 4, cell 1: Image collection, variant A: the Import button (use A or B, not both) ----
 // (1) Import: the collection appears in the Imports panel at the top of the script
+// as a variable (rename it to s2); it stands for exactly this line:
 var s2 = ee.ImageCollection('COPERNICUS/S2_SR_HARMONIZED');
 // ---- end of Step 4, cell 1 ----
 </code></pre>
@@ -16,7 +17,7 @@ var s2 = ee.ImageCollection('COPERNICUS/S2_SR_HARMONIZED');
 /*
  This is also a comment (description or note)
 */
-var s2 = ee.ImageCollection("COPERNICUS/S2_SR_HARMONIZED");
+var s2 = ee.ImageCollection('COPERNICUS/S2_SR_HARMONIZED');
 // ---- end of Step 4, cell 2 ----
 </code></pre>
 
@@ -33,32 +34,31 @@ var aoi = ee.Geometry.Polygon([
 Map.centerObject(aoi, 12);
 // ---- end of Step 4, cell 3 ----
 </code></pre>
-<pre class="iot-material-code"><code class="language-javascript">// ---- Step 4, cell 4: Area of interest, variant B: a point with a 100 m buffer ----
-// point: roughly the centre of the rectangle above
-var poi = ee.Geometry.Point(16.92, 52.44);
-var aoi = poi.buffer(100); // 100 m around poi
-Map.centerObject(aoi, 16);
+<pre class="iot-material-code"><code class="language-javascript">// ---- Step 4, cell 4: Area of interest, variant B: a point with a 5 km buffer (the default of all scripts) ----
+var poi = ee.Geometry.Point(16.93, 52.41);   // lon, lat - Poznan centre
+var aoi = poi.buffer(5000);                  // 5 km radius around poi
+Map.centerObject(aoi, 12);                   // the second argument is the zoom level
 // ---- end of Step 4, cell 4 ----
 </code></pre>
 
 <h3 class="iot-material-divider">3. Filtering image collections</h3>
-<pre class="iot-material-code"><code class="language-javascript">// ---- Step 4, cell 5: Filter the collection by date, cloud cover and area ----
-var s2Filtered = s2.filterDate('2025-05-01', '2025-09-30')      // filter by date: the 2025 growing season (end date is exclusive)
-               // pre-filter to get less cloudy granules (Sentinel-2)
-               .filter(ee.Filter.lt('CLOUDY_PIXEL_PERCENTAGE', 35))
-               .filter(ee.Filter.bounds(aoi));
-               // .filterBounds(aoi);   // or use the short-cut for the line above
+<pre class="iot-material-code"><code class="language-javascript">// ---- Step 4, cell 5: Filter the collection by area, date and cloud cover ----
+var s2Filtered = s2
+  .filterBounds(aoi)                                          // where
+  .filterDate('2025-05-01', '2025-09-30')                     // when: 2025 growing season (end date is exclusive)
+  .filter(ee.Filter.lt('CLOUDY_PIXEL_PERCENTAGE', 35));       // how cloudy: drop scenes with 35 % cloud or more
+// .filterBounds(aoi) is the short form of .filter(ee.Filter.bounds(aoi))
 // ---- end of Step 4, cell 5 ----
 </code></pre>
 <pre class="iot-material-code"><code class="language-javascript">// ---- Step 4, cell 6: Check how many images are left ----
-// check the number of images after filtering
-print(s2Filtered.size());
+// print the SIZE, not the collection: print(s2Filtered) lists the metadata of every scene and is slow
+print('Number of scenes after filtering:', s2Filtered.size());
 // ---- end of Step 4, cell 6 ----
 </code></pre>
 
 <div class="iot-material-callout iot-material-callout--check">
 <p class="iot-material-callout-title">You are done when</p>
-<p>The Console prints a number (not an error) after <code>print(s2Filtered.size())</code>, and the map is centred on your region. Press <strong>Next</strong> to remove the clouds before any index.</p>
+<p>The Console prints a number (not an error) after <code>print('Number of scenes after filtering:', s2Filtered.size())</code>, and the map is centred on your region. Press <strong>Next</strong> to remove the clouds before any index.</p>
 </div>
 
 <div class="iot-material-callout iot-material-callout--warn">

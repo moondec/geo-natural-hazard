@@ -35,6 +35,7 @@ print(ee.String('Hello from Earth Engine').getInfo())
 Then use <code>%%R</code> as a <strong>cell magic</strong> at the very beginning of a cell if you want all its syntax executed in R:
 <pre class="iot-material-code"><code class="language-r">%%R
 # ---- Colab, cell 3: An R cell: a scatter plot with ggplot2 ----
+library(ggplot2)
 a&lt;-seq(1,10)
 set.seed(1313) #for reproducible results
 b&lt;-runif(10)*a

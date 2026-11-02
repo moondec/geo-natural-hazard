@@ -9,8 +9,8 @@ in labs 2–6; compare them line by line with your JavaScript.
 |---|---|
 | `python/01_hello_earth_engine.py` | authenticate, `ee.Initialize(project=...)`, Sentinel-2 L2A median NDVI around Poznań, one number via `getInfo()` |
 | `python/02_geemap_ndvi_map.py` | `geemap.Map`, layers, split map, GeoTIFF export (`geemap.ee_export_image` and `ee.batch.Export.image.toDrive`) |
-| `python/03_flood_s1_change_detection.py` | lab 4 in Python: Sentinel-1 VH before/after, difference in dB (< −3 dB), JRC permanent-water and NASADEM slope masks, flooded hectares, export – Nysa Kłodzka, September 2024 |
-| `python/04_dnbr_burn_severity.py` | lab 6 in Python: pre/post Sentinel-2 with SCL (or Cloud Score+) mask, NBR, dNBR × 1000, USGS classes, hectares per class – Landiras fire, Gironde, July 2022 |
+| `python/03_flood_s1_change_detection.py` | lab 4 in Python (same parameters as the GEO2 script `04_floods/03`): Sentinel-1 VH before/after, difference in dB (< −3 dB), JRC permanent-water and Copernicus DEM slope masks, flooded hectares, export – Nysa Kłodzka, September 2024 |
+| `python/04_dnbr_burn_severity.py` | lab 6 in Python (same parameters as the GEO2 script `06_wildfires/02`): pre/post Sentinel-2 with SCL (or Cloud Score+) mask, NBR, dNBR × 1000, USGS classes, hectares per class – Landiras fire, Gironde, July 2022 |
 | `python/05_cdse_openeo_ndvi.py` | *for the curious:* the lesson-2 NDVI median without Google – Sentinel-2 L2A from the Copernicus Data Space Ecosystem through openEO, SCL cloud mask, GeoTIFF for QGIS |
 | `notebooks/07_capstone_template.ipynb` | template for the capstone notebook: text cells (event, data, method, results, limitations) + the code of 03/04 inline so it runs standalone in Colab |
 | `qgis/01_qgis_console_ndvi.py` | QGIS Python Console with the Google Earth Engine plugin: NDVI median as a live layer |
@@ -35,12 +35,13 @@ To run a `.py` script in Colab: paste its content into a code cell (remove nothi
 
 ## Local setup (Jupyter, VS Code, Positron)
 
-Python 3.11 or newer is required by the current `earthengine-api`.
+Use Python 3.12 or newer: the current `earthengine-api` needs 3.11+, the current `geemap` 3.12+.
 
 ```bash
 python -m venv .venv
 # Windows: .venv\Scripts\activate      Linux/macOS: source .venv/bin/activate
-pip install earthengine-api geemap jupyterlab
+pip install earthengine-api geemap jupyterlab "pandas<3"
+# pandas < 3: geemap.ee_to_df (lecture 7) fails with pandas 3 in geemap 0.38.9
 earthengine authenticate      # once; the token is cached in your home directory
 ```
 
@@ -52,8 +53,9 @@ ee.Initialize(project='your-project-id')
 print(ee.String('Hello from Earth Engine').getInfo())
 ```
 
-The first `earthengine authenticate` may ask for the **gcloud CLI**
-(Google Cloud SDK); install it from cloud.google.com/sdk and run `gcloud init`.
+`earthengine authenticate` opens the browser for the Google sign-in; the gcloud CLI
+is not needed for the Python API on a computer with a browser (on a remote server
+without one, use `earthengine authenticate --auth_mode=notebook`).
 `conda install -c conda-forge earthengine-api geemap` is the alternative
 to pip. The `geemap.Map` widget renders only inside a notebook; run as a
 plain script the examples still print the numbers and start the exports.
@@ -77,20 +79,23 @@ survives the session) and the openEO API. `python/05_cdse_openeo_ndvi.py` runs t
 installing anything, or locally after `pip install openeo`; `authenticate_oidc()` prints a link
 and a code for the CDSE login. What you gain: Sentinel data at the source (newest scenes first),
 Sentinel-1 SLC for InSAR, the original products as files, an open API that runs on other
-backends, no Google account. What you lose: the Earth Engine catalogue, built-in classifiers,
-unlimited free compute (openEO and Sentinel Hub use monthly credits). Not assessed.
+backends, no Google account. What you lose: the Earth Engine catalogue, built-in classifiers
+and the instant map; compute is limited on both sides (openEO and Sentinel Hub use monthly
+credits, Earth Engine a monthly noncommercial quota per Cloud project – see
+https://developers.google.com/earth-engine/guides/noncommercial_tiers). Not assessed.
 
 ## QGIS and the Google Earth Engine plugin
 
 Needs QGIS 3.44 or newer (QGIS 4 works). *Plugins → Manage and Install Plugins → All*,
-search "Google Earth Engine" (version 0.3.3, August 2026), install. On first start the
-plugin opens a browser tab to sign in and then asks for your Cloud project name
+search "Google Earth Engine" (version 0.3.3 or newer), install. On first start the
+plugin opens a browser tab to sign in and then asks for your Cloud project ID
 (Code Editor → account name → *Project Info* → *Cloud Project*). Run the `qgis/*.py`
 scripts from *Plugins → Python Console → Show Editor*. Layers added by the plugin are
 Earth Engine tiles (view only); export with *Processing → Google Earth Engine → Export
 GeoTIFF* or with `Export.image.toDrive` in the Code Editor and open the file in QGIS.
 
-Traps: old QGIS (< 3.44) → use the export path; do not `pip install earthengine-api`
+Traps: old QGIS (< 3.44) gets the older plugin 0.1.x, which differs from the lesson pages →
+update QGIS or use the export path; do not `pip install earthengine-api`
 into the QGIS Python (the plugin ships its own); stale credentials → delete
 `~/.config/earthengine/credentials`, run `import ee; ee.Authenticate()` in the console;
 unregistered Cloud project; tiles are not data (measure only exported files, in a
@@ -107,8 +112,9 @@ ee_check()                    # Python >= 3.11, earthengine-api, credentials
 ee_Initialize(project = "your-project-id", drive = TRUE)
 ```
 
-The first authentication of a new user needs the gcloud CLI on every operating
-system (see the lesson page *rgee*). If rgee refuses to start:
+rgee (unlike the Python API) needs the gcloud CLI for the first authentication of a
+new user on every operating system (rgee README; lesson 7, QGIS page 4, section
+*For volunteers: rgee*). If rgee refuses to start:
 `ee_clean_pyenv(); ee_install()` and read the error message.
 `R/01_rgee_hello.R` also needs `terra` and `sf` (`install.packages(c("terra", "sf"))`).
 
@@ -120,7 +126,7 @@ system (see the lesson page *rgee*). If rgee refuses to start:
 | `GOOGLE/CLOUD_SCORE_PLUS/V1/S2_HARMONIZED` | Cloud Score+ per-pixel quality (`cs_cdf >= 0.6`), optional mask in 04 |
 | `COPERNICUS/S1_GRD` | Sentinel-1 GRD backscatter in dB (flood change detection) |
 | `JRC/GSW1_4/GlobalSurfaceWater` | permanent water mask (`seasonality >= 10`) |
-| `NASA/NASADEM_HGT/001` | DEM for the slope mask (< 5°) |
+| `COPERNICUS/DEM/GLO30_2024_1` | Copernicus DEM GLO-30, slope mask (< 5°) |
 
 ## Capstone notebook (M7)
 

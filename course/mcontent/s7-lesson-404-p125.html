@@ -34,14 +34,14 @@ except ModuleNotFoundError:
     else:
         print('geemap not found, please install via conda in your environment')
 
-# The automatic conversion of code is done by calling the
+# Cell 3 converts the Code Editor script of cell 2 with geemap.js_snippet_to_py.
 # ---- end of JS to Python, cell 1 ----
 </code></pre></li>
 <li><strong>Paste the JavaScript</strong> as a Python string. Start with this example, then replace it with your own lab 2 script:
 <pre class="iot-material-code"><code class="language-python"># ---- JS to Python, cell 2: The Code Editor script as a Python string ----
 javascript_code = """
-var geometry = ee.Geometry.Point([107.61303468448624, 12.130969369851766]);
-Map.centerObject(geometry, 12)
+var aoi = ee.Geometry.Point([107.61303468448624, 12.130969369851766]);
+Map.centerObject(aoi, 12)
 var s2 = ee.ImageCollection('COPERNICUS/S2_SR_HARMONIZED')
 var rgbVis = {
   min: 0.0,
@@ -49,22 +49,19 @@ var rgbVis = {
   bands: ['B4', 'B3', 'B2'],
 };
 
-// Write a function for Cloud masking
-function maskS2clouds(image) {
-  var qa = image.select('QA60')
-  var cloudBitMask = 1 &lt;&lt; 10;
-  var cirrusBitMask = 1 &lt;&lt; 11;
-  var mask = qa.bitwiseAnd(cloudBitMask).eq(0).and(
-             qa.bitwiseAnd(cirrusBitMask).eq(0))
-  return image.updateMask(mask)
-      .select("B.*")
-      .copyProperties(image, ["system:time_start"])
+// Cloud mask from the SCL band (lesson 2): drop cloud shadow (3),
+// medium and high probability cloud (8, 9) and cirrus (10).
+// QA60 is not used, because it is empty for scenes from 2022 to early 2024.
+function maskS2scl(image) {
+  var scl = image.select('SCL')
+  var mask = scl.neq(3).and(scl.neq(8)).and(scl.neq(9)).and(scl.neq(10))
+  return image.updateMask(mask).select('B.*')
 }
 
-var filtered = s2
+var s2Filtered = s2
   .filter(ee.Filter.date('2019-01-01', '2019-12-31'))
-  .filter(ee.Filter.bounds(geometry))
-  .map(maskS2clouds)
+  .filter(ee.Filter.bounds(aoi))
+  .map(maskS2scl)
 
 
 // Write a function that computes NDVI for an image and adds it as a band
@@ -73,16 +70,16 @@ function addNDVI(image) {
   return image.addBands(ndvi);
 }
 
-var withNdvi = filtered.map(addNDVI);
+var s2ndvi = s2Filtered.map(addNDVI);
 
-var composite = withNdvi.median()
+var composite = s2ndvi.median()
 var palette = [
   'FFFFFF', 'CE7E45', 'DF923D', 'F1B555', 'FCD163', '99B718',
   '74A901', '66A000', '529400', '3E8601', '207401', '056201',
   '004C00', '023B01', '012E01', '011D01', '011301'];
 
 var ndviVis = {min:0, max:0.5, palette: palette }
-Map.addLayer(withNdvi.select('ndvi'), ndviVis, 'NDVI Composite')
+Map.addLayer(composite.select('ndvi'), ndviVis, 'NDVI Composite')
 """
 # ---- end of JS to Python, cell 2 ----
 </code></pre></li>
@@ -95,14 +92,14 @@ for line in lines:
     print(line.rstrip())
 # ---- end of JS to Python, cell 3 ----
 </code></pre></li>
-<li><strong>Copy the printed Python</strong> into a new cell and run it. Fix what the translator missed: quoted dictionary keys, <code>.And()</code>, <code>getInfo()</code> on anything you print. The <code>geemap.Map</code> should appear below the cell.</li>
-<li><strong>Check the content</strong>, not only the syntax: NDVI from <code>B8</code> and <code>B4</code>, the L2A collection <code>COPERNICUS/S2_SR_HARMONIZED</code> as in labs 2–6, and the date and point of your own area.</li>
+<li><strong>Copy the printed Python</strong> into a new cell and run it. The translator already quotes the dictionary keys, writes <code>.And()</code> / <code>.Not()</code> and adds <code>.getInfo()</code> to <code>print()</code>; check what it gets wrong – it corrupts strings that contain a colon (<code>'system:time_start'</code> becomes <code>'"system":time_start'</code>), so fix those by hand. The <code>geemap.Map</code> should appear below the cell.</li>
+<li><strong>Check the content</strong>, not only the syntax: NDVI from <code>B8</code> and <code>B4</code>, the per-pixel <code>SCL</code> cloud mask, the L2A collection <code>COPERNICUS/S2_SR_HARMONIZED</code> as in labs 2–6, and the date and point of your own area.</li>
 <li><strong>Repeat with your lab 2 script</strong> (NDVI, classes, areas). Add text cells explaining each step – this is the format of your capstone notebook.</li>
 </ol>
 
 <div class="iot-material-callout iot-material-callout--warn">
 <p class="iot-material-callout-title">Client vs. server objects</p>
-<p><code>print(s2.size())</code> shows <code>&lt;ee.Number object&gt;</code>, not 37: <code>ee.*</code> objects are recipes evaluated on the server. Use <code>.getInfo()</code> for small values (a number, a dictionary); a Python <code>if</code> on a server object is always true. Images and big collections go out via <strong>Export</strong>, never via <code>getInfo()</code>.</p>
+<p><code>print(s2.size())</code> shows <code>ee.Number({…})</code> – the recipe as JSON – not a number: <code>ee.*</code> objects are recipes evaluated on the server. Use <code>.getInfo()</code> for small values (a number, a dictionary). Python logic on a server object goes wrong: <code>if s2.size() &gt; 10:</code> raises a <code>TypeError</code>, and a bare <code>if s2.size():</code> is always true, even for an empty collection – write <code>if s2.size().getInfo() &gt; 10:</code> or use the server-side <code>ee.Algorithms.If</code>. Images and big collections go out via <strong>Export</strong>, never via <code>getInfo()</code>.</p>
 </div>
 <div class="iot-material-callout iot-material-callout--check">
 <p class="iot-material-callout-title">You are done when</p>

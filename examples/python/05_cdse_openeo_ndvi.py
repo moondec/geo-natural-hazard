@@ -63,4 +63,5 @@ print("written", OUT, "- open it in QGIS next to the Earth Engine export")
 
 # What CDSE gives you that Earth Engine does not: the same scenes a day earlier, Sentinel-1 SLC
 # (InSAR), the original products as files, an open API that also runs on non-Google backends.
-# What it does not give you: the thousand-dataset catalogue, built-in classifiers, unlimited quota.
+# What it does not give you: the thousand-dataset catalogue, built-in classifiers, the instant map.
+# Neither is unlimited: openEO uses monthly credits, Earth Engine a monthly noncommercial quota.

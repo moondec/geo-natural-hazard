@@ -1,6 +1,7 @@
 # 02 - Burn severity with dNBR in R / rgee (lab 6 reproduced in R)
 #
-# Same steps as examples/python/04_dnbr_burn_severity.py:
+# Same steps and parameters as examples/python/04_dnbr_burn_severity.py and
+# GEO2/06_wildfires/02_dnbr_burn_severity_sentinel2:
 #   pre/post Sentinel-2 L2A medians with an SCL cloud mask, NBR, dNBR x 1000,
 #   USGS classes, hectares per class, raster out to terra.
 # Default event: Landiras fire, Gironde (France), 12-25 July 2022.
@@ -10,8 +11,8 @@ library(terra)
 
 # ------------------------------------------------------------------ parameters
 PROJECT <- "ee-your-project"
-AOI_BBOX <- c(-0.70, 44.38, -0.30, 44.65)          # west, south, east, north
-PRE_START  <- "2022-06-15"; PRE_END  <- "2022-07-10"
+AOI_BBOX <- c(-0.72, 44.40, -0.36, 44.64)          # west, south, east, north
+PRE_START  <- "2022-06-15"; PRE_END  <- "2022-07-11"
 POST_START <- "2022-07-26"; POST_END <- "2022-08-08"
 MAX_CLOUD_PCT <- 40
 EXPORT_SCALE <- 20                                  # B12 (SWIR2) is a 20 m band
@@ -27,10 +28,11 @@ ee_Initialize(project = PROJECT, drive = TRUE)
 aoi <- ee$Geometry$Rectangle(AOI_BBOX)
 
 # ------------------------------------------------------------- cloud mask
+# drop cloud shadow 3, cloud 8/9, cirrus 10, snow 11; keep 7 (unclassified): much of a fresh burn scar is class 7
 mask_scl <- function(img) {
   scl <- img$select("SCL")
-  keep <- scl$remap(c(4L, 5L, 6L, 11L), c(1L, 1L, 1L, 1L), 0L)
-  img$updateMask(keep)
+  cloudy <- scl$eq(3)$Or(scl$eq(8))$Or(scl$eq(9))$Or(scl$eq(10))$Or(scl$eq(11))
+  img$updateMask(cloudy$Not())
 }
 
 s2_masked <- function(start, end) {
@@ -81,7 +83,7 @@ Map$addLayer(median_pre, rgb, "pre-fire true colour") +
                "burn severity (USGS)")
 
 # ------------------------------------------------- raster out to terra
-# About 32 x 30 km at 20 m = 2.4e6 pixels, one byte band: fine for
+# About 29 x 27 km at 20 m = 1.9e6 pixels, one byte band: fine for
 # getDownloadURL; switch to via = "drive" for larger areas.
 sev_r <- ee_as_rast(severity$unmask(255L), region = aoi, scale = EXPORT_SCALE,
                     via = "getDownloadURL")

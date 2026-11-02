@@ -7,7 +7,7 @@ import ee
 from ee_plugin import Map
 
 # ---------------------------------------------------------------- PARAMETERS
-aoi = ee.Geometry.Rectangle([-0.62, 44.36, -0.20, 44.64])
+aoi = ee.Geometry.Rectangle([-0.72, 44.40, -0.36, 44.64])   # Landiras, as in GEO2
 PRE = ('2022-06-15', '2022-07-11')
 POST = ('2022-07-26', '2022-08-08')
 MAX_CLOUD = 40

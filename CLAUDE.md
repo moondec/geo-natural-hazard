@@ -42,6 +42,11 @@ Rozmawiaj z użytkownikiem po polsku; treść kursu jest po angielsku.
   (M2–M7 po 10 %, Final test cm435 40 %, lekcje waga 0 i ukryte), próg 60, wyświetlanie „punkty (ocena)”; quiz Final test ukryty (30 losowych pytań z banku).
   Push do Moodle: skopiuj `course/mcontent/` do WSL `/home/marek/.hermes/build/mcontent-geo-work/` i uruchom `gpush.sh` (dry) / `gpush.sh --apply`;
   pull: `gpull.sh` (→ `mcontent-geo/`). Baner kursu (overviewfiles) zostaje bez zmian.
+  Po `--apply` przenieś `ops.tsv` do `ops-applied-RRRR-MM-DD.tsv` (zrobione: 2026-10-25, 2026-11-02); op `answerscore <answerid> <0|1>` ustawia punkt odpowiedzi w quizie lekcji.
+- Nawigacja lekcji: `course/lesson_nav.php` (dry run / `--apply`) odtwarza przyciski każdej strony treści w układzie
+  Start | Previous | tematy | Next | End of lesson (zastosowane 2026-11-02). Przyciski edytuj w tym skrypcie, nie ręcznie.
+- Odchudzanie plików: `course/slim_files.php` (dry run / `-- --apply` jako www-data) usuwa stary obraz 143 MB z p93, moduł cm 397 „Short deck”
+  i opróżnia kosz; uruchamia użytkownik (klasyfikator blokuje usuwanie). Obrazy do stron: `course/newfiles/<pole>/` + `course/attach_files.php`.
 
 ## Sposób pracy (przejęty z projektu IoT, `~/Documents/Dydaktyka/iot_lectures`)
 

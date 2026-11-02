@@ -5,7 +5,7 @@
 <div class="iot-material-callout iot-material-callout--task">
 <p class="iot-material-callout-title">Before you start</p>
 <ul class="iot-material-list">
-<li><strong>QGIS 3.44 or newer</strong> (<em>Help → About</em>). Plugin 0.3.x refuses older versions. The long-term release from <a href="https://qgis.org/download/" target="_blank" rel="noopener">qgis.org</a> is fine; QGIS 4 works too. If the lab computer is older, do this page at home and use the export path of QGIS 4 today.</li>
+<li><strong>QGIS 3.44 or newer</strong> (<em>Help → About</em>). On older QGIS the Plugin Manager offers only the old plugin 0.1.x, whose menus differ from these pages. The long-term release from <a href="https://qgis.org/download/" target="_blank" rel="noopener">qgis.org</a> is fine; QGIS 4 works too. If the lab computer is older, do this page at home and use the export path (Door A on QGIS page 4) today.</li>
 <li>Your Google account with the <strong>registered Earth Engine Cloud project</strong> from lab 1 (milestone M1). The Code Editor must open for you in the browser.</li>
 <li>Internet access without a blocking proxy (the plugin talks to earthengine.googleapis.com).</li>
 </ul>
@@ -15,7 +15,7 @@
 <ol class="iot-material-steps">
 <li><strong>Open the Plugin Manager</strong>: <em>Plugins → Manage and Install Plugins…</em>
 <figure class="iot-material-figure"><img src="@@PLUGINFILE@@/installation1.png" alt="QGIS Plugins menu with Manage and Install Plugins" width="800" height="558"><figcaption>Plugins → Manage and Install Plugins…</figcaption></figure></li>
-<li><strong>Search and install</strong>: on the <em>All</em> tab type <code>google earth engine</code>, select <strong>Google Earth Engine</strong> (author gena, version 0.3.3 or newer) and click <strong>Install Plugin</strong>. The download includes its own copy of the Earth Engine Python library – you install nothing else.
+<li><strong>Search and install</strong>: on the <em>All</em> tab type <code>google earth engine</code>, select <strong>Google Earth Engine</strong> (by Gennadii Donchyts and others, version 0.3.3 or newer) and click <strong>Install Plugin</strong>. The download includes its own copy of the Earth Engine Python library – you install nothing else.
 <figure class="iot-material-figure"><img src="@@PLUGINFILE@@/installation2.png" alt="Plugin Manager showing the Google Earth Engine plugin" width="800" height="597"><figcaption>The plugin in the Plugin Manager.</figcaption></figure></li>
 <li><strong>Sign-in prompt</strong>: right after the installation the plugin looks for a <code>credentials</code> file in your home folder (it exists if you already used the Python API or Colab on this computer). If there is none, a dialog asks you to sign in. Click <strong>OK</strong>.
 <figure class="iot-material-figure"><img src="@@PLUGINFILE@@/installation3.png" alt="Dialog asking to authenticate with Earth Engine" width="800" height="598"><figcaption>No credentials found – the plugin asks to sign in.</figcaption></figure></li>
@@ -27,12 +27,12 @@
 <ol class="iot-material-steps" start="5">
 <li><strong>QGIS asks for the project</strong>: the <em>Select Earth Engine project</em> dialog appears, because an account can have several Cloud projects.
 <figure class="iot-material-figure"><img src="@@PLUGINFILE@@/installation7.png" alt="Select Earth Engine project dialog in QGIS" width="800" height="600"><figcaption>The project dialog.</figcaption></figure></li>
-<li><strong>Find the project name</strong> in the Code Editor: open <a href="https://code.earthengine.google.com/" target="_blank" rel="noopener">code.earthengine.google.com</a>, click your account name in the top-right corner and choose <em>Project Info</em>.
+<li><strong>Find the project ID</strong> in the Code Editor: open <a href="https://code.earthengine.google.com/" target="_blank" rel="noopener">code.earthengine.google.com</a>, click your account name in the top-right corner and choose <em>Project Info</em>.
 <figure class="iot-material-figure"><img src="@@PLUGINFILE@@/installation8.png" alt="Code Editor account menu with Project Info" width="800" height="450"><figcaption>Account menu → Project Info.</figcaption></figure></li>
-<li><strong>Copy the Cloud Project</strong> name shown in the window (for example <code>ee-yourname</code>).
-<figure class="iot-material-figure"><img src="@@PLUGINFILE@@/installation9.png" alt="Project Info window with the Cloud Project name" width="800" height="515"><figcaption>The Cloud Project name – copy it exactly.</figcaption></figure></li>
+<li><strong>Copy the Cloud Project</strong> ID shown in the window (for example <code>ee-yourname</code>).
+<figure class="iot-material-figure"><img src="@@PLUGINFILE@@/installation9.png" alt="Project Info window with the Cloud Project ID" width="800" height="515"><figcaption>The Cloud Project ID – copy it exactly.</figcaption></figure></li>
 <li><strong>Paste it in QGIS</strong> and click <strong>OK</strong>. The plugin initialises with this project; a success message follows.
-<figure class="iot-material-figure"><img src="@@PLUGINFILE@@/installation10.png" alt="Project name pasted into the QGIS dialog" width="800" height="597"><figcaption>Paste, OK.</figcaption></figure></li>
+<figure class="iot-material-figure"><img src="@@PLUGINFILE@@/installation10.png" alt="Project ID pasted into the QGIS dialog" width="800" height="597"><figcaption>Paste, OK.</figcaption></figure></li>
 <li><strong>Check the result</strong>: close the Plugin Manager. The <em>Plugins</em> menu now has a <em>Google Earth Engine</em> entry, and <em>Processing → Toolbox</em> lists a <strong>Google Earth Engine</strong> provider with <em>Add EE Image</em>, <em>Add Image Collection</em>, <em>Add Feature Collection</em> and <em>Export → Export Image to GeoTIFF</em>.
 <figure class="iot-material-figure"><img src="@@PLUGINFILE@@/installation13.png" alt="Processing Toolbox with the Google Earth Engine provider" width="800" height="525"><figcaption>The provider in the Processing Toolbox.</figcaption></figure></li>
 </ol>

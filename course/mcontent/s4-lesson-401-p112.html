@@ -22,30 +22,93 @@
 <h3 class="iot-material-divider">Optical part of the lab: MNDWI before / after</h3>
 <ol class="iot-material-steps">
 <li><strong>Pick the event.</strong> In the <a href="https://browser.dataspace.copernicus.eu/" target="_blank" rel="noopener">Copernicus Browser</a> find a flood (e.g. south-west Poland, September 2024) and note a clear Sentinel-2 date before and the first clear date after the peak.</li>
-<li><strong>Compute MNDWI for both dates</strong> (reuse your lab 2 script):
-<pre class="iot-material-code"><code class="language-javascript">// ---- Optical flood, cell 1: Cloud-masked medians before and after the event, MNDWI ----
+<li><strong>Compute MNDWI for both dates</strong> (the SCL cloud mask of lesson 2, step 5; the full script is <a href="https://code.earthengine.google.com/?scriptPath=users%2Fmarekurbaniak%2FGEO2%3A04_floods%2F01_sentinel2_water_indices" target="_blank" rel="noopener">GEO2 › 04_floods › 01_sentinel2_water_indices</a>). If the Console shows 0 scenes after the flood, widen the after window or raise <code>MAX_CLOUD_PCT</code>:
+<pre class="iot-material-code"><code class="language-javascript">// ---- Optical flood, cell 1: Cloud-masked medians before and after the event, water indices ----
+var aoi = ee.Geometry.Rectangle([17.20, 50.40, 17.80, 50.90]);   // Nysa, Lake Nysa, Lewin Brzeski
+var BEFORE_START = '2024-08-20';   // clear period before the flood
+var BEFORE_END   = '2024-09-10';
+var AFTER_START  = '2024-09-16';   // from the flood peak onwards
+var AFTER_END    = '2024-09-30';   // long enough to catch a clear scene
+var MAX_CLOUD_PCT = 40;            // scene-level filter (CLOUDY_PIXEL_PERCENTAGE)
+
+// SCL mask of lesson 2, step 5 (drop cloud shadow 3, clouds 8 and 9, cirrus 10);
+// reflectance scaled from 0..10000 to 0..1 because the AWEI formulas need it.
+function maskAndScale(image) {
+  var scl = image.select('SCL');
+  var clear = scl.neq(3).and(scl.neq(8)).and(scl.neq(9)).and(scl.neq(10));
+  return image.updateMask(clear)
+    .select('B.*')
+    .divide(10000)
+    .copyProperties(image, ['system:time_start']);
+}
+
+// B2 blue, B3 green, B4 red, B8 NIR, B11 SWIR1, B12 SWIR2
+function addWaterIndices(image) {
+  var ndwi  = image.normalizedDifference(['B3', 'B8']).rename('NDWI');   // McFeeters 1996
+  var mndwi = image.normalizedDifference(['B3', 'B11']).rename('MNDWI'); // Xu 2006
+  // AWEI (Feyisa et al. 2014) - "nsh" = no shadow, "sh" = shadow version
+  var aweiNsh = image.expression(
+    '4 * (G - S1) - (0.25 * N + 2.75 * S2)',
+    {G: image.select('B3'), N: image.select('B8'),
+     S1: image.select('B11'), S2: image.select('B12')}).rename('AWEI_nsh');
+  var aweiSh = image.expression(
+    'B + 2.5 * G - 1.5 * (N + S1) - 0.25 * S2',
+    {B: image.select('B2'), G: image.select('B3'), N: image.select('B8'),
+     S1: image.select('B11'), S2: image.select('B12')}).rename('AWEI_sh');
+  return image.addBands([ndwi, mndwi, aweiNsh, aweiSh]);
+}
+
 var s2 = ee.ImageCollection('COPERNICUS/S2_SR_HARMONIZED')
   .filterBounds(aoi)
-  .filter(ee.Filter.lt('CLOUDY_PIXEL_PERCENTAGE', 20))
-  .map(maskSCL);                                   // the cloud mask function of lesson 2, step 5
-// one median image per period (short windows: the flood peak is a matter of days)
-var medianBefore = s2.filterDate('2024-08-20', '2024-09-10').median();
-var medianAfter  = s2.filterDate('2024-09-16', '2024-09-30').median();
-var mndwiBefore = medianBefore.normalizedDifference(['B3', 'B11']).rename('mndwi');
-var mndwiAfter  = medianAfter.normalizedDifference(['B3', 'B11']).rename('mndwi');
-Map.addLayer(mndwiAfter, {min: -1, max: 1, palette: ['brown', 'white', 'blue']}, 'MNDWI after');
+  .filter(ee.Filter.lt('CLOUDY_PIXEL_PERCENTAGE', MAX_CLOUD_PCT))
+  .map(maskAndScale);
+var s2Before = s2.filterDate(BEFORE_START, BEFORE_END);
+var s2After  = s2.filterDate(AFTER_START, AFTER_END);
+// 0 scenes AFTER = widen the window or raise MAX_CLOUD_PCT (floods come with clouds)
+print('S2 scenes BEFORE (count):', s2Before.size());
+print('S2 scenes AFTER (count):', s2After.size());
+
+// one median image per period, the indices as extra bands
+var medianBefore = addWaterIndices(s2Before.median().clip(aoi));
+var medianAfter  = addWaterIndices(s2After.median().clip(aoi));
+var visIdx = {min: -1, max: 1, palette: ['8c510a', 'f5f5f5', '2166ac']};
+Map.centerObject(aoi, 10);
+Map.addLayer(medianAfter.select('MNDWI'), visIdx, 'MNDWI after');
 // ---- end of Optical flood, cell 1 ----
 </code></pre></li>
-<li><strong>Look at the histogram</strong> of <code>mndwiAfter</code> over the AOI (<code>ui.Chart.image.histogram</code>) and pick the threshold in the valley between the land and water peaks.</li>
-<li><strong>Threshold and area.</strong> Water pixels that were not water before are the flood:
-<pre class="iot-material-code"><code class="language-javascript">// ---- Optical flood, cell 2: Threshold the MNDWI and compute the flooded area ----
-var waterAfter  = mndwiAfter.gt(0);            // 1 = water after the event
-var waterBefore = mndwiBefore.gt(0);           // 1 = water before (rivers, lakes)
-var floodOptical = waterAfter.and(waterBefore.not()).selfMask();   // new water only; selfMask hides the zeros
-var areaHa = floodOptical.multiply(ee.Image.pixelArea()).divide(1e4)
-  .reduceRegion({reducer: ee.Reducer.sum(), geometry: aoi, scale: 20, maxPixels: 1e10});
-print('optical flood area [ha]', areaHa);
+<li><strong>Look at the histogram</strong> of MNDWI after the flood over the AOI (<code>ui.Chart.image.histogram</code>) and pick the threshold in the valley between the land and water peaks:
+<pre class="iot-material-code"><code class="language-javascript">// ---- Optical flood, cell 2: Histogram of MNDWI after the flood ----
+// Water and land form two peaks; put the threshold in the valley between
+// them. Coarse scale (100 m) keeps the chart fast.
+print('Histogram of MNDWI after the flood (pick the valley):',
+  ui.Chart.image.histogram({
+    image: medianAfter.select('MNDWI'), region: aoi, scale: 100, maxBuckets: 60}));
 // ---- end of Optical flood, cell 2 ----
+</code></pre></li>
+<li><strong>Threshold and area.</strong> Set <code>THRESH_MNDWI</code> to the valley you found; water pixels that were not water before are the flood:
+<pre class="iot-material-code"><code class="language-javascript">// ---- Optical flood, cell 3: Threshold the MNDWI and compute the flooded area ----
+var THRESH_MNDWI = 0.0;            // index &gt; threshold means water: the valley of the histogram
+var SCALE = 10;                    // m, for area statistics
+var MAX_PIXELS = 1e10;
+
+// Flooded = water after AND NOT water before. unmask(0) turns masked
+// pixels (clouds) into "no water" so the AND does not drop them silently.
+function floodFromIndex(bandName, threshold) {
+  var waterBefore = medianBefore.select(bandName).gt(threshold).unmask(0);
+  var waterAfter  = medianAfter.select(bandName).gt(threshold).unmask(0);
+  return waterAfter.and(waterBefore.not()).selfMask().rename('flood_' + bandName);
+}
+var floodMNDWI = floodFromIndex('MNDWI', THRESH_MNDWI);
+
+function areaHa(mask, label) {
+  var stats = mask.multiply(ee.Image.pixelArea()).divide(1e4).reduceRegion({
+    reducer: ee.Reducer.sum(), geometry: aoi, scale: SCALE, maxPixels: MAX_PIXELS});
+  print('Optical flood area [ha] - ' + label + ':',
+    ee.Number(stats.values().get(0)).round());
+}
+areaHa(floodMNDWI, 'MNDWI &gt; ' + THRESH_MNDWI);
+Map.addLayer(floodMNDWI, {palette: ['e31a1c']}, 'flood MNDWI');
+// ---- end of Optical flood, cell 3 ----
 </code></pre></li>
 </ol>
 <div class="iot-material-callout iot-material-callout--warn">

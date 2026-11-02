@@ -41,7 +41,7 @@ In the Code Editor open the <em>Tasks</em> tab and press <strong>Run</strong>; i
 <li><strong>Add it in QGIS</strong>: <em>Layer → Add Layer → Add Raster Layer</em>. Check the CRS in the layer properties (EPSG:2180). Add OpenStreetMap from the <em>XYZ Tiles</em> as a background.</li>
 <li><strong>Style the classes</strong>: <em>Symbology → Paletted / Unique values → Classify</em>, then give every class its name and colour (dNBR: USGS colours from the script; flood: one blue class; heatmap: <em>Singleband pseudocolor</em>, YlOrRd). Set the no-data value (0) to transparent.</li>
 <li><strong>Add the numbers</strong>: <em>Layer → Add Layer → Add Delimited Text Layer</em> for the CSV (no geometry), and insert it as a table in the layout; or type the hectares into the legend labels.</li>
-<li><strong>Print Layout</strong>: <em>Project → New Print Layout</em>; add the map, a title, the legend, a scale bar, a north arrow and one source line: <em>Contains modified Copernicus Sentinel data [2024], processed in Google Earth Engine</em>. Export as PDF (<em>Layout → Export as PDF</em>). This PDF plus the script link is a milestone.</li>
+<li><strong>Print Layout</strong>: <em>Project → New Print Layout</em>; add the map, a title, the legend, a scale bar, a north arrow and one source line: <em>Contains modified Copernicus Sentinel data [year of your scenes], processed in Google Earth Engine</em>. Export as PDF (<em>Layout → Export as PDF</em>). This PDF plus the script link is a milestone.</li>
 </ol>
 <div class="iot-material-callout iot-material-callout--task">
 <p class="iot-material-callout-title">Vectors too</p>
@@ -58,10 +58,10 @@ In the Code Editor open the <em>Tasks</em> tab and press <strong>Run</strong>; i
 
 <h3 class="iot-material-divider">4. Traps – QGIS and the plugin</h3>
 <ul class="iot-material-list">
-<li><strong>QGIS version.</strong> Plugin 0.3.x needs QGIS 3.44+; older lab installations show nothing or an import error. Door A has no version requirement.</li>
+<li><strong>QGIS version.</strong> Plugin 0.3.x needs QGIS 3.44+; older lab installations get only the old plugin 0.1.x, whose menus differ from these pages. Door A has no version requirement.</li>
 <li><strong>Which Python?</strong> QGIS uses its own Python (OSGeo4W on Windows). Do not <code>pip install earthengine-api</code> into it – the plugin ships its own copy; mixing two versions gives <code>ImportError</code> or "SRE module mismatch".</li>
 <li><strong>Credentials.</strong> The plugin stores a token in <code>~/.config/earthengine/credentials</code> (Windows: <code>C:\Users\&lt;you&gt;\.config\earthengine\credentials</code>). If it fails to initialise or asks to sign in on every start: delete that file, open the Python Console, run <code>import ee; ee.Authenticate()</code>, then re-enable the plugin. Signing in with the wrong Google account (university vs private) is the usual cause.</li>
-<li><strong>Project not registered.</strong> "Project … is not registered to use Earth Engine": register the project at <a href="https://console.cloud.google.com/earth-engine/configuration" target="_blank" rel="noopener">console.cloud.google.com/earth-engine</a> (noncommercial) or type the right project name – the one shown in the Code Editor under <em>Project Info</em>.</li>
+<li><strong>Project not registered.</strong> "Project … is not registered to use Earth Engine": register the project at <a href="https://console.cloud.google.com/earth-engine/configuration" target="_blank" rel="noopener">console.cloud.google.com/earth-engine</a> (noncommercial) or type the right project ID – the one shown in the Code Editor under <em>Project Info</em>.</li>
 <li><strong>Tiles are not data.</strong> Plugin layers are rendered at screen resolution; measuring, zonal statistics or the field calculator on them is meaningless. Export first (GeoTIFF, explicit scale and CRS).</li>
 <li><strong>CRS.</strong> Earth Engine serves tiles in Web Mercator; your exported GeoTIFF is in the CRS you chose (EPSG:2180). QGIS reprojects on the fly, but areas must be computed in a metric CRS, never in EPSG:4326.</li>
 <li><strong>Big exports.</strong> Exporting a whole voivodeship at 10 m from the plugin is slow and may time out – do large exports as Drive tasks from the Code Editor or Python and let them run in the background.</li>
@@ -70,7 +70,7 @@ In the Code Editor open the <em>Tasks</em> tab and press <strong>Run</strong>; i
 
 <h3 class="iot-material-divider">5. For volunteers: rgee (Earth Engine from R)</h3>
 <p>If the rest of your thesis is in R (statistics, ggplot2, sf, terra), <a href="https://r-spatial.github.io/rgee/" target="_blank" rel="noopener">rgee</a> calls the Python API through reticulate: the same objects with <code>$</code> instead of <code>.</code>, results straight into terra (<code>ee_as_rast</code>), sf (<code>ee_as_sf</code>) and data frames (<code>ee_extract</code>). Two scripts are in the repository: <a href="https://github.com/moondec/geo-natural-hazard/tree/main/examples/R" target="_blank" rel="noopener">examples/R</a>. Install at home, not in the lab:</p>
-<pre class="iot-material-code"><code class="language-r"># ---- Export, cell 2: rgee: the same NDVI from R (volunteers) ----
+<pre class="iot-material-code"><code class="language-r"># ---- rgee, cell 1: the same NDVI from R (volunteers) ----
 install.packages("rgee")
 library(rgee)
 ee_install(py_env = "rgee")        # once: Miniconda + earthengine-api (~200 MB), answer Y, restart R
@@ -83,13 +83,13 @@ ndvi &lt;- ee$ImageCollection("COPERNICUS/S2_SR_HARMONIZED")$filterBounds(aoi)$
           map(function(i) i$normalizedDifference(c("B8", "B4")))$median()
 Map$centerObject(aoi, 11); Map$addLayer(ndvi, list(min = -0.2, max = 0.8), "NDVI")
 r &lt;- ee_as_rast(ndvi$clip(aoi), region = aoi, scale = 10)   # terra SpatRaster
-# ---- end of Export, cell 2 ----
+# ---- end of rgee, cell 1 ----
 </code></pre>
 <p><strong>Traps – R:</strong></p>
 <ul class="iot-material-list">
 <li><strong>A second Python.</strong> rgee needs Python ≥ 3.11 with <code>earthengine-api</code>; <code>ee_install()</code> creates a Miniconda environment and writes <code>EARTHENGINE_PYTHON</code> to <code>.Renviron</code>. A different Python picked up by reticulate (Anaconda, QGIS, a system one) is the first thing to suspect – <code>ee_check()</code> tells you which one is used; <code>ee_clean_pyenv(); ee_install()</code> resets it.</li>
 <li><strong>First sign-in needs the gcloud CLI</strong> on every operating system (rgee README): install the <a href="https://cloud.google.com/sdk/docs/install" target="_blank" rel="noopener">Google Cloud CLI</a>, run <code>gcloud init</code> with the account of your Earth Engine project, then <code>ee_Initialize()</code>. Afterwards the token is cached.</li>
-<li><strong>Version lag.</strong> rgee (CRAN 1.1.8, 2025) is community-maintained and follows <code>earthengine-api</code> with delay; after an API update some functions break. If <code>ee_Initialize()</code> fails right after an update, pin an older API with <code>ee_install_upgrade(version = ...)</code> or install the development version of rgee from GitHub.</li>
+<li><strong>Version lag.</strong> rgee (CRAN 1.1.8) is community-maintained and follows <code>earthengine-api</code> with delay; after an API update some functions break. If <code>ee_Initialize()</code> fails right after an update, pin an older API with <code>ee_install_upgrade(version = ...)</code> or install the development version of rgee from GitHub.</li>
 <li><strong>Drive and GCS extras.</strong> <code>ee_as_rast(via = "drive")</code>, <code>ee_as_sf</code> and <code>ee_extract</code> of big results need the <code>googledrive</code> (and for GCS <code>googleCloudStorageR</code>) packages and a second consent screen – <code>drive = TRUE</code> in <code>ee_Initialize()</code>. Small results work with <code>via = "getDownloadURL"</code> only.</li>
 <li><strong>Syntax.</strong> <code>$</code> replaces <code>.</code>; R functions passed to <code>map()</code> must return an <code>ee</code> object (no base-R arithmetic inside); use <code>ee$List</code>, <code>ee$Number</code> for server-side values.</li>
 <li><strong>Windows paths and accounts.</strong> Spaces or Polish letters in the user folder break Miniconda; two Google accounts in the browser log you into the wrong one – check <code>ee_user_info()</code>.</li>

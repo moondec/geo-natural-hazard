@@ -161,24 +161,31 @@ source: [NASA EarthData – What is SAR?](https://www.earthdata.nasa.gov/learn/e
 - Free, open, in Copernicus Browser and in Earth Engine: `COPERNICUS/S1_GRD`, bands `VV`, `VH`, `angle`, values already in dB
 :::
 
-::: block <!-- element style="font-size:34px" align="left" drag="45 78" drop="53 15" bg="#e8f4f8" pad="15px"-->
+::: block <!-- element style="font-size:22px" align="left" drag="45 78" drop="53 15" bg="#e8f4f8" pad="15px"-->
 ```javascript
+var POLARIZATION = 'VH', PASS = 'ASCENDING', RELATIVE_ORBIT = 175;
+var SPECKLE_RADIUS_M = 50;
+var BEFORE_START = '2024-08-20', BEFORE_END = '2024-09-10';
+var AFTER_START  = '2024-09-16', AFTER_END  = '2024-09-28';
 var s1 = ee.ImageCollection('COPERNICUS/S1_GRD')
   .filter(ee.Filter.eq('instrumentMode', 'IW'))
-  .filter(ee.Filter.listContains('transmitterReceiverPolarisation', 'VH'))
-  .filter(ee.Filter.eq('orbitProperties_pass', 'DESCENDING'))
+  .filter(ee.Filter.listContains('transmitterReceiverPolarisation', POLARIZATION))
+  .filter(ee.Filter.eq('orbitProperties_pass', PASS))
+  .filter(ee.Filter.eq('resolution_meters', 10))
   .filterBounds(aoi)
-  .select('VH');
-
-var sarBefore = s1.filterDate('2024-08-20', '2024-09-10').mosaic();
-var sarAfter  = s1.filterDate('2024-09-15', '2024-09-25').mosaic();
-
-// speckle filter: 50 m focal mean (circle)
-var smoothRadiusM = 50;
-var sarBeforeSmooth = sarBefore.focal_mean(smoothRadiusM, 'circle', 'meters');
-var sarAfterSmooth  = sarAfter.focal_mean(smoothRadiusM, 'circle', 'meters');
-Map.addLayer(sarBeforeSmooth, {min: -25, max: 0}, 'before VH');
-Map.addLayer(sarAfterSmooth,  {min: -25, max: 0}, 'after VH');
+  .select(POLARIZATION);
+if (RELATIVE_ORBIT !== null) {
+  s1 = s1.filter(ee.Filter.eq('relativeOrbitNumber_start', RELATIVE_ORBIT));
+}
+var s1Before = s1.filterDate(BEFORE_START, BEFORE_END);
+var s1After  = s1.filterDate(AFTER_START, AFTER_END);
+var sarBefore = s1Before.mosaic().clip(aoi);
+var sarAfter  = s1After.mosaic().clip(aoi);
+// speckle filter: 50 m focal median (keeps edges better than focal_mean)
+var sarBeforeSmooth = sarBefore.focal_median(SPECKLE_RADIUS_M, 'circle', 'meters');
+var sarAfterSmooth  = sarAfter.focal_median(SPECKLE_RADIUS_M, 'circle', 'meters');
+Map.addLayer(sarBeforeSmooth, {min: -25, max: 0}, POLARIZATION + ' before (filtered)');
+Map.addLayer(sarAfterSmooth,  {min: -25, max: 0}, POLARIZATION + ' after (filtered)');
 ```
 Choose VH for floods in open land (bigger contrast land/water); VV for flooded vegetation (double bounce).
 :::
@@ -211,31 +218,37 @@ Two strategies: (a) **single image** – everything darker than a threshold is w
 ::: block <!-- element style="font-size:30px" align="left" drag="50 78" drop="0 15"-->
 - Backscatter histogram over a flooded area is **bimodal**: a water peak around −22 dB and a land peak around −12 dB
 - **Manual**: read values with the Inspector over known water and land, pick the valley (e.g. −18 dB)
-- **Ratio / difference**: the UN-SPIDER script divides the **dB images**, `after.divide(before)`, and flags ratio > **1.25** – the after value is ≥ 25 % more negative (≈ 3 dB darker around −12 dB); a ratio of dB values is not a physical ratio, so the cleaner equivalent is the difference in dB: `after.subtract(before).lt(-3)`
+- **Ratio / difference**: the UN-SPIDER script divides the **dB images**, `after.divide(before)`, and flags ratio > **1.25** – the after value is ≥ 25 % more negative (≈ 3 dB darker around −12 dB); a ratio of dB values is not a physical ratio, so the cleaner equivalent is the difference in dB: `after.subtract(before).lt(-3)` – the default of the lab script (`THRESHOLD_DB = -3`; `USE_RATIO = true` gives the ratio)
 - **Otsu**: automatic threshold that maximises the separation of two classes in the histogram – objective, reproducible, used by the Global Flood Monitoring service
 - Report which one you used and why – it is the main uncertainty of the map
 :::
 
-::: block <!-- element style="font-size:26px" align="left" drag="45 78" drop="53 15" bg="#e8f4f8" pad="15px"-->
+::: block <!-- element style="font-size:20px" align="left" drag="45 78" drop="53 15" bg="#e8f4f8" pad="15px"-->
 ```javascript
-// difference in dB and the UN-SPIDER style ratio
-var diffDb = sarAfterSmooth.subtract(sarBeforeSmooth);          // dB
-var flooded = diffDb.lt(-3);                    // became ≥ 3 dB darker
-// UN-SPIDER style (ratio of dB images):
-// var ratio = sarAfterSmooth.divide(sarBeforeSmooth); var flooded = ratio.gt(1.25);
-
-// masks
+var THRESHOLD_DB = -3, USE_RATIO = false, RATIO_THRESHOLD = 1.25;
+var PERMANENT_WATER_MONTHS = 10, SLOPE_MAX_DEG = 5, MIN_CONNECTED_PIXELS = 8;
+var SCALE = 10, MAX_PIXELS = 1e10;
+// difference in dB (default) or the UN-SPIDER style ratio of dB images
+var diffDb = sarAfterSmooth.subtract(sarBeforeSmooth).rename('diff_dB');   // negative = darker
+var ratio  = sarAfterSmooth.divide(sarBeforeSmooth).rename('ratio_dB');
+var floodRaw = USE_RATIO ? ratio.gt(RATIO_THRESHOLD) : diffDb.lt(THRESHOLD_DB);
+floodRaw = floodRaw.rename('flooded');
+// masks; GSW is masked where water was never seen -> unmask(0) = "not permanent"
 var gsw = ee.Image('JRC/GSW1_4/GlobalSurfaceWater').select('seasonality');
-var permanentWater = gsw.gte(10);                   // water ≥ 10 months/yr
-var dem = ee.Image('WWF/HydroSHEDS/03VFDEM');
+var permanentWater = gsw.gte(PERMANENT_WATER_MONTHS).unmask(0);
+var demCol = ee.ImageCollection('COPERNICUS/DEM/GLO30_2024_1').select('DEM');
+var dem = demCol.mosaic().setDefaultProjection(demCol.first().projection());
 var slope = ee.Terrain.slope(dem);
-flooded = flooded.updateMask(permanentWater.not())
-                 .updateMask(slope.lt(5))
-                 .updateMask(flooded.connectedPixelCount(25).gte(8)); // specks, as UN-SPIDER
-
-var floodAreaHa = flooded.multiply(ee.Image.pixelArea()).divide(1e4)
-  .reduceRegion({reducer: ee.Reducer.sum(), geometry: aoi, scale: 10, maxPixels: 1e10});
-print('flooded area [ha]', floodAreaHa);
+var flooded = floodRaw.selfMask()                 // count only flood pixels
+  .updateMask(permanentWater.not())
+  .updateMask(slope.lt(SLOPE_MAX_DEG));
+var connected = flooded.connectedPixelCount(25, true);
+flooded = flooded.updateMask(connected.gte(MIN_CONNECTED_PIXELS));   // specks
+var areaImage = flooded.multiply(ee.Image.pixelArea()).divide(1e4);
+var floodHa = areaImage.reduceRegion({
+  reducer: ee.Reducer.sum(), geometry: aoi, scale: SCALE, maxPixels: MAX_PIXELS
+}).getNumber('flooded').round();
+print('STEP 7 - flooded area [ha]:', floodHa);
 ```
 :::
 

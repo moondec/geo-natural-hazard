@@ -153,15 +153,17 @@ source: [Python API – differences from JavaScript](https://developers.google.c
 
 ::: block <!-- element style="font-size:40px" align="left" drag="50 78" drop="0 15"-->
 ```python
-n = s2.size()            # ee.Number – lives on the server, no value yet
-print(n)                 # <ee.Number object>  – not 37
-print(n.getInfo())       # 37  – one round trip to Google
+n = s2.size()          # ee.Number on the server
+print(n)               # the recipe as JSON, not 17
+print(n.getInfo())     # 17 – one round trip
 
-# WRONG: Python 'if' on a server object (always True – the object exists)
-if s2.size() > 10: ...
-# RIGHT: bring the number to the client first, or use server-side logic
+# WRONG: Python logic on a server object
+if s2.size() > 10: ... # TypeError
+if s2.size(): ...      # always True, even for 0
+# RIGHT: client value, or server-side If
 if s2.size().getInfo() > 10: ...
-img = ee.Algorithms.If(s2.size().gt(10), s2.median(), ee.Image(0))
+img = ee.Image(ee.Algorithms.If(
+    s2.size().gt(10), s2.median(), ee.Image(0)))
 ```
 :::
 
@@ -227,7 +229,7 @@ source: [Exporting data](https://developers.google.com/earth-engine/guides/expor
 
 ::: block <!-- element style="font-size:28px" align="left" drag="47 80" drop="0 15"-->
 **Door A – export, then QGIS (always works)**
-1. `Export.image.toDrive({image: severity.toByte(), region: AOI, scale: 20, crs: 'EPSG:2180'})` – Tasks → Run; EPSG code from [epsg.io](https://epsg.io) or the QGIS CRS selector: Poland 2180, elsewhere UTM 326 + zone
+1. `Export.image.toDrive({image: severity.toByte(), region: aoi, scale: 20, crs: 'EPSG:2180'})` – Tasks → Run; EPSG code from [epsg.io](https://epsg.io) or the QGIS CRS selector: Poland 2180, elsewhere UTM 326 + zone
 2. Download from Drive, *Layer → Add Raster Layer*; the CSV of hectares as a delimited text layer
 3. *Symbology → Paletted / Unique values*: class names and colours; no-data transparent
 4. *Print Layout*: title, legend, scale bar, source line, your vectors (EMS / EFFIS perimeter) → PDF
@@ -237,14 +239,15 @@ Earth Engine computes, QGIS makes the map – the format of M4–M7.
 :::
 
 ::: block <!-- element style="font-size:24px" align="left" drag="50 80" drop="49 15" bg="#e8f4f8" pad="12px"-->
-**Door B – the Google Earth Engine plugin** (0.3.3, Aug 2026; QGIS ≥ 3.44)
-*Plugins → Manage and Install → "Google Earth Engine"* → sign in → paste your Cloud project (Code Editor → *Project Info*)
+**Door B – the Google Earth Engine plugin** (0.3.3 or newer; QGIS ≥ 3.44)
+*Plugins → Manage and Install → "Google Earth Engine"* → sign in → paste your Cloud project ID (Code Editor → *Project Info*)
 <pre><code class="language-python">import ee
 from ee_plugin import Map              # instead of geemap.Map
 aoi = ee.Geometry.Point(16.93, 52.41).buffer(5000)
 s2 = (ee.ImageCollection('COPERNICUS/S2_SR_HARMONIZED')
-        .filterBounds(aoi).filterDate('2025-05-01', '2025-09-30'))
-ndvi = s2.map(lambda i: i.normalizedDifference(['B8', 'B4'])).median()
+        .filterBounds(aoi).filterDate('2025-05-01', '2025-09-30')
+        .filter(ee.Filter.lt('CLOUDY_PIXEL_PERCENTAGE', 30)))
+ndvi = s2.map(lambda i: i.normalizedDifference(['B8', 'B4']).rename('NDVI')).median()
 Map.addLayer(ndvi.clip(aoi), {'min': -0.2, 'max': 0.8,
    'palette': ['blue', 'white', 'yellow', 'green', 'darkgreen']}, 'NDVI')
 Map.centerObject(aoi, 11)
@@ -265,10 +268,10 @@ source: [QGIS Earth Engine plugin – user guide](https://gee-community.github.i
 
 ::: block <!-- element style="font-size:26px" align="left" drag="47 80" drop="0 15"-->
 **QGIS + plugin**
-- QGIS < 3.44 (lab machines!) → nothing loads; use Door A
+- QGIS < 3.44 (lab machines!) → only the old plugin 0.1.x, different from the lesson pages; use Door A
 - QGIS has its **own Python** (OSGeo4W): never `pip install earthengine-api` into it – the plugin ships its copy ("SRE module mismatch")
 - stale or wrong-account token in `~/.config/earthengine/credentials` → delete it, `import ee; ee.Authenticate()` in the console, re-enable the plugin
-- "Project … is not registered" → the registered project from lab 1, name from *Project Info*
+- "Project … is not registered" → the registered project from lab 1, project ID from *Project Info*
 - **tiles are not data**: no measuring, no zonal stats on plugin layers – export with explicit scale and CRS; areas in a metric CRS (EPSG:2180), never 4326
 - big exports time out → Drive tasks from the Code Editor; proxies / firewalls → Door A; macOS: *Install Certificates.command*
 :::
@@ -281,7 +284,7 @@ ee_check(); ee_Initialize(project = &quot;your-project-id&quot;, drive = TRUE)
 </code></pre>
 - a **second Python**: reticulate may pick Anaconda / QGIS / system Python – `ee_check()` shows which; reset with `ee_clean_pyenv(); ee_install()`
 - first sign-in needs the **gcloud CLI** (`gcloud init`), any OS
-- **version lag**: CRAN 1.1.8 (2025), community-maintained; after an API update pin an older `earthengine-api` (`ee_install_upgrade`)
+- **version lag**: CRAN 1.1.8, community-maintained; after an API update pin an older `earthengine-api` (`ee_install_upgrade`)
 - Drive / GCS extras (`googledrive`) for `ee_as_rast(via = "drive")`, `ee_extract`
 - R functions in `map()` must return `ee` objects; spaces or Polish letters in the Windows user folder break Miniconda
 :::
@@ -307,7 +310,7 @@ source: [plugin troubleshooting](https://gee-community.github.io/qgis-earthengin
 | the **original products** as files (S3, download) | derived exports only |
 | **openEO**: one process graph, several backends (Terrascope, EODC…) | Google only |
 | EU account, **no Google Cloud project** | registered project required |
-| | **1000+ datasets**, classifiers, instant map, free quota |
+| | **1000+ datasets**, classifiers, instant map, free noncommercial quota (monthly limit) |
 
 Use it when the thesis needs InSAR or the original product, when Google is not allowed, or when yesterday's scene matters. Moodle lesson 7 has the optional page; `examples/python/05_cdse_openeo_ndvi.py`.
 :::
@@ -361,10 +364,10 @@ Everything in this course can be done in all of them (R users: rgee, community-m
 <grid drag="13 26" drop="80 53" bg="#ffB73F"/>
 
 ::: block <!-- element style="font-size:40px" align="left" drag="95 78" drop="0 15"-->
-1. **Colab** (45 min): new notebook, `ee.Authenticate()` with your project; translate your lab 2 script with `geemap.js_snippet_to_py`; fix what the translator missed; the map appears
-2. **QGIS 1–2** (45 min): install the plugin, sign in, set the project; the NDVI median from the Python Console; identify tool
-3. **QGIS 3** (45 min): Add Image Collection without code, Data Catalog, Export Image to GeoTIFF in EPSG:2180; the flood or dNBR script of your event
-4. **QGIS** (60 min): plugin or export path; NDVI in the Python Console; the map of your M4–M6 result with legend, scale bar and hectares (Print Layout → PDF)
+1. **Colab** (60 min): new notebook, `ee.Authenticate()` with your project; translate your lab 2 script with `geemap.js_snippet_to_py`; fix what the translator missed; the map appears
+2. **QGIS 1–2** (35 min): install the plugin, sign in, set the project; the NDVI median from the Python Console; identify tool
+3. **QGIS 3** (25 min): Add Image Collection without code, Data Catalog, Export Image to GeoTIFF in EPSG:2180; the flood or dNBR script of your event
+4. **QGIS 4** (30 min): export path; the map of your M4–M6 result with legend, scale bar and hectares (Print Layout → PDF)
 5. **Capstone** (rest): pick one of labs 4–6 (flood, landslide, fire) and rerun it as a Python notebook or a QGIS project with a PDF map and a short report (R volunteers: rgee) – this is the final deliverable of the course
 6. API quiz in the Moodle lesson
 :::

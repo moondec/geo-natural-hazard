@@ -1,0 +1,12 @@
+answertext	332	Earth Engine Code Editor
+answerresponse	332	<div style="background:#f8d7da;border-left:6px solid #dc3545;color:#721c24;padding:10px 16px;border-radius:6px;margin:4px 0"><p style="margin:0 0 4px;font-weight:700">&#10008; Not correct</p><p style="margin:0">The Code Editor is a programming environment for analysis, not an image browser. (Earth Engine Explorer, the old lightweight viewer, has been discontinued.) Timelapse, once a separate site, is today a feature inside Google Earth (Landsat and Sentinel-2 mosaics 1984–2022).</p></div>
+answertext	335	JavaScript and Python API
+answertext	405	JavaScript
+answerresponse	403	<div style="background:#d4edda;border-left:6px solid #28a745;color:#155724;padding:10px 16px;border-radius:6px;margin:4px 0"><p style="margin:0 0 4px;font-weight:700">&#10004; Correct</p><p style="margin:0">Google provides the official Earth Engine client libraries for JavaScript (the Code Editor) and Python. <em>Two answers are correct (Python and JavaScript); the question counts as correct only with exactly these two ticked.</em></p></div>
+answerresponse	405	<div style="background:#d4edda;border-left:6px solid #28a745;color:#155724;padding:10px 16px;border-radius:6px;margin:4px 0"><p style="margin:0 0 4px;font-weight:700">&#10004; Correct</p><p style="margin:0">Google provides the official Earth Engine client libraries for JavaScript (the Code Editor) and Python. <em>Two answers are correct (Python and JavaScript); the question counts as correct only with exactly these two ticked.</em></p></div>
+jump	404	0
+answerscore	404	0
+answerresponse	404	<div style="background:#f8d7da;border-left:6px solid #dc3545;color:#721c24;padding:10px 16px;border-radius:6px;margin:4px 0"><p style="margin:0 0 4px;font-weight:700">&#10008; Not correct</p><p style="margin:0">R support comes from the community: <a href="https://github.com/r-spatial/rgee">rgee</a> wraps the Python API; it is not an official Google library.</p></div>
+jump	406	0
+answerscore	406	0
+answerresponse	406	<div style="background:#f8d7da;border-left:6px solid #dc3545;color:#721c24;padding:10px 16px;border-radius:6px;margin:4px 0"><p style="margin:0 0 4px;font-weight:700">&#10008; Not correct</p><p style="margin:0">Julia support came from the community: <a href="https://docs.juliahub.com/EarthEngine/">EarthEngine.jl</a> wraps the Python API and has not been updated since 2023; it is not an official Google library.</p></div>

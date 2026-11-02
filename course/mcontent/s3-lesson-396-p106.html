@@ -5,7 +5,7 @@
 <p>Unsupervised classification is used when the expert has no knowledge of the classes in the data and no patterns that could be used to label them. The algorithm finds groups of pixels that are similar in all bands and can help to understand the processes and relationships hidden in the data. Be careful: the computer finds <em>spectral</em> groups, not land cover classes, and it can find patterns without any cause-and-effect relationship. Sunlit and shaded forest may become two clusters, wheat and grass one – it is <em>you</em> who must look at the map and name the clusters afterwards.</p>
 <h3 class="iot-material-divider">Before you start</h3>
 <ul class="iot-material-list">
-<li>Reference example from the End-to-End course: <a href="https://code.earthengine.google.co.in/c1e3135d283f91edb3f4805eab41ce9f" target="_blank" rel="noopener">unsupervised classification</a>; <a href="https://code.earthengine.google.co.in/8b589a215a6bd498157be533eaf7b792" target="_blank" rel="noopener">another example</a> written for Sentinel-2.</li>
+<li>The complete script of this page in the course repository: <a href="https://code.earthengine.google.com/?scriptPath=users%2Fmarekurbaniak%2FGEO2%3A03_classification%2F02_kmeans_unsupervised" target="_blank" rel="noopener">GEO2 › 03_classification › 02_kmeans_unsupervised</a> (clusters, cluster statistics for naming, remap, area table, export); the k-means confusion matrix is in <a href="https://code.earthengine.google.com/?scriptPath=users%2Fmarekurbaniak%2FGEO2%3A03_classification%2F03_accuracy_assessment" target="_blank" rel="noopener">GEO2 › 03_classification › 03_accuracy_assessment</a>. Background: the Earth Engine guide on <a href="https://developers.google.com/earth-engine/guides/clustering" target="_blank" rel="noopener">unsupervised classification (clustering)</a>.</li>
 <li>The same AOI and the same <code>composite</code> as on the previous page – otherwise the comparison is unfair.</li>
 </ul>
 <h3 class="iot-material-divider">Step by step</h3>
@@ -13,21 +13,24 @@
 <li><strong>Sample the composite.</strong> k-means needs a table of pixels, not polygons:
 <pre class="iot-material-code"><code class="language-javascript">// ---- Unsupervised, cell 1: Sample the composite without labels ----
 // 5000 random pixels (band values only, no labels) are enough to train the clusterer
-var clusterSample = composite.sample({region: aoi, scale: 10, numPixels: 5000});
+var clusterSample = composite.sample({region: aoi, scale: 10, numPixels: 5000, seed: 42});   // seed: same sample on every run
 // ---- end of Unsupervised, cell 1 ----
 </code></pre></li>
 <li><strong>Train the clusterer with k = 4</strong> – the same number as your supervised classes – and cluster the image:
 <pre class="iot-material-code"><code class="language-javascript">// ---- Unsupervised, cell 2: Train k-means and cluster the composite ----
 var clusterer = ee.Clusterer.wekaKMeans(4).train(clusterSample);
-var clusters = composite.cluster(clusterer);
-Map.addLayer(clusters.randomVisualizer(), {}, 'k-means clusters');
+var clusters = composite.cluster(clusterer).rename('cluster');
+// random colours: a cluster id has no meaning yet, so no fixed palette
+Map.addLayer(clusters.randomVisualizer(), {}, 'k-means clusters (k = 4)');
 // ---- end of Unsupervised, cell 2 ----
 </code></pre></li>
 <li><strong>Name the clusters.</strong> Use the <em>Inspector</em> and the true-colour layer to decide which cluster is water, urban, crops, forest. Write the mapping down.</li>
 <li><strong>Relabel clusters to your classes</strong> so that the cluster ids match the <code>landcover</code> codes 0…3 of the supervised exercise:
 <pre class="iot-material-code"><code class="language-javascript">// ---- Unsupervised, cell 3: Relabel the clusters with the class codes of the supervised page ----
-// example: cluster 2 → water (0), 0 → urban (1), 3 → crops (2), 1 → forest (3)
-var kmeansClass = clusters.remap([2, 0, 3, 1], [0, 1, 2, 3]).rename('classification');
+// position i = cluster id i, value = class code. Example: cluster 0 looks like crops (2),
+// 1 like water (0), 2 like forest (3), 3 like urban (1)
+var CLUSTER_TO_CLASS = [2, 0, 3, 1];   // &gt;&gt;&gt; CHANGE after looking at your map
+var kmeansClass = clusters.remap([0, 1, 2, 3], CLUSTER_TO_CLASS).rename('classification');
 Map.addLayer(kmeansClass, {min: 0, max: 3,
   palette: ['blue', 'gray', 'yellow', 'green']}, 'k-means relabelled');
 // ---- end of Unsupervised, cell 3 ----
@@ -43,8 +46,8 @@ print('k-means overall accuracy', cmKmeans.accuracy());
 print('k-means kappa', cmKmeans.kappa());
 // ---- end of Unsupervised, cell 4 ----
 </code></pre></li>
-<li><strong>Try other k.</strong> Repeat with k = 6 and k = 8 and look how the clusters split – this is the argument for the number of classes in your report.</li>
-<li><strong>Export and save.</strong> Export the relabelled map to Drive (scale 10) and copy the script link.</li>
+<li><strong>Try other k.</strong> Repeat with k = 6 and k = 8 and look how the clusters split – this is the argument for the number of classes in your report. Both <code>remap</code> lists then need k entries; several clusters may get the same class.</li>
+<li><strong>Export and save.</strong> Export the relabelled map to Drive as on the previous page (scale 10, metric <code>crs</code>) and copy the script link.</li>
 </ol>
 <h3 class="iot-material-divider">Supervised vs. unsupervised – what to compare</h3>
 <table class="iot-material-table">

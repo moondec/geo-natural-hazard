@@ -1,7 +1,9 @@
 """04 - Burn severity with dNBR (lab 6 in Python).
 
-Mirrors the course copy of the UN-SPIDER burn severity script:
-  1. Sentinel-2 L2A median_pre- and median_post-fire collections (S2_SR_HARMONIZED)
+Python version of the lab 6 script GEO2/06_wildfires/02_dnbr_burn_severity_sentinel2
+(course copy of the UN-SPIDER burn severity script; same AOI, dates and SCL mask,
+so the hectares must agree):
+  1. Sentinel-2 L2A pre- and post-fire collections (S2_SR_HARMONIZED), median composites
   2. per-pixel cloud mask: SCL (default) or Cloud Score+ (set a flag)
   3. NBR = (B8 - B12) / (B8 + B12) on the median composites
   4. dNBR = NBR_pre - NBR_post, scaled x 1000
@@ -10,7 +12,7 @@ Mirrors the course copy of the UN-SPIDER burn severity script:
 
 Default event: Landiras fire, Gironde, France, 12-25 July 2022
 (about 14 000 ha of pine forest; a second fire reignited nearby on
-9 August 2022, so the median_post window ends before that).
+9 August 2022, so the post-fire window ends before that).
 """
 
 import ee
@@ -18,8 +20,8 @@ import ee
 # ---------------------------------------------------------------- parameters
 PROJECT = 'ee-your-project'
 
-AOI_BBOX = [-0.70, 44.38, -0.30, 44.65]        # Landiras / Hostens, Gironde
-PRE_START, PRE_END = '2022-06-15', '2022-07-10'    # before ignition, same season
+AOI_BBOX = [-0.72, 44.40, -0.36, 44.64]        # Landiras, Gironde (whole burn scar)
+PRE_START, PRE_END = '2022-06-15', '2022-07-11'    # before ignition (12 July), same season
 POST_START, POST_END = '2022-07-26', '2022-08-08'  # smoke gone, ash still there
 
 MAX_CLOUD_PCT = 40            # scene-level pre-filter; the pixel mask does the work
@@ -29,7 +31,7 @@ EXPORT_SCALE = 20
 # CRS: EPSG code of a METRIC system - Poland 'EPSG:2180'; elsewhere the UTM zone,
 # 'EPSG:326' + zone (N) / '327' + zone (S), zone = floor((lon + 180) / 6) + 1; look it up at
 # https://epsg.io or in QGIS (Project > Properties > CRS). Never 4326 (degrees) or 3857.
-EXPORT_CRS = 'EPSG:2154'      # Lambert-93 for France; use EPSG:2180 in Poland
+EXPORT_CRS = 'EPSG:32630'     # UTM 30N for Gironde; use EPSG:2180 in Poland
 DRIVE_FOLDER = 'gee'
 
 # USGS classes on the x1000 scale (lab 6, page 3)
@@ -50,11 +52,13 @@ aoi = ee.Geometry.Rectangle(AOI_BBOX)
 
 # ------------------------------------------------------------ 2. cloud masks
 def mask_scl(img):
-    """Keep vegetation (4), bare (5), water (6), snow (11); drop clouds,
-    shadows, cirrus, unclassified. Add 7 to the list for a looser mask."""
+    """Drop cloud shadow (3), medium and high probability cloud (8, 9),
+    cirrus (10) and snow (11). Unclassified (7) and dark (2) pixels stay:
+    about half of the Landiras burn scar is class 7 in the post-fire scenes,
+    so a mask that keeps only 4/5/6 would remove much of the burn."""
     scl = img.select('SCL')
-    keep = scl.remap([4, 5, 6, 11], [1, 1, 1, 1], 0)
-    return img.updateMask(keep)
+    cloudy = scl.eq(3).Or(scl.eq(8)).Or(scl.eq(9)).Or(scl.eq(10)).Or(scl.eq(11))
+    return img.updateMask(cloudy.Not())
 
 
 def mask_cs_plus(img):
@@ -63,17 +67,15 @@ def mask_cs_plus(img):
 
 
 def s2_masked(start, end):
-    s2 = (ee.ImageCollection('COPERNICUS/S2_SR_HARMONIZED')
-           .filterDate(start, end)
-           .filterBounds(aoi)
-           .filter(ee.Filter.lt('CLOUDY_PIXEL_PERCENTAGE', MAX_CLOUD_PCT)))
+    s2_filtered = (ee.ImageCollection('COPERNICUS/S2_SR_HARMONIZED')
+                   .filterDate(start, end)
+                   .filterBounds(aoi)
+                   .filter(ee.Filter.lt('CLOUDY_PIXEL_PERCENTAGE', MAX_CLOUD_PCT)))
     if USE_CLOUD_SCORE_PLUS:
         cs_plus = ee.ImageCollection('GOOGLE/CLOUD_SCORE_PLUS/V1/S2_HARMONIZED')
         # linkCollection joins by system:index and adds the cs_cdf band
-        s2 = s2.linkCollection(cs_plus, ['cs_cdf']).map(mask_cs_plus)
-    else:
-        s2 = s2.map(mask_scl)
-    return s2
+        return s2_filtered.linkCollection(cs_plus, ['cs_cdf']).map(mask_cs_plus)
+    return s2_filtered.map(mask_scl)
 
 
 s2_before = s2_masked(PRE_START, PRE_END)
@@ -121,6 +123,8 @@ for g in groups:
     total += ha
     print('%2d  %-28s %10.0f' % (g['class'], CLASS_NAMES[g['class']], ha))
 print('    %-28s %10.0f' % ('total', total))
+burned = sum(g['sum'] for g in groups if g['class'] >= 3)   # low .. high severity
+print('    %-28s %10.0f' % ('burned (classes 3-6)', burned))
 
 # dNBR histogram over the AOI (bimodal with the unburned peak near 0?)
 hist = dnbr.reduceRegion(
@@ -135,11 +139,11 @@ for lo, n in hist:
 # m = geemap.Map()
 # m.centerObject(aoi, 11)
 # rgb = {'min': 0, 'max': 3000, 'bands': ['B4', 'B3', 'B2']}
-# m.addLayer(pre, rgb, 'pre-fire true colour')
-# m.addLayer(post, rgb, 'post-fire true colour')
+# m.addLayer(median_pre, rgb, 'pre-fire true colour')
+# m.addLayer(median_post, rgb, 'post-fire true colour')
 # m.addLayer(dnbr, {'min': -500, 'max': 1300, 'palette': ['white', 'black']}, 'dNBR x1000', False)
 # m.addLayer(severity, {'min': 0, 'max': 6, 'palette': CLASS_PALETTE}, 'burn severity (USGS)')
-# m.add_legend(title='dNBR severity', labels=CLASS_NAMES, colors=CLASS_PALETTE)
+# m.add_legend(title='dNBR severity', keys=CLASS_NAMES, colors=CLASS_PALETTE)
 # m
 
 # ------------------------------------------------------------------ 6. export

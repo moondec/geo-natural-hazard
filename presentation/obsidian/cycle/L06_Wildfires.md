@@ -104,17 +104,33 @@ source: [NASA FIRMS](https://firms.modaps.eosdis.nasa.gov/); [EFFIS](https://for
 - Use in the lab: hotspot dates = **when** the fire burned → choose the post-fire window
 :::
 
-::: block <!-- element style="font-size:27px" align="left" drag="45 78" drop="53 15" bg="#e8f4f8" pad="15px"-->
+::: block <!-- element style="font-size:20px" align="left" drag="45 78" drop="53 15" bg="#e8f4f8" pad="15px"-->
 ```javascript
-var firms = ee.ImageCollection('FIRMS')
-  .filterDate('2025-07-01', '2025-08-31')
-  .filterBounds(aoi)
-  .select('T21');                       // brightness temperature, K
-var hot = firms.max().gt(300);          // any detection in the window
-Map.addLayer(hot.selfMask(), {palette: ['red']}, 'FIRMS hotspots');
-// a chart of detections per day gives the fire timeline
-print(ui.Chart.image.series(firms.map(function(i){return i.gt(0);}),
-      aoi, ee.Reducer.sum(), 1000));
+var DATE_START = '2022-07-08', DATE_END = '2022-08-01', MIN_CONFIDENCE = 30;
+var firms = ee.ImageCollection('FIRMS')   // MODIS, daily, 1 km
+  .filterDate(DATE_START, DATE_END)
+  .filterBounds(aoi);
+function confidenceFilter(image) {
+  var conf = image.select('confidence');
+  return image.updateMask(conf.gte(MIN_CONFIDENCE));
+}
+var firmsConf = firms.map(confidenceFilter);
+// hottest detection per pixel: brightness temperature T21, K
+var t21Max = firmsConf.select('T21').max().clip(aoi).rename('T21_max');
+Map.addLayer(t21Max, {min: 300, max: 400,
+  palette: ['ffff00', 'ff8800', 'ff0000', '800000']},
+  'FIRMS max brightness temperature T21 (K)');
+// detections per day = the fire timeline
+var perDay = firmsConf.map(function (img) {
+  var n = img.select('T21').reduceRegion({
+    reducer: ee.Reducer.count(), geometry: aoi, scale: 1000,
+    maxPixels: 1e10}).get('T21');
+  return img.set('detections', n)
+            .set('date', img.date().format('YYYY-MM-dd'));
+});
+var activeDays = perDay.filter(ee.Filter.gt('detections', 0))
+  .aggregate_array('date');
+print('Days with detections (first = start, last = end)', activeDays);
 ```
 <!-- TODO image: Planck curves at 300 K and 800 K with MWIR/TIR bands marked (public-domain figure, e.g. from NASA ARSET or draw in Excalidraw). -->
 :::
@@ -179,15 +195,17 @@ Convention: often scaled × 1000. Positive = loss of vegetation; negative = regr
 
 ::: block <!-- element style="font-size:22px" align="left" drag="48 78" drop="52 15" bg="#e8f4f8" pad="15px"-->
 ```javascript
-var nbrPre  = pre.normalizedDifference(['B8','B12']);
-var nbrPost = post.normalizedDifference(['B8','B12']);
+var nbrPre = medianPre.normalizedDifference([NIR_BAND, 'B12']).rename('NBR_pre');
+var nbrPost = medianPost.normalizedDifference([NIR_BAND, 'B12']).rename('NBR_post');
 var dNBR = nbrPre.subtract(nbrPost).multiply(1000).rename('dNBR');
 
-var thresholds = ee.Image([-250, -100, 100, 270, 440, 660]);
-var severity = dNBR.gt(thresholds).reduce('sum').toInt();   // 0..6
-var sevVis = {min: 0, max: 6, palette:
-  ['7a8737','acbe4d','0ae042','fff70b','ffaf38','ff641b','a41fd6']};
-Map.addLayer(severity.clip(aoi), sevVis, 'burn severity');
+var THRESHOLDS = [-250, -100, 100, 270, 440, 660];
+var PALETTE = ['7a8737', 'acbe4d', '0ae042', 'fff70b', 'ffaf38', 'ff641b',
+               'a41fd6'];
+var severity = dNBR.gt(ee.Image.constant(THRESHOLDS)).reduce(ee.Reducer.sum()).toInt()
+  .rename('severity');                                  // class 0..6
+Map.addLayer(severity, {min: 0, max: 6, palette: PALETTE},
+             'dNBR severity classes (USGS)', true, 0.85);
 ```
 Caveats:
 - thresholds were derived for US forests; in Mediterranean shrub or Polish pine they shift – **calibrate** with field data or at least report them as "USGS proposed"
@@ -211,7 +229,7 @@ The most common source of a wrong severity map is not the formula – it is the 
 - **post** (*initial assessment*): 1–4 weeks after containment – smoke gone, ash still there
 - **extended assessment**: next growing season, same phenology as pre – measures mortality, not char
 - same sensor, same processing level (L2A), same band set; never mix Landsat pre with Sentinel post without harmonisation
-- mask clouds **per pixel** (`SCL` / `QA60`) – a cloud in *pre* looks like high severity
+- mask clouds **per pixel** (`SCL` as in the lab script, or Cloud Score+; not `QA60` – empty in 2022 – early 2024 scenes) – a cloud in *pre* looks like high severity
 :::
 
 ::: block <!-- element style="font-size:34px" align="left" drag="45 78" drop="53 15" bg="#e8f4f8" pad="15px"-->
@@ -283,7 +301,7 @@ That is why every lab report in this course has: data, dates, method, thresholds
 
 ::: block <!-- element style="font-size:40px" align="left" drag="95 78" drop="0 15"-->
 1. Your fire (from last week's homework): FIRMS hotspots → start/end dates; Copernicus Browser → cloud-free pre and post Sentinel-2 dates
-2. Open the GEE script (Moodle *Fire detection…* lesson, page 4): set `geometry`, `prefire_start/end`, `postfire_start/end`; run
+2. Open the GEE script (Moodle *Fire detection…* lesson, page 4): set `aoi`, `PRE_START`/`PRE_END`, `POST_START`/`POST_END`; run
 3. Inspect: NBR pre, NBR post, dNBR – Inspector over unburned forest, a field, the fire core
 4. Severity classes with the USGS thresholds; area per class in hectares; a legend
 5. Compare the perimeter with EFFIS (or EMS); where do they disagree and why (clouds? phenology? agricultural fields?)

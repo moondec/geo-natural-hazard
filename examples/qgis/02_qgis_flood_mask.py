@@ -9,8 +9,9 @@ from ee_plugin import Map
 # ---------------------------------------------------------------- PARAMETERS
 aoi = ee.Geometry.Rectangle([17.20, 50.40, 17.80, 50.90])
 BEFORE = ('2024-08-20', '2024-09-10')
-AFTER = ('2024-09-16', '2024-09-28')
-PASS = 'DESCENDING'
+AFTER = ('2024-09-16', '2024-09-28')        # >= 12 days: one S1 pass per orbit
+PASS = 'ASCENDING'
+RELATIVE_ORBIT = 175       # one track, as in the GEO2 script (never mix tracks or passes)
 THRESHOLD_DB = -3          # after - before below this = new water (UN-SPIDER ratio 1.25 ~ -3 dB)
 SMOOTH_M = 50
 
@@ -20,22 +21,26 @@ s1 = (ee.ImageCollection('COPERNICUS/S1_GRD')
         .filter(ee.Filter.eq('instrumentMode', 'IW'))
         .filter(ee.Filter.listContains('transmitterReceiverPolarisation', 'VH'))
         .filter(ee.Filter.eq('orbitProperties_pass', PASS))
+        .filter(ee.Filter.eq('resolution_meters', 10))
+        .filter(ee.Filter.eq('relativeOrbitNumber_start', RELATIVE_ORBIT))
         .select('VH'))
-before = s1.filterDate(*BEFORE).median().focal_median(SMOOTH_M, 'circle', 'meters')
-after = s1.filterDate(*AFTER).median().focal_median(SMOOTH_M, 'circle', 'meters')
+# mosaic + focal median, as in the GEO2 script and examples/python/03
+before = s1.filterDate(*BEFORE).mosaic().focal_median(SMOOTH_M, 'circle', 'meters')
+after = s1.filterDate(*AFTER).mosaic().focal_median(SMOOTH_M, 'circle', 'meters')
 print('Scenes before / after:', s1.filterDate(*BEFORE).size().getInfo(),
       s1.filterDate(*AFTER).size().getInfo())
 
 # ---------------------------------------------------------------- CHANGE + MASKS
 diff = after.subtract(before)
 flooded = diff.lt(THRESHOLD_DB)
-permanent = ee.Image('JRC/GSW1_4/GlobalSurfaceWater').select('seasonality').gte(10)
-slope = ee.Terrain.slope(ee.Image('NASA/NASADEM_HGT/001').select('elevation'))
-flooded = (flooded.updateMask(permanent.unmask(0).Not())
-                  .updateMask(slope.lt(5))
-                  .selfMask()
-                  .updateMask(flooded.connectedPixelCount(25).gte(8))
-                  .clip(aoi))
+permanent = ee.Image('JRC/GSW1_4/GlobalSurfaceWater').select('seasonality').gte(10).unmask(0)
+dem_tiles = ee.ImageCollection('COPERNICUS/DEM/GLO30_2024_1').select('DEM')
+slope = ee.Terrain.slope(dem_tiles.mosaic().setDefaultProjection(dem_tiles.first().projection()))
+flooded = (flooded.selfMask()
+                  .updateMask(permanent.Not())
+                  .updateMask(slope.lt(5)))
+# speck filter last, 8-neighbourhood: removes specks left by the two masks too
+flooded = flooded.updateMask(flooded.connectedPixelCount(25, True).gte(8)).clip(aoi)
 
 ha = (flooded.multiply(ee.Image.pixelArea()).divide(1e4)
       .reduceRegion(ee.Reducer.sum(), aoi, 10, maxPixels=1e10).get('VH'))

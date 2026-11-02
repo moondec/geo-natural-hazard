@@ -149,8 +149,10 @@ A decision tree asks one question per node ("is NIR > 0.3?"), splits the pixels,
 
 ::: block <!-- element style="font-size: 36px;" align="left" drag="42 75" drop="58 15" bg="#e8f4f8" pad="15px"-->
 ```javascript
-var classifier = ee.Classifier.smileRandomForest(50)
-  .train({features: labelledPixels, classProperty: 'landcover',
+var classifier = ee.Classifier
+  .smileRandomForest({numberOfTrees: 50, seed: 42})
+  .train({features: trainSet,
+          classProperty: 'landcover',
           inputProperties: composite.bandNames()});
 var classified = composite.classify(classifier);
 ```
@@ -184,9 +186,12 @@ source: Breiman, L. (2001). Random Forests. *Machine Learning* 45, 5–32.
 
 ::: block <!-- element style="font-size: 36px;" align="left" drag="45 75" drop="55 15" bg="#e8f4f8" pad="15px"-->
 ```javascript
-var clusterSample = composite.sample({region: aoi, scale: 10, numPixels: 5000});
-var clusterer = ee.Clusterer.wekaKMeans(4).train(clusterSample);
-var clusters = composite.cluster(clusterer);
+var clusterSample = composite.sample({
+  region: aoi, scale: 10, numPixels: 5000, seed: 42});
+var clusterer = ee.Clusterer.wekaKMeans(4)
+  .train(clusterSample);
+var clusters = composite.cluster(clusterer)
+  .rename('cluster');
 ```
 - cluster **numbers mean nothing** – cluster 2 is not "forest" until you look at the map and say so
 - the result depends on the bands you give it and on k; try k = 4, 6, 8
@@ -216,17 +221,26 @@ Rules:
 - use the median composite, not a single date, so the samples represent the season
 :::
 
-::: block <!-- element style="font-size: 32px;" align="left" drag="45 78" drop="53 15" bg="#e8f4f8" pad="15px"-->
+::: block <!-- element style="font-size: 24px;" align="left" drag="45 78" drop="53 15" bg="#e8f4f8" pad="15px"-->
 ```javascript
-var labelledPixels = composite.addBands(clusters).sampleRegions({  // bands + k-means cluster
-  collection: trainingSamples,        // your 4 merged FeatureCollections
-  properties: ['landcover'],
-  scale: 10
+// every third polygon of each class (2, 5, 8, ...) -> test = 1
+function markTestPolygons(samples) {
+  var list = samples.toList(samples.size());
+  return ee.FeatureCollection(ee.List.sequence(0, list.size().subtract(1)).map(function (i) {
+    return ee.Feature(list.get(i)).set('test', ee.Number(i).mod(3).eq(2));
+  }));
+}
+var trainingSamples = markTestPolygons(water).merge(markTestPolygons(urban))
+  .merge(markTestPolygons(crops)).merge(markTestPolygons(forest));
+var labelledPixels = composite.sampleRegions({
+  collection: trainingSamples,
+  properties: ['landcover', 'test'],
+  scale: 10,
+  geometries: true           // test points are reused for k-means
 });
-// keep 30 % aside for validation
-var withRandom = labelledPixels.randomColumn('random');
-var trainSet = withRandom.filter(ee.Filter.lt('random', 0.7));
-var testSet  = withRandom.filter(ee.Filter.gte('random', 0.7));
+// split by POLYGON, not by pixel: neighbouring pixels are near copies
+var trainSet = labelledPixels.filter(ee.Filter.eq('test', 0));
+var testSet  = labelledPixels.filter(ee.Filter.eq('test', 1));
 ```
 Common mistakes: *Import as Geometry* instead of FeatureCollection; a forgotten `landcover` property; classes named `1, 2, 3, 4` in one layer and `0…3` in another.
 :::
@@ -263,8 +277,8 @@ var confusionMatrix = testClassified.errorMatrix('landcover', 'classification');
 print('confusion matrix', confusionMatrix);
 print('overall accuracy', confusionMatrix.accuracy());
 print('kappa', confusionMatrix.kappa());
-print('producer accuracy', confusionMatrix.producersAccuracy());
-print('consumer accuracy', confusionMatrix.consumersAccuracy());
+print("producer's accuracy", confusionMatrix.producersAccuracy());
+print("user's accuracy", confusionMatrix.consumersAccuracy());   // GEE: consumer's
 ```
 - **Producer's accuracy** (recall): of the real crops, how many did we find?
 - **User's accuracy** (precision): of the pixels we called crops, how many are crops?
@@ -313,15 +327,16 @@ A fair comparison in the report: same AOI, same composite, same 4 classes, **a c
 
 ::: block <!-- element style="font-size: 24px;" align="left" drag="45 78" drop="53 15" bg="#e8f4f8" pad="15px"-->
 ```javascript
-var ndvi  = composite.normalizedDifference(['B8','B4']).rename('ndvi');
-var mndwi = composite.normalizedDifference(['B3','B11']).rename('mndwi');
-var ndbi  = composite.normalizedDifference(['B11','B8']).rename('ndbi');
+var ndvi  = composite.normalizedDifference(['B8', 'B4']).rename('NDVI');
+var mndwi = composite.normalizedDifference(['B3', 'B11']).rename('MNDWI');
+var ndbi  = composite.normalizedDifference(['B11', 'B8']).rename('NDBI');
 var dem   = ee.Image('NASA/NASADEM_HGT/001').select('elevation');
 var slope = ee.Terrain.slope(dem).rename('slope');
 var stack = composite.addBands([ndvi, mndwi, ndbi, dem, slope]);
+// re-sample the polygons from stack, then train on stack.bandNames()
 ```
 Ready examples in Moodle (lesson *Classifiers*, page 4): k-means, RF + k-means, RF difference matrix.
-Check which input mattered: `print(classifier.explain())` → `importance`.
+Check which input mattered: `print('variable importance', ee.Dictionary(classifier.explain().get('importance')))`.
 :::
 
 ::: source
@@ -385,7 +400,7 @@ Examples in hazards: percent of a pixel burned, flood depth from SAR backscatter
 
 ::: block <!-- element style="font-size:42px" align="left" drag="95 75" drop="0 15"-->
 - [ ] Submit the classification report
-- [ ] Open Moodle → *Classifiers* lesson → page *ML algorithms* → the short "GEO_ML_Classifiers" slides (10 min)
+- [ ] Open Moodle → *Lesson 3: Classifiers* → page *ML algorithms* and re-read the Random Forest and k-means slides of this lecture (10 min)
 - [ ] Read End-to-End GEE module 3, *Supervised classification* and *Accuracy assessment* (skim; you did it in the lab)
 - [ ] Next week is about **floods** and **radar**: watch [Sentinel-1 for flood mapping, UN-SPIDER](https://www.un-spider.org/advisory-support/recommended-practices/recommended-practice-google-earth-engine-flood-mapping) (read the *In detail* tab, 15 min)
 :::

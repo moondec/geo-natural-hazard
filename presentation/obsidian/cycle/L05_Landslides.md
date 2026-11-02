@@ -198,7 +198,7 @@ source: Handwerger, A.L. et al. (2022). Generating landslide density heatmaps fo
 :::
 
 ::: block <!-- element style="font-size:36px" drag="95 14" drop="0 86" bg="#fff3cd" pad="10px 20px"-->
-The parameters you will change: AOI geometry, `eventDate`, length of the pre-event stack (longer = less noise), the change threshold, the grid size. Everything else you have already seen in labs 2 and 4 (filter, median – the course copy may use mean –, ratio, percentile, mask, reduce).
+The parameters you will change: `aoi`, the pre/post windows `PRE_START` … `POST_END` (longer pre-event stack = less noise), `PERCENTILE` (90/95/99), `KERNEL_RADIUS_M`, `GRID_M`. Everything else you have already seen in labs 2 and 4 (filter, median, ratio, percentile, mask, reduce).
 :::
 
 ---
@@ -235,16 +235,25 @@ source: [EGMS product description](https://land.copernicus.eu/en/products/europe
 :::
 <grid drag="13 26" drop="87 75" bg="#00ced1" rotate="-15"/>
 
-::: block <!-- element style="font-size:26px" align="left" drag="50 78" drop="0 15"-->
+::: block <!-- element style="font-size:20px" align="left" drag="50 78" drop="0 15"-->
 ```javascript
-var dem = ee.ImageCollection('COPERNICUS/DEM/GLO30_2024_1').select('DEM').mosaic();  // 30 m, TanDEM-X 2010–2015
-// or NASA/NASADEM_HGT/001 (SRTM reprocessed), or your LiDAR DTM uploaded as an Asset
-var terrain = ee.Terrain.products(dem);   // elevation, slope, aspect, hillshade
-var slope = terrain.select('slope');
-var aspect = terrain.select('aspect');
-var curvature = dem.convolve(ee.Kernel.laplacian8());   // simple profile curvature proxy
-
-Map.addLayer(slope, {min: 0, max: 45, palette: ['white', 'yellow', 'red']}, 'slope');
+// NASADEM, as in the lab scripts: 30 m elevation + 'swb' water body band
+var nasadem = ee.Image('NASA/NASADEM_HGT/001');
+var dem = nasadem.select('elevation');
+var waterMask = nasadem.select('swb').eq(0);          // 1 = land
+var slope = ee.Terrain.slope(dem);                     // degrees
+var aspect = ee.Terrain.aspect(dem);
+// curvature as in the authors' script: Gaussian-smoothed DEM, d2z/dx2 + d2z/dy2
+var gauss = ee.Kernel.gaussian({radius: 60, sigma: 30, units: 'meters',
+                                normalize: true});
+var demSmooth = dem.convolve(gauss).resample('bilinear');
+var grad = demSmooth.gradient().resample('bilinear');
+var curvature = grad.select('x').gradient().select('x')
+  .add(grad.select('y').gradient().select('y')).rename('curvature');
+// Copernicus DEM GLO-30 instead: an ImageCollection of tiles, restore a projection
+// var demCol = ee.ImageCollection('COPERNICUS/DEM/GLO30_2024_1').select('DEM');
+// var dem = demCol.mosaic().setDefaultProjection(demCol.first().projection());
+Map.addLayer(slope, {min: 0, max: 45, palette: ['ffffff', 'ffff00', 'ff0000']}, 'Slope (deg)');
 ```
 In Poland: the national LiDAR DTM (1 m, ISOK / geoportal.gov.pl) – vastly better than any global DEM for landslide scars (shaded relief shows old slumps under forest).
 :::
@@ -287,8 +296,8 @@ source: Moodle section *Landslides mapping approaches* – summary
 
 ::: block <!-- element style="font-size:40px" align="left" drag="95 78" drop="0 15"-->
 1. Choose an event with a known date and a reference inventory: the paper's cases (Hokkaido 6.09.2018, Hiroshima July 2018, Haiti 14.08.2021) or one from an EMS activation
-2. Open the heatmap script (Moodle *Landslides* lesson, page 2); set AOI, event date, pre/post windows, orbit; run – note the computation time
-3. Inspect the log-ratio layers (VV, VH) with the Inspector over a known landslide and an untouched slope
+2. Open the heatmap script (Moodle *Landslides* lesson, page 2); set `aoi` and the pre/post windows (ascending and descending log-ratios are averaged); run – note the computation time
+3. Inspect the log-ratio layers (VH: ascending, descending, averaged) with the Inspector over a known landslide and an untouched slope
 4. Change the threshold and the pre-event stack length; see how the heatmap changes
 5. Overlay a reference: EMS grading map (upload as Asset) or Sentinel-2 true colour of the first clear day – visual agreement
 6. Export the heatmap GeoTIFF; a short note: event, parameters, where it works, where it fails (shadow? floods? agriculture?)

@@ -30,30 +30,61 @@
 <h3 class="iot-material-divider">Loading Sentinel-1 in GEE</h3>
 <p>Sentinel-1 (today 1C and 1D – 1C launched Dec 2024, 1D launched Nov 2025 and operational since May 2026; 1A worked from 2014 to June 2026 – 6-day repeat with two satellites) is in the catalogue as <a href="https://developers.google.com/earth-engine/datasets/catalog/COPERNICUS_S1_GRD" target="_blank" rel="noopener"><code>COPERNICUS/S1_GRD</code></a>, bands <code>VV</code>, <code>VH</code>, <code>angle</code>, values already in dB. Main mode over land: IW (Interferometric Wide), 10 m GRD pixels (amplitude only, terrain-corrected).</p>
 <ol class="iot-material-steps">
-<li><strong>Filter the collection</strong> – one mode, one polarisation, one orbit direction (never mix ascending and descending in change detection):
-<pre class="iot-material-code"><code class="language-javascript">// ---- Sentinel-1, cell 1: Load Sentinel-1 GRD (VH, IW, descending) over the AOI ----
+<li><strong>Filter the collection</strong> – one mode, one polarisation, one orbit direction and relative orbit (never mix orbits in change detection). The cells on this page are steps 1–4 of the lab script <a href="https://code.earthengine.google.com/?scriptPath=users%2Fmarekurbaniak%2FGEO2%3A04_floods%2F03_sentinel1_flood_change_detection" target="_blank" rel="noopener">GEO2 › 04_floods › 03_sentinel1_flood_change_detection</a>; <a href="https://code.earthengine.google.com/?scriptPath=users%2Fmarekurbaniak%2FGEO2%3A04_floods%2F02_sentinel1_orbit_check" target="_blank" rel="noopener">02_sentinel1_orbit_check</a> lists which pass and orbit cover your area:
+<pre class="iot-material-code"><code class="language-javascript">// ---- Sentinel-1, cell 1: Load Sentinel-1 GRD (VH, IW, one pass and orbit) over the AOI ----
+var aoi = ee.Geometry.Rectangle([17.20, 50.40, 17.80, 50.90]);   // Nysa, Lake Nysa, Lewin Brzeski
+var POLARIZATION   = 'VH';         // 'VH' for open land, 'VV' for flooded vegetation
+var PASS           = 'ASCENDING';  // or 'DESCENDING' - never mix (script 02)
+var RELATIVE_ORBIT = 175;          // from script 02; null = all orbits of that pass,
+                                   // which mixes geometries (false changes)
+
+// GRD = Ground Range Detected: thermal noise removed, radiometrically
+// calibrated, terrain corrected (sigma0 in dB). Only speckle is left to us.
 var s1 = ee.ImageCollection('COPERNICUS/S1_GRD')
   .filter(ee.Filter.eq('instrumentMode', 'IW'))
-  .filter(ee.Filter.listContains('transmitterReceiverPolarisation', 'VH'))
-  .filter(ee.Filter.eq('orbitProperties_pass', 'DESCENDING'))
+  .filter(ee.Filter.listContains('transmitterReceiverPolarisation', POLARIZATION))
+  .filter(ee.Filter.eq('orbitProperties_pass', PASS))
+  .filter(ee.Filter.eq('resolution_meters', 10))
   .filterBounds(aoi)
-  .select('VH');
+  .select(POLARIZATION);
+if (RELATIVE_ORBIT !== null) {
+  s1 = s1.filter(ee.Filter.eq('relativeOrbitNumber_start', RELATIVE_ORBIT));
+}
 // ---- end of Sentinel-1, cell 1 ----
 </code></pre></li>
 <li><strong>Make a before and an after mosaic</strong> around the flood peak:
-<pre class="iot-material-code"><code class="language-javascript">// ---- Sentinel-1, cell 2: Mosaic the before and after periods into two images ----
-// mosaic() stitches the scenes of each period into one image (VH backscatter in dB)
-var sarBefore = s1.filterDate('2024-08-20', '2024-09-10').mosaic();
-var sarAfter  = s1.filterDate('2024-09-15', '2024-09-25').mosaic();
+<pre class="iot-material-code"><code class="language-javascript">// ---- Sentinel-1, cell 2: Before and after sets, mosaicked into two images ----
+var BEFORE_START = '2024-08-20';   // 2-3 weeks before the flood
+var BEFORE_END   = '2024-09-10';
+var AFTER_START  = '2024-09-16';   // from the flood peak onwards
+var AFTER_END    = '2024-09-28';   // &gt;= 12 days: one S1A image per orbit
+
+var s1Before = s1.filterDate(BEFORE_START, BEFORE_END);
+var s1After  = s1.filterDate(AFTER_START, AFTER_END);
+function listDates(col) {
+  return col.aggregate_array('system:time_start')
+    .map(function (t) { return ee.Date(t).format('YYYY-MM-dd'); });
+}
+print('STEP 2 - scenes BEFORE (count, dates):', s1Before.size(), listDates(s1Before));
+print('STEP 2 - scenes AFTER  (count, dates):', s1After.size(), listDates(s1After));
+// If a count is 0: widen the dates, change PASS or set RELATIVE_ORBIT = null.
+
+// mosaic() takes the most recent pixel; with one orbit per period this is
+// simply the scene (VH backscatter in dB).
+var sarBefore = s1Before.mosaic().clip(aoi);
+var sarAfter  = s1After.mosaic().clip(aoi);
 // ---- end of Sentinel-1, cell 2 ----
 </code></pre></li>
-<li><strong>Reduce speckle</strong> with a 50 m focal mean and display both images:
+<li><strong>Reduce speckle</strong> with a 50 m focal median and display both images:
 <pre class="iot-material-code"><code class="language-javascript">// ---- Sentinel-1, cell 3: Speckle filter and display ----
-var smoothRadiusM = 50;                        // speckle filter radius in metres
-var sarBeforeSmooth = sarBefore.focal_mean(smoothRadiusM, 'circle', 'meters');
-var sarAfterSmooth  = sarAfter.focal_mean(smoothRadiusM, 'circle', 'meters');
-Map.addLayer(sarBeforeSmooth, {min: -25, max: 0}, 'before VH');
-Map.addLayer(sarAfterSmooth,  {min: -25, max: 0}, 'after VH');
+var SPECKLE_RADIUS_M = 50;         // radius of the speckle filter (m)
+// focal_median keeps edges better than focal_mean (used by UN-SPIDER).
+var sarBeforeSmooth = sarBefore.focal_median(SPECKLE_RADIUS_M, 'circle', 'meters');
+var sarAfterSmooth  = sarAfter.focal_median(SPECKLE_RADIUS_M, 'circle', 'meters');
+var visDb = {min: -25, max: 0};
+Map.centerObject(aoi, 10);
+Map.addLayer(sarBeforeSmooth, visDb, POLARIZATION + ' before (filtered)');
+Map.addLayer(sarAfterSmooth,  visDb, POLARIZATION + ' after (filtered)');
 // ---- end of Sentinel-1, cell 3 ----
 </code></pre></li>
 <li><strong>Read values with the Inspector</strong> over known water and known land: the histogram is bimodal, with a water peak around −22 dB and a land peak around −12 dB. Choose VH for floods in open land (bigger land/water contrast) and VV for flooded vegetation (double bounce).</li>
