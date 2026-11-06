@@ -261,13 +261,13 @@ Classify the **test set** (pixels the model has not seen) and compare predicted 
 
 | true \ predicted | water | urban | crops | forest | **PA** |
 |---|---|---|---|---|---|
-| water | 48 | 1 | 1 | 0 | 96 % |
-| urban | 0 | 40 | 8 | 2 | 80 % |
-| crops | 0 | 6 | 42 | 2 | 84 % |
-| forest | 0 | 1 | 3 | 46 | 92 % |
-| **UA** | 100 % | 83 % | 78 % | 92 % | |
+| water | 48 | 1 | 1 | 0 | 96% |
+| urban | 0 | 40 | 8 | 2 | 80% |
+| crops | 0 | 6 | 42 | 2 | 84% |
+| forest | 0 | 1 | 3 | 46 | 92% |
+| **UA** | 100% | 83% | 78% | 92% | |
 
-Overall accuracy = diagonal / total = 176 / 200 = **88 %**
+Overall accuracy = diagonal / total = 176 / 200 = **88%**
 :::
 
 ::: block <!-- element style="font-size: 27px;" align="left" drag="45 78" drop="53 15" bg="#e8f4f8" pad="15px"-->

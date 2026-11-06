@@ -109,7 +109,7 @@ Reading (link in Moodle, section *Flood mapping*): Olofsson et al. 2014, *Remote
 <grid drag="13 26" drop="87 75" bg="#00ced1" rotate="-15"/>
 
 ::: block <!-- element style="font-size:42px" align="left" drag="95 78" drop="0 15"-->
-1. **Threshold sensitivity**: run the map with the threshold ± 20 % → range of area (ha). Report *"flooded area 4 210 ha (3 650–4 820 for ratio 1.15–1.40)"*, not a single number
+1. **Threshold sensitivity**: run the map with the threshold ± 20% → range of area (ha). Report *"flooded area 4 210 ha (3 650–4 820 for ratio 1.15–1.40)"*, not a single number
 2. **Date sensitivity**: a second pre-event composite (different weeks) → how much of the "change" moves
 3. **Confusion matrix** against any independent reference (EMS, EFFIS, field, VHR image): overall accuracy, per-class, kappa (lecture 3)
 4. **Area-adjusted accuracy** (Olofsson et al. 2014) – if you go on to a thesis: stratified sampling, confidence intervals on the area
@@ -168,10 +168,10 @@ Know them, cite them, compare against them – and know that the method you ran 
 <grid drag="13 26" drop="87 75" bg="#ffB73F"/>
 
 ::: block <!-- element style="font-size:40px" align="left" drag="95 78" drop="0 15"-->
-- Final test – **40 %**: 30 questions from all lectures (9 from the first weeks), 40 min, one attempt, in the room, no materials; retake in the exam session
-- Labs of the first weeks – **30 %**: the grade from their lecturer
-- Homework M2–M7 – **30 %** (5 % each): M2, M5 one-page notes; M3, M4, M6 reports; M7 notebook or QGIS project
-- Each piece: script 30, figures 30, numbers 20, validation 20 points; pass from 60 % overall
+- Final test – **40%**: 30 questions from all lectures (9 from the first weeks), 40 min, one attempt, in the room, no materials; retake in the exam session
+- Labs of the first weeks – **30%**: the grade from their lecturer
+- Homework M2–M7 – **30%** (5% each): M2, M5 one-page notes; M3, M4, M6 reports; M7 notebook or QGIS project
+- Each piece: script 30, figures 30, numbers 20, validation 20 points; pass from 60% overall
 - Missing work counts as 0 after the M7 deadline – details: *How you are graded* on the start page
 :::
 

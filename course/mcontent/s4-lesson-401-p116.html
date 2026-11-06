@@ -25,7 +25,7 @@
 var THRESHOLD_DB = -3;
 // UN-SPIDER alternative: ratio of the two dB images, flood where
 // after / before &gt; 1.25. Because both values are negative, 1.25 means
-// "the after value is at least 25 % more negative" (-12 -&gt; -15 dB, about
+// "the after value is at least 25% more negative" (-12 -&gt; -15 dB, about
 // 3 dB). It is NOT a physical ratio of backscatter. Set USE_RATIO = true
 // to reproduce the UN-SPIDER result exactly.
 var USE_RATIO = false;
@@ -40,11 +40,11 @@ print('STEP 5 - method:', USE_RATIO ? 'ratio &gt; ' + RATIO_THRESHOLD
                                     : 'difference &lt; ' + THRESHOLD_DB + ' dB');
 // ---- end of Flood script, cell 1 ----
 </code></pre>
-By default the script takes the difference in dB: −3 dB means that at least half of the backscatter was lost. With <code>USE_RATIO = true</code> it divides the <em>dB</em> values as UN-SPIDER does, so a ratio of 1.25 means the after value is at least 25 % more negative (e.g. −12 → −15 dB, roughly 3 dB darker for a typical land pixel); it is not a physical ratio of backscatter.</li>
+By default the script takes the difference in dB: −3 dB means that at least half of the backscatter was lost. With <code>USE_RATIO = true</code> it divides the <em>dB</em> values as UN-SPIDER does, so a ratio of 1.25 means the after value is at least 25% more negative (e.g. −12 → −15 dB, roughly 3 dB darker for a typical land pixel); it is not a physical ratio of backscatter.</li>
 <li><strong>Understand the masks.</strong> Permanent water (JRC), slopes steeper than 5° (radar shadow; slope from the Copernicus DEM GLO-30) and isolated specks (fewer than 8 connected pixels) are removed:
 <pre class="iot-material-code"><code class="language-javascript">// ---- Flood script, cell 2: Masks - permanent water (JRC GSW), slope (Copernicus DEM), specks ----
 var PERMANENT_WATER_MONTHS = 10;   // JRC seasonality &gt;= 10 months = permanent
-var SLOPE_MAX_DEG = 5;             // in DEGREES (5 deg = 8.7 %), UN-SPIDER value
+var SLOPE_MAX_DEG = 5;             // in DEGREES (5 deg = 8.7%), UN-SPIDER value
 var MIN_CONNECTED_PIXELS = 8;      // specks smaller than this are removed
 
 // 6a. Permanent water: JRC Global Surface Water seasonality = number of

@@ -218,7 +218,7 @@ Two strategies: (a) **single image** – everything darker than a threshold is w
 ::: block <!-- element style="font-size:30px" align="left" drag="50 78" drop="0 15"-->
 - Backscatter histogram over a flooded area is **bimodal**: a water peak around −22 dB and a land peak around −12 dB
 - **Manual**: read values with the Inspector over known water and land, pick the valley (e.g. −18 dB)
-- **Ratio / difference**: the UN-SPIDER script divides the **dB images**, `after.divide(before)`, and flags ratio > **1.25** – the after value is ≥ 25 % more negative (≈ 3 dB darker around −12 dB); a ratio of dB values is not a physical ratio, so the cleaner equivalent is the difference in dB: `after.subtract(before).lt(-3)` – the default of the lab script (`THRESHOLD_DB = -3`; `USE_RATIO = true` gives the ratio)
+- **Ratio / difference**: the UN-SPIDER script divides the **dB images**, `after.divide(before)`, and flags ratio > **1.25** – the after value is ≥ 25% more negative (≈ 3 dB darker around −12 dB); a ratio of dB values is not a physical ratio, so the cleaner equivalent is the difference in dB: `after.subtract(before).lt(-3)` – the default of the lab script (`THRESHOLD_DB = -3`; `USE_RATIO = true` gives the ratio)
 - **Otsu**: automatic threshold that maximises the separation of two classes in the histogram – objective, reproducible, used by the Global Flood Monitoring service
 - Report which one you used and why – it is the main uncertainty of the map
 :::

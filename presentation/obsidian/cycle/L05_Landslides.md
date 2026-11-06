@@ -72,7 +72,7 @@ Classified by **material** (rock, debris, earth) and **type of movement**:
 ::: block <!-- element style="font-size:35px" align="left" drag="45 75" drop="55 15" bg="#e8f4f8" pad="15px"-->
 From orbit you see the **scar** (bare, bright, steep source area), the **track** and the **deposit** (fan, dammed river). Size: from 10 m (one Sentinel pixel) to km². Most rain-triggered landslides are **small** – resolution matters more than for floods.
 
-In Poland: Carpathian flysch (Beskidy, Pogórze) – ~95 % of Polish landslides; the SOPO inventory by PGI-NRI holds > 70 000 of them (2023) ([geoportal SOPO](https://geoportal.pgi.gov.pl/portal/page/portal/SOPO)).
+In Poland: Carpathian flysch (Beskidy, Pogórze) – ~95% of Polish landslides; the SOPO inventory by PGI-NRI holds > 70 000 of them (2023) ([geoportal SOPO](https://geoportal.pgi.gov.pl/portal/page/portal/SOPO)).
 :::
 
 

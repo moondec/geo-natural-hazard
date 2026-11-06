@@ -2,8 +2,8 @@
 // Grading system of AGeoHazard (CLI, as admin): Polish academic scale as grade letters, weighted course total, final test.
 // Usage: docker exec moodle-lab-web-1 php /backups/grading.php COURSEID
 // Idempotent: re-running updates letters, settings, weights and the quiz settings; the quiz is created only once.
-//   letters (course context):  5.0 >= 92 %, 4.5 >= 84, 4.0 >= 76, 3.5 >= 68, 3.0 >= 60, 2.0 below 60
-//   course total: weighted mean – Final test 40 %, labs part A (manual) 30 %, homework M2..M7 30 % (5 % each); lesson items weight 0, hidden
+//   letters (course context):  5.0 >= 92%, 4.5 >= 84, 4.0 >= 76, 3.5 >= 68, 3.0 >= 60, 2.0 below 60
+//   course total: weighted mean – Final test 40%, labs part A (manual) 30%, homework M2..M7 30% (5% each); lesson items weight 0, hidden
 //   every assignment and the test: grade to pass 60; display "points (grade)" for items, the grade alone for the course total
 //   final test: hidden quiz in section 7, 30 random questions (9 from part A lectures, 3 per module L1-L7), 1 mark each, max grade 100,
 //   40 min, 1 attempt in the classroom at the last meeting (retake in the exam session via a user override),
@@ -68,7 +68,7 @@ if (!$quiz) {
               ['76%', '<p><strong>4.0</strong> – good.</p>'],
               ['68%', '<p><strong>3.5</strong> – satisfactory plus.</p>'],
               ['60%', '<p><strong>3.0</strong> – satisfactory: passed.</p>'],
-              [null,  '<p><strong>2.0</strong> – not passed (below 60 %). Review the lectures, the lesson pages and the lecture summaries and come to the retake in the exam session.</p>']];
+              [null,  '<p><strong>2.0</strong> – not passed (below 60%). Review the lectures, the lesson pages and the lecture summaries and come to the retake in the exam session.</p>']];
     $mi->feedbacktext = []; $mi->feedbackboundaries = [];
     foreach ($bands as $i => [$b, $t]) { $mi->feedbacktext[$i] = ['text' => $t, 'format' => FORMAT_HTML]; if ($b !== null) $mi->feedbackboundaries[$i] = $b; }
     $mi->visibleoncoursepage = 1; $mi->cmidnumber = ''; $mi->groupmode = 0; $mi->groupingid = 0;
@@ -121,10 +121,10 @@ $total = $coursecat->get_grade_item();
 $total->display = GRADE_DISPLAY_TYPE_LETTER; $total->decimals = 0; $total->gradepass = 60; $total->grademax = 100; $total->grademin = 0; $total->update();   // weighted mean: the total is 0-100 (was 200 from the natural sum)
 
 // Subject grade (decision of 2026-11-06): weighted mean of three pieces at course level
-//   final test    40 %  – all 20 h of lectures of the subject (lectures of the first weeks included)
-//   labs, part A  30 %  – a manual grade item: the lab grade (18 h) from the lecturer of the first weeks
-//   labs, part B  30 %  – grade category with homework M2..M7, equal weights (5 % of the subject each)
-// Pass from 60 % of the course total only; the pieces have no separate pass rule.
+//   final test    40%  – all 20 h of lectures of the subject (lectures of the first weeks included)
+//   labs, part A  30%  – a manual grade item: the lab grade (18 h) from the lecturer of the first weeks
+//   labs, part B  30%  – grade category with homework M2..M7, equal weights (5% of the subject each)
+// Pass from 60% of the course total only; the pieces have no separate pass rule.
 $LABA = 'Labs, part A: grade from the lecturer of the first weeks (18 h)';
 $LABB = 'Labs, part B: homework M2–M7 (22 h)';
 $OLDA = 'Part A: grade from the first weeks of the semester (other lecturer, 24 h)';   // names before 2026-11-06
@@ -151,7 +151,7 @@ if (!$aitem) {
     echo "created manual grade item: $LABA\n";
 }
 $aitem->itemname = $LABA;
-$aitem->iteminfo = 'Lab grade (0-100) of the first weeks of the semester, entered by hand from the grade given by their lecturer; 30 % of the subject grade.';
+$aitem->iteminfo = 'Lab grade (0-100) of the first weeks of the semester, entered by hand from the grade given by their lecturer; 30% of the subject grade.';
 $aitem->aggregationcoef = 30; $aitem->gradepass = 60; $aitem->display = GRADE_DISPLAY_TYPE_REAL_LETTER; $aitem->decimals = 0; $aitem->hidden = 0;
 $aitem->categoryid = $coursecat->id; $aitem->update();
 
@@ -169,7 +169,7 @@ foreach ($items as $gi) {
     $gi->update();
     printf("  %-8s cat=%d w=%2d pass=%2d hidden=%d | %s\n", $gi->itemmodule, $gi->categoryid, $gi->aggregationcoef, $gi->gradepass, $gi->hidden, $gi->itemname);
 }
-echo "course total = 40 % final test + 30 % labs part A (manual) + 30 % labs part B (homework category)\n";
+echo "course total = 40% final test + 30% labs part A (manual) + 30% labs part B (homework category)\n";
 grade_regrade_final_grades($courseid);
 rebuild_course_cache($courseid, true);
 purge_all_caches();

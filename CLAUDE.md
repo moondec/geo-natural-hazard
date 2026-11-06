@@ -23,6 +23,10 @@ Rozmawiaj z użytkownikiem po polsku; treść kursu jest po angielsku.
   `docker exec moodle-lab-web-1 php admin/cli/restore_backup.php --file=/backups/<plik>.mbz --categoryid=1`.
 - Kopia do wysłania: `docker exec moodle-lab-web-1 php admin/cli/backup.php --courseid=N --destination=/backups`
   (jeśli read-only, użyj katalogu w kontenerze i `docker cp`). Na produkcję przywraca użytkownik sam przez UI.
+  **Kurs 15 na produkcję: kopia bez użytkowników** – `course/backup_nousers.php` (CLI `backup.php` bierze domyślne `backup_general_users=1`
+  i zabrałby 8 studentów poprzedniego rocznika). Skrypt `docker cp` do `/tmp` kontenera (www-data nie czyta `/backups`), uruchom
+  `docker exec -u www-data moodle-lab-web-1 php /tmp/backup_nousers.php 15 /tmp/mbzout`, potem `docker cp` do Pobranych.
+  Przed kopią wykonaj zadania w tle (`adhoc_task.php --execute`) – usuwanie modułów w UI czeka w kolejce. Pierwsza kopia: 2026-11-06, 23,6 MB.
 - Hasło admina zna tylko użytkownik; w przeglądarce loguje się sam. Web services są wyłączone.
   Zmian konfiguracji Moodle (motyw, ustawienia serwisu) nie rób bez zgody użytkownika. Usuwanie kursów — użytkownik.
 
@@ -35,12 +39,14 @@ Rozmawiaj z użytkownikiem po polsku; treść kursu jest po angielsku.
   W Moodle wykłady to moduły URL (cm 413–421), nie pliki.
 - Treść kursu: `course/mcontent/` (pola tekstowe Moodle, styl IoT z niebieską paletą `course/geo.scss`, CSS wstawia `course/inline-iot-css.py geo.scss mcontent`);
   `course/build_summaries.py` generuje podsumowania sekcji, intro URL-i i `ops.tsv`; reguły edycji `course/RULES-geo.md`.
+- **Znak procentu bez spacji** (Marek, 2026-11-06): „2%”, „40%”, „5–10%”, nigdy „2 %” – w treści, generatorach, slajdach, banku pytań.
+  Sprawdzenie bazy kursu: `course/percent_nospace.php COURSEID [--apply]` (`docker cp` do `/tmp` kontenera).
 - **Bez dat w treści kursu** (kurs odtwarzany co rok dla nowej grupy): strony piszą „at the start of lab N”, nigdy konkretnej daty.
   Daty semestru są tylko w `course/schedule.json`; `course/assignments.php COURSEID /backups/schedule.json` ustawia terminy zadań
   (bez cut-off – spóźnione oddania dozwolone) i datę startu kursu (kotwica przesunięcia dat przy restore); opisy zadań z `course/build_assign_intros.py`.
-- Ocenianie: `course/grading.php COURSEID` (idempotentny) – litery 5.0/4.5/4.0/3.5/3.0/2.0 od 92/84/76/68/60 %, suma kursu = średnia ważona
-  (od 2026-11-06: Final test cm435 40 % – obejmuje wszystkie 20 h wykładu, też koleżanki; ręczna pozycja „Labs, part A” 30 % – ocena z ćwiczeń
-  od koleżanki; kategoria „Labs, part B” 30 % = M2–M7 po równo; lekcje waga 0 i ukryte), próg 60 tylko z całości, wyświetlanie „punkty (ocena)”;
+- Ocenianie: `course/grading.php COURSEID` (idempotentny) – litery 5.0/4.5/4.0/3.5/3.0/2.0 od 92/84/76/68/60%, suma kursu = średnia ważona
+  (od 2026-11-06: Final test cm435 40% – obejmuje wszystkie 20 h wykładu, też koleżanki; ręczna pozycja „Labs, part A” 30% – ocena z ćwiczeń
+  od koleżanki; kategoria „Labs, part B” 30% = M2–M7 po równo; lekcje waga 0 i ukryte), próg 60 tylko z całości, wyświetlanie „punkty (ocena)”;
   quiz Final test ukryty, docelowo 30 losowych pytań: 9 z kategorii „A …” (wykłady koleżanki, jeszcze nie ma) + po 3 z L1–L7.
   Sloty quizu powstają tylko przy jego tworzeniu – po dodaniu kategorii „A” trzeba je przebudować (quiz bez podejść).
   Decyzje z 2026-11-06: test w sali na ostatnich zajęciach, bez materiałów, 1 podejście (poprawka w sesji = nadpisanie użytkownika

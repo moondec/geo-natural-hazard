@@ -63,7 +63,7 @@
   },
   "cutoff": "none – late submissions stay possible and are marked late (Marek, 25.10.2026)",
   "hours": {
-    "_comment": "subject = 20 h lecture + 40 h lab; part A (other lecturer, first weeks) 6 + 18 h, part B (this course) 14 + 22 h. Grade since 2026-11-06: final test over all 20 h of lectures 40 %, part A lab grade 30 %, homework M2-M7 30 %; pass from 60 % overall. Labs are 3 h, lab 7 is 4 h; lectures 1 and 8 are short (11:30-12:15).",
+    "_comment": "subject = 20 h lecture + 40 h lab; part A (other lecturer, first weeks) 6 + 18 h, part B (this course) 14 + 22 h. Grade since 2026-11-06: final test over all 20 h of lectures 40%, part A lab grade 30%, homework M2-M7 30%; pass from 60% overall. Labs are 3 h, lab 7 is 4 h; lectures 1 and 8 are short (11:30-12:15).",
     "part_a": {
       "lecture": 6,
       "lab": 18

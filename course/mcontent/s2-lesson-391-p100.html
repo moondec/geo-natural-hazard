@@ -46,7 +46,7 @@ Map.centerObject(aoi, 12);                   // the second argument is the zoom 
 var s2Filtered = s2
   .filterBounds(aoi)                                          // where
   .filterDate('2025-05-01', '2025-09-30')                     // when: 2025 growing season (end date is exclusive)
-  .filter(ee.Filter.lt('CLOUDY_PIXEL_PERCENTAGE', 35));       // how cloudy: drop scenes with 35 % cloud or more
+  .filter(ee.Filter.lt('CLOUDY_PIXEL_PERCENTAGE', 35));       // how cloudy: drop scenes with 35% cloud or more
 // .filterBounds(aoi) is the short form of .filter(ee.Filter.bounds(aoi))
 // ---- end of Step 4, cell 5 ----
 </code></pre>

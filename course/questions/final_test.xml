@@ -146,10 +146,10 @@
     <correctfeedback format="html"><text>Correct.</text></correctfeedback>
     <partiallycorrectfeedback format="html"><text>Partially correct.</text></partiallycorrectfeedback>
     <incorrectfeedback format="html"><text>Not correct.</text></incorrectfeedback>
-    <answer fraction="100" format="html"><text><![CDATA[<p>Removes whole scenes whose metadata says more than 35 % cloud – it does not mask any pixel</p>]]></text><feedback format="html"><text></text></feedback></answer>
+    <answer fraction="100" format="html"><text><![CDATA[<p>Removes whole scenes whose metadata says more than 35% cloud – it does not mask any pixel</p>]]></text><feedback format="html"><text></text></feedback></answer>
     <answer fraction="0" format="html"><text><![CDATA[<p>Masks every cloudy pixel in every scene</p>]]></text><feedback format="html"><text></text></feedback></answer>
-    <answer fraction="0" format="html"><text><![CDATA[<p>Keeps only pixels with less than 35 % cloud probability</p>]]></text><feedback format="html"><text></text></feedback></answer>
-    <answer fraction="0" format="html"><text><![CDATA[<p>Removes scenes with less than 35 % cloud</p>]]></text><feedback format="html"><text></text></feedback></answer>
+    <answer fraction="0" format="html"><text><![CDATA[<p>Keeps only pixels with less than 35% cloud probability</p>]]></text><feedback format="html"><text></text></feedback></answer>
+    <answer fraction="0" format="html"><text><![CDATA[<p>Removes scenes with less than 35% cloud</p>]]></text><feedback format="html"><text></text></feedback></answer>
   </question>
   <question type="multichoice">
     <name><text>L2-04 Cloud Score+</text></name>
@@ -163,7 +163,7 @@
     <answer fraction="100" format="html"><text><![CDATA[<p>… that are likely clear; a higher threshold (e.g. 0.65) is stricter, a lower one (0.5) keeps more pixels</p>]]></text><feedback format="html"><text></text></feedback></answer>
     <answer fraction="0" format="html"><text><![CDATA[<p>… that are likely cloudy</p>]]></text><feedback format="html"><text></text></feedback></answer>
     <answer fraction="0" format="html"><text><![CDATA[<p>… with reflectance above 0.6</p>]]></text><feedback format="html"><text></text></feedback></answer>
-    <answer fraction="0" format="html"><text><![CDATA[<p>… acquired after 60 % of the season</p>]]></text><feedback format="html"><text></text></feedback></answer>
+    <answer fraction="0" format="html"><text><![CDATA[<p>… acquired after 60% of the season</p>]]></text><feedback format="html"><text></text></feedback></answer>
   </question>
   <question type="truefalse">
     <name><text>L2-05 QA60 gap</text></name>
@@ -308,7 +308,7 @@
   </question>
   <question type="multichoice">
     <name><text>L3-04 Train/test split</text></name>
-    <questiontext format="html"><text><![CDATA[<p>Why do you keep 30 % of the samples aside as a test set?</p>]]></text></questiontext>
+    <questiontext format="html"><text><![CDATA[<p>Why do you keep 30% of the samples aside as a test set?</p>]]></text></questiontext>
     <generalfeedback format="html"><text><![CDATA[<p>randomColumn() and a 0.7 split give training and test sets; the confusion matrix is computed on the test set only.</p>]]></text></generalfeedback>
     <defaultgrade>1</defaultgrade><penalty>0.3333333</penalty><hidden>0</hidden>
     <single>true</single><shuffleanswers>true</shuffleanswers><answernumbering>abc</answernumbering>
@@ -317,13 +317,13 @@
     <incorrectfeedback format="html"><text>Not correct.</text></incorrectfeedback>
     <answer fraction="100" format="html"><text><![CDATA[<p>To measure the accuracy on pixels the model has never seen – otherwise the accuracy is meaningless</p>]]></text><feedback format="html"><text></text></feedback></answer>
     <answer fraction="0" format="html"><text><![CDATA[<p>To speed up the training</p>]]></text><feedback format="html"><text></text></feedback></answer>
-    <answer fraction="0" format="html"><text><![CDATA[<p>Because Earth Engine cannot train on more than 70 % of the samples</p>]]></text><feedback format="html"><text></text></feedback></answer>
+    <answer fraction="0" format="html"><text><![CDATA[<p>Because Earth Engine cannot train on more than 70% of the samples</p>]]></text><feedback format="html"><text></text></feedback></answer>
     <answer fraction="0" format="html"><text><![CDATA[<p>To create the legend</p>]]></text><feedback format="html"><text></text></feedback></answer>
   </question>
   <question type="numerical">
     <name><text>L3-05 Overall accuracy</text></name>
     <questiontext format="html"><text><![CDATA[<p>A confusion matrix of 200 test pixels has 176 on the diagonal. What is the overall accuracy in percent?</p>]]></text></questiontext>
-    <generalfeedback format="html"><text><![CDATA[<p>Overall accuracy = correctly classified / total = 176 / 200 = 0.88 = 88 %.</p>]]></text></generalfeedback>
+    <generalfeedback format="html"><text><![CDATA[<p>Overall accuracy = correctly classified / total = 176 / 200 = 0.88 = 88%.</p>]]></text></generalfeedback>
     <defaultgrade>1</defaultgrade><penalty>0.3333333</penalty><hidden>0</hidden>
     <answer fraction="100" format="moodle_auto_format"><text>88</text><tolerance>0.5</tolerance><feedback format="html"><text></text></feedback></answer>
     <unitgradingtype>0</unitgradingtype><unitpenalty>0.1</unitpenalty><showunits>3</showunits><unitsleft>0</unitsleft>
@@ -546,10 +546,10 @@
     <correctfeedback format="html"><text>Correct.</text></correctfeedback>
     <partiallycorrectfeedback format="html"><text>Partially correct.</text></partiallycorrectfeedback>
     <incorrectfeedback format="html"><text>Not correct.</text></incorrectfeedback>
-    <answer fraction="100" format="html"><text><![CDATA[<p>The after value is at least 25 % more negative (e.g. −12 → −15 dB, about 3 dB darker); it is a ratio of dB values, not of physical backscatter</p>]]></text><feedback format="html"><text></text></feedback></answer>
+    <answer fraction="100" format="html"><text><![CDATA[<p>The after value is at least 25% more negative (e.g. −12 → −15 dB, about 3 dB darker); it is a ratio of dB values, not of physical backscatter</p>]]></text><feedback format="html"><text></text></feedback></answer>
     <answer fraction="0" format="html"><text><![CDATA[<p>The water is 1.25 m deep</p>]]></text><feedback format="html"><text></text></feedback></answer>
-    <answer fraction="0" format="html"><text><![CDATA[<p>The pixel is 25 % water</p>]]></text><feedback format="html"><text></text></feedback></answer>
-    <answer fraction="0" format="html"><text><![CDATA[<p>The after image is 25 % brighter</p>]]></text><feedback format="html"><text></text></feedback></answer>
+    <answer fraction="0" format="html"><text><![CDATA[<p>The pixel is 25% water</p>]]></text><feedback format="html"><text></text></feedback></answer>
+    <answer fraction="0" format="html"><text><![CDATA[<p>The after image is 25% brighter</p>]]></text><feedback format="html"><text></text></feedback></answer>
   </question>
   <question type="multichoice">
     <name><text>L4-10 Masks</text></name>
@@ -755,7 +755,7 @@
   </question>
   <question type="multichoice">
     <name><text>L5-10 Poland</text></name>
-    <questiontext format="html"><text><![CDATA[<p>Where are about 95 % of the landslides of Poland?</p>]]></text></questiontext>
+    <questiontext format="html"><text><![CDATA[<p>Where are about 95% of the landslides of Poland?</p>]]></text></questiontext>
     <generalfeedback format="html"><text><![CDATA[<p>The SOPO inventory of the Polish Geological Institute holds more than 70 000 landslides (2023), almost all in the Carpathians.</p>]]></text></generalfeedback>
     <defaultgrade>1</defaultgrade><penalty>0.3333333</penalty><hidden>0</hidden>
     <single>true</single><shuffleanswers>true</shuffleanswers><answernumbering>abc</answernumbering>

@@ -20,6 +20,7 @@ must stand out. Course content language: **English**. Keep the facts; improve st
   – never "30.11", "Monday", "winter 2026/27". The real dates live only in `course/schedule.json` (applied to the assignment
   due dates and the course start date by `course/assignments.php`) and Moodle shows them itself (activity dates, calendar).
   Late submissions stay open (no cut-off date); they are only marked late.
+- **Percent sign without a space**: "2%", "40%", "5–10%", "(5% each)" – never "2 %" (no normal, non-breaking or thin space).
 - Schedule of the 2026/27 run (reference only – do not copy these dates into content): lecture of week N introduces the lab of week N+1.
   L1 9.11 → Lab 1 16.11 (Copernicus Browser, CDSE account, GEE registration, first script);
   L2 16.11 → Lab 2 23.11 (GEE JS: collections, filters, NDVI, classes, areas; homework "index areas");
