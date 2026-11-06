@@ -165,13 +165,14 @@ Know them, cite them, compare against them – and know that the method you ran 
 ::: title
 ## Assessment
 :::
-<grid drag="13 26" drop="80 53" bg="#ffB73F"/>
+<grid drag="13 26" drop="87 75" bg="#ffB73F"/>
 
-::: block <!-- element style="font-size:44px" align="left" drag="95 78" drop="0 15"-->
-- Lab deliverables M1–M6: submitted in Moodle (assignments and lessons), always with the script link
-- Capstone notebook M7 (lab 7): one hazard reproduced in Python or R, with text, figures, parameters, limitations
-- Lesson quizzes (GEE, API)
-- Grading weights, deadlines and attendance rules: **Course regulations and syllabus** – the resource at the top of the Moodle course
+::: block <!-- element style="font-size:40px" align="left" drag="95 78" drop="0 15"-->
+- Final test – **40 %**: 30 questions from all lectures of the subject (9 from the first weeks), 40 min, two attempts
+- Labs of the first weeks – **30 %**: the grade from their lecturer
+- Homework M2–M7 – **30 %** (5 % each): reports in Moodle with the script link; M7 = notebook or QGIS project
+- You pass from 60 % of the subject grade overall; the lesson quizzes are self-checks
+- Details: *How you are graded* on the Moodle start page
 :::
 
 ---

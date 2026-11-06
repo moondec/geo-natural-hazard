@@ -54,6 +54,12 @@ foreach ($schedule['homework'] as $n => $h) {
     if ($h['onlinetext']) {
         $DB->set_field('assign_plugin_config', 'value', 1, ['assignment' => $existing->id, 'subtype' => 'assignsubmission', 'plugin' => 'onlinetext', 'name' => 'enabled']);
     }
+    // every homework is a report uploaded as a file; M2 came from production with online text only
+    $fileconf = ['assignment' => $existing->id, 'subtype' => 'assignsubmission', 'plugin' => 'file'];
+    $DB->set_field('assign_plugin_config', 'value', 1, $fileconf + ['name' => 'enabled']);
+    if ((string)$DB->get_field('assign_plugin_config', 'value', $fileconf + ['name' => 'filetypeslist']) === '') {
+        $DB->set_field('assign_plugin_config', 'value', '.pdf,.docx', $fileconf + ['name' => 'filetypeslist']);
+    }
     $cm = get_coursemodule_from_id('assign', $existing->cmid, $courseid, false, MUST_EXIST);
     $assign = new assign(context_module::instance($cm->id), $cm, $course);
     $assign->update_calendar($cm->id);

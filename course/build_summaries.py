@@ -104,7 +104,7 @@ MODULES = [
                 ('Lab 7 – capstone', 'Pick flood, landslide or fire and rerun it as a notebook or a QGIS project with a map', mod('lesson', 404)),
                 ('Homework M7 – capstone', 'Notebook link + files, or QGIS project + PDF map; report template in the assignment', mod('assign', 434)),
                 ('Lecture 8 – wrap-up', 'One workflow, sources of error, uncertainty, what next, assessment', mod('page', 430)),
-                ('Final test', '30 questions drawn from the seven lessons, 40 min, two attempts; 40 % of the course grade – opened by the lecturer at the end of the course', None)],
+                ('Final test', '30 questions from all the lectures of the subject (9 from the first weeks, 21 from modules 1–7), 40 min, two attempts; 40 % of the subject grade – opened by the lecturer at the end of the course', None)],
          links=[('Lecture 7 (slides)', mod('page', 429)), ('Lecture 8 – wrap-up (slides)', mod('page', 430)), ('Lesson: APIs for GEE', mod('lesson', 404)), ('Homework M7: capstone', mod('assign', 434)), ('Final test (opens at the end of the course)', mod('quiz', 435)), ('Python, QGIS and R examples (GitHub)', 'https://github.com/moondec/geo-natural-hazard/tree/main/examples'),
                 ('Earth Engine Python quickstart', 'https://developers.google.com/earth-engine/guides/quickstart_python'), ('geemap', 'https://geemap.org/'), ('QGIS Earth Engine plugin – user guide', 'https://gee-community.github.io/qgis-earthengine-plugin/'), ('rgee (R volunteers)', 'https://r-spatial.github.io/rgee/'), ('For the curious: CDSE JupyterLab (free, on request)', 'https://dataspace.copernicus.eu/analyse/jupyterlab'), ('openEO Python client – documentation', 'https://open-eo.github.io/openeo-python-client/')],
          extra=''),
@@ -173,8 +173,14 @@ intro = f'''<div class="iot-course-intro">
 
   <div class="iot-note iot-note--info">
     <p class="iot-note-title">How you are graded</p>
-    <p>Six homework reports (M2–M7) make <strong>60 %</strong> of the course grade (10 % each) and the <strong>final test</strong> (30 questions from the seven lessons, 40 min, two attempts, the better one counts) makes <strong>40 %</strong>. Every report is marked out of 100 against the report template in its assignment; the lesson quizzes are self-checks and do not count. You pass from <strong>60 %</strong>, in each piece and overall. The grade: <strong>5.0</strong> from 92 %, <strong>4.5</strong> from 84 %, <strong>4.0</strong> from 76 %, <strong>3.5</strong> from 68 %, <strong>3.0</strong> from 60 %, <strong>2.0</strong> below. Late homework stays open and is marked as late.</p>
-    <p><strong>The grade of the whole subject</strong> is not this number alone. The subject has two parts taught by two lecturers: the first weeks of the semester (part A: 6 h of lectures and 18 h of labs, 24 h) and this course (part B: 14 h of lectures and 22 h of labs, 36 h). The final grade is the weighted mean of the two parts, with the weights of their teaching hours: <strong>part A 40 %, part B 60 %</strong>. Both parts have to be passed (60 %). In the gradebook you see part A as one grade entered by the lecturer, part B as the category with the homework and the final test, and the course total as the final grade.</p>
+    <p>The grade of the subject is the weighted mean of three pieces:</p>
+    <ul class="iot-list">
+      <li><strong>Final test – 40 %</strong>: 30 questions from all the lectures of the subject (9 from the lectures of the first weeks, 21 from modules 1–7 of this course), 40 min, two attempts, the better one counts.</li>
+      <li><strong>Labs of the first weeks – 30 %</strong>: one grade from the lecturer who teaches them, entered here by hand.</li>
+      <li><strong>Homework M2–M7 – 30 %</strong> (5 % each): every report is marked out of 100 against the report template in its assignment. Late homework stays open and is marked as late.</li>
+    </ul>
+    <p>The lesson quizzes are self-checks and do not count. You pass from <strong>60 %</strong> of the subject grade overall, so a weaker piece can be made up by the others. The grade: <strong>5.0</strong> from 92 %, <strong>4.5</strong> from 84 %, <strong>4.0</strong> from 76 %, <strong>3.5</strong> from 68 %, <strong>3.0</strong> from 60 %, <strong>2.0</strong> below.</p>
+    <p><strong>Two lecturers, one grade.</strong> The first weeks of the semester (6 h of lectures, 18 h of labs) are taught by another lecturer; this course covers the rest (14 h of lectures, 22 h of labs). In the gradebook you see the final test, the lab grade of the first weeks, the category with your homework and the course total – the course total is the final grade of the subject.</p>
   </div>
 
   <div class="iot-note iot-note--info">
@@ -189,7 +195,7 @@ intro = f'''<div class="iot-course-intro">
 for m in MODULES:
     (OUT / f's{m["n"]}-summary.html').write_text(module_html(m), encoding='utf-8', newline='\n')
 
-(OUT / 's7-quiz-435.intro.html').write_text('<div class="iot-material iot-material--label" data-iot-material="v1"><p>The final test of the course: <strong>30 questions</strong> drawn at random from the seven lesson categories (4–5 per lesson: data and accounts, Earth Engine basics, classifiers, floods, landslides, wildfires, APIs), <strong>40 minutes</strong>, <strong>two attempts</strong> – the better one counts. It makes 40 % of the course grade; you pass from 60 %. The questions are the same kind as the self-check quizzes in the lessons, so revise the lesson pages and the lecture summaries. The test is opened by the lecturer at the end of the course.</p></div>\n', encoding='utf-8', newline='\n')
+(OUT / 's7-quiz-435.intro.html').write_text('<div class="iot-material iot-material--label" data-iot-material="v1"><p>The final test of the subject covers all its lectures: <strong>30 questions</strong> drawn at random – <strong>9</strong> from the lectures of the first weeks of the semester and <strong>21</strong> from the seven modules of this course (3 per module: data and accounts, Earth Engine basics, classifiers, floods, landslides, wildfires, APIs), <strong>40 minutes</strong>, <strong>two attempts</strong> – the better one counts. It makes 40 % of the subject grade; the subject is passed from 60 % overall. Revise the lectures of the first weeks, the lesson pages and the lecture summaries. The test is opened by the lecturer at the end of the course.</p></div>\n', encoding='utf-8', newline='\n')
 (OUT / 's0-forum-388.intro.html').write_text('<div class="iot-material iot-material--label" data-iot-material="v1"><p>Announcements, deadlines and questions about the labs. Enrolment key for this course: <code>GEO</code>.</p></div>\n', encoding='utf-8', newline='\n')
 
 ops = [

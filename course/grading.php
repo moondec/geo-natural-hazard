@@ -3,9 +3,9 @@
 // Usage: docker exec moodle-lab-web-1 php /backups/grading.php COURSEID
 // Idempotent: re-running updates letters, settings, weights and the quiz settings; the quiz is created only once.
 //   letters (course context):  5.0 >= 92 %, 4.5 >= 84, 4.0 >= 76, 3.5 >= 68, 3.0 >= 60, 2.0 below 60
-//   course total: weighted mean – Homework M2..M7 10 % each (60 %), Final test 40 %; lesson grade items weight 0 and hidden
+//   course total: weighted mean – Final test 40 %, labs part A (manual) 30 %, homework M2..M7 30 % (5 % each); lesson items weight 0, hidden
 //   every assignment and the test: grade to pass 60; display "points (grade)" for items, the grade alone for the course total
-//   final test: hidden quiz in section 7, 30 random questions (4-5 per lesson category), 1 mark each, max grade 100,
+//   final test: hidden quiz in section 7, 30 random questions (9 from part A lectures, 3 per module L1-L7), 1 mark each, max grade 100,
 //   40 min, 2 attempts (highest counts), deferred feedback, overall feedback = the grade for the band
 define('CLI_SCRIPT', true);
 require '/var/www/html/config.php';
@@ -36,11 +36,12 @@ echo "course grade display: real (letter), 0 decimals\n";
 
 // ---------------------------------------------------------------- 3. final test quiz (created once)
 $quizmodule = $DB->get_field('modules', 'id', ['name' => 'quiz'], MUST_EXIST);
-$QUIZNAME = 'Final test: 30 questions from lessons 1–7';
+$QUIZNAME = 'Final test: 30 questions from all lectures';
 $quiz = $DB->get_record_sql("SELECT q.*, cm.id AS cmid FROM {quiz} q JOIN {course_modules} cm ON cm.instance = q.id AND cm.module = ?
     WHERE q.course = ? AND q.name LIKE 'Final test%'", [$quizmodule, $courseid]);
-// per-lesson categories of the question bank: name prefix => number of random questions
-$PICK = ['L1 ' => 4, 'L2 ' => 4, 'L3 ' => 4, 'L4 ' => 5, 'L5 ' => 4, 'L6 ' => 4, 'L7 ' => 5];
+// categories of the question bank: name prefix => number of random questions (2026-11-06: the test covers all lectures;
+// 'A ' = lectures of the first weeks by the other lecturer, 6 of 20 h -> 9 of 30; L1..L7 = modules of this course)
+$PICK = ['A ' => 9, 'L1 ' => 3, 'L2 ' => 3, 'L3 ' => 3, 'L4 ' => 3, 'L5 ' => 3, 'L6 ' => 3, 'L7 ' => 3];
 if (!$quiz) {
     $mi = new stdClass();
     $mi->modulename = 'quiz'; $mi->module = $quizmodule; $mi->course = $courseid; $mi->section = 7; $mi->visible = 0;  // hidden until the test day
@@ -89,6 +90,16 @@ if (!$quiz) {
     echo "  sumgrades {$quiz->sumgrades}, grade {$quiz->grade}\n";
 } else {
     echo "quiz exists: {$quiz->id} cm{$quiz->cmid}\n";
+    if ($quiz->name !== $QUIZNAME) {
+        $DB->set_field('quiz', 'name', $QUIZNAME, ['id' => $quiz->id]); $quiz->name = $QUIZNAME;
+        echo "  renamed to '$QUIZNAME'\n";
+    }
+    // random slots are built only when the quiz is created; rebuilding them needs a quiz without attempts
+    foreach ($PICK as $prefix => $n) {
+        if (!$DB->record_exists_select('question_categories', 'contextid = ? AND ' . $DB->sql_like('name', '?'), [$ctx->id, $prefix . '%'])) {
+            echo "  WARNING: no question category '$prefix...' – the quiz slots still follow the old distribution\n";
+        }
+    }
 }
 quiz_grade_item_update($quiz);
 
@@ -100,42 +111,48 @@ $coursecat->update();
 $total = $coursecat->get_grade_item();
 $total->display = GRADE_DISPLAY_TYPE_LETTER; $total->decimals = 0; $total->gradepass = 60; $total->grademax = 100; $total->grademin = 0; $total->update();   // weighted mean: the total is 0-100 (was 200 from the natural sum)
 
-// Two parts of the subject, weighted by teaching hours (20 h lecture + 40 h lab = 60 h):
-//   part A – the other lecturer, first weeks: 6 h lecture + 18 h lab = 24 h -> 40 %   (a manual grade item, filled in by hand)
-//   part B – this Moodle course:            14 h lecture + 22 h lab = 36 h -> 60 %   (a grade category: homework 10 % each, final test 40 %)
-$PARTA = 'Part A: grade from the first weeks of the semester (other lecturer, 24 h)';
-$PARTB = 'Part B: satellite hazard mapping – this course (36 h)';
-$partb = grade_category::fetch(['courseid' => $courseid, 'fullname' => $PARTB]);
-if (!$partb) {
-    $partb = new grade_category(['courseid' => $courseid, 'fullname' => $PARTB, 'parent' => $coursecat->id], false);
-    $partb->aggregation = GRADE_AGGREGATE_WEIGHTED_MEAN; $partb->aggregateonlygraded = 1;
-    $partb->insert();
-    echo "created grade category: $PARTB\n";
+// Subject grade (decision of 2026-11-06): weighted mean of three pieces at course level
+//   final test    40 %  – all 20 h of lectures of the subject (lectures of the first weeks included)
+//   labs, part A  30 %  – a manual grade item: the lab grade (18 h) from the lecturer of the first weeks
+//   labs, part B  30 %  – grade category with homework M2..M7, equal weights (5 % of the subject each)
+// Pass from 60 % of the course total only; the pieces have no separate pass rule.
+$LABA = 'Labs, part A: grade from the lecturer of the first weeks (18 h)';
+$LABB = 'Labs, part B: homework M2–M7 (22 h)';
+$OLDA = 'Part A: grade from the first weeks of the semester (other lecturer, 24 h)';   // names before 2026-11-06
+$OLDB = 'Part B: satellite hazard mapping – this course (36 h)';
+$labb = grade_category::fetch(['courseid' => $courseid, 'fullname' => $LABB]) ?: grade_category::fetch(['courseid' => $courseid, 'fullname' => $OLDB]);
+if (!$labb) {
+    $labb = new grade_category(['courseid' => $courseid, 'fullname' => $LABB, 'parent' => $coursecat->id], false);
+    $labb->aggregation = GRADE_AGGREGATE_WEIGHTED_MEAN; $labb->aggregateonlygraded = 1;
+    $labb->insert();
+    echo "created grade category: $LABB\n";
 } else {
-    $partb->aggregation = GRADE_AGGREGATE_WEIGHTED_MEAN; $partb->aggregateonlygraded = 1; $partb->update();
+    $labb->fullname = $LABB; $labb->aggregation = GRADE_AGGREGATE_WEIGHTED_MEAN; $labb->aggregateonlygraded = 1; $labb->update();
 }
-$bitem = $partb->get_grade_item();
-$bitem->aggregationcoef = 60; $bitem->grademax = 100; $bitem->grademin = 0; $bitem->gradepass = 60;
+$bitem = $labb->get_grade_item();
+$bitem->aggregationcoef = 30; $bitem->grademax = 100; $bitem->grademin = 0; $bitem->gradepass = 60;
 $bitem->display = GRADE_DISPLAY_TYPE_REAL_LETTER; $bitem->decimals = 0; $bitem->update();
 
-$aitem = grade_item::fetch(['courseid' => $courseid, 'itemtype' => 'manual', 'itemname' => $PARTA]);
+$aitem = grade_item::fetch(['courseid' => $courseid, 'itemtype' => 'manual', 'itemname' => $LABA])
+      ?: grade_item::fetch(['courseid' => $courseid, 'itemtype' => 'manual', 'itemname' => $OLDA]);
 if (!$aitem) {
-    $aitem = new grade_item(['courseid' => $courseid, 'itemtype' => 'manual', 'itemname' => $PARTA, 'categoryid' => $coursecat->id,
-        'gradetype' => GRADE_TYPE_VALUE, 'grademax' => 100, 'grademin' => 0,
-        'iteminfo' => 'Grade (0-100) of the first weeks of the semester, entered by the lecturer; weight 24/60 of the teaching hours.'], false);
+    $aitem = new grade_item(['courseid' => $courseid, 'itemtype' => 'manual', 'itemname' => $LABA, 'categoryid' => $coursecat->id,
+        'gradetype' => GRADE_TYPE_VALUE, 'grademax' => 100, 'grademin' => 0], false);
     $aitem->insert();
-    echo "created manual grade item: $PARTA\n";
+    echo "created manual grade item: $LABA\n";
 }
-$aitem->aggregationcoef = 40; $aitem->gradepass = 60; $aitem->display = GRADE_DISPLAY_TYPE_REAL_LETTER; $aitem->decimals = 0; $aitem->hidden = 0;
+$aitem->itemname = $LABA;
+$aitem->iteminfo = 'Lab grade (0-100) of the first weeks of the semester, entered by hand from the grade given by their lecturer; 30 % of the subject grade.';
+$aitem->aggregationcoef = 30; $aitem->gradepass = 60; $aitem->display = GRADE_DISPLAY_TYPE_REAL_LETTER; $aitem->decimals = 0; $aitem->hidden = 0;
 $aitem->categoryid = $coursecat->id; $aitem->update();
 
 $items = grade_item::fetch_all(['courseid' => $courseid, 'itemtype' => 'mod']);
 foreach ($items as $gi) {
     if ($gi->itemmodule === 'assign' && preg_match('/^Homework M\d/', $gi->itemname)) {
-        $gi->categoryid = $partb->id;
+        $gi->categoryid = $labb->id;
         $gi->aggregationcoef = 10; $gi->gradepass = 60; $gi->display = GRADE_DISPLAY_TYPE_REAL_LETTER; $gi->decimals = 0; $gi->hidden = 0;
     } else if ($gi->itemmodule === 'quiz') {
-        $gi->categoryid = $partb->id;
+        $gi->categoryid = $coursecat->id;
         $gi->aggregationcoef = 40; $gi->gradepass = 60; $gi->display = GRADE_DISPLAY_TYPE_REAL_LETTER; $gi->decimals = 0; $gi->hidden = 0;
     } else {   // lesson self-checks and anything else: no weight, not shown to students
         $gi->aggregationcoef = 0; $gi->hidden = 1;
@@ -143,7 +160,7 @@ foreach ($items as $gi) {
     $gi->update();
     printf("  %-8s cat=%d w=%2d pass=%2d hidden=%d | %s\n", $gi->itemmodule, $gi->categoryid, $gi->aggregationcoef, $gi->gradepass, $gi->hidden, $gi->itemname);
 }
-echo "course total = 40 % part A (manual) + 60 % part B (category)\n";
+echo "course total = 40 % final test + 30 % labs part A (manual) + 30 % labs part B (homework category)\n";
 grade_regrade_final_grades($courseid);
 rebuild_course_cache($courseid, true);
 purge_all_caches();

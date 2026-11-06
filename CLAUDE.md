@@ -39,7 +39,10 @@ Rozmawiaj z użytkownikiem po polsku; treść kursu jest po angielsku.
   Daty semestru są tylko w `course/schedule.json`; `course/assignments.php COURSEID /backups/schedule.json` ustawia terminy zadań
   (bez cut-off – spóźnione oddania dozwolone) i datę startu kursu (kotwica przesunięcia dat przy restore); opisy zadań z `course/build_assign_intros.py`.
 - Ocenianie: `course/grading.php COURSEID` (idempotentny) – litery 5.0/4.5/4.0/3.5/3.0/2.0 od 92/84/76/68/60 %, suma kursu = średnia ważona
-  (M2–M7 po 10 %, Final test cm435 40 %, lekcje waga 0 i ukryte), próg 60, wyświetlanie „punkty (ocena)”; quiz Final test ukryty (30 losowych pytań z banku).
+  (od 2026-11-06: Final test cm435 40 % – obejmuje wszystkie 20 h wykładu, też koleżanki; ręczna pozycja „Labs, part A” 30 % – ocena z ćwiczeń
+  od koleżanki; kategoria „Labs, part B” 30 % = M2–M7 po równo; lekcje waga 0 i ukryte), próg 60 tylko z całości, wyświetlanie „punkty (ocena)”;
+  quiz Final test ukryty, docelowo 30 losowych pytań: 9 z kategorii „A …” (wykłady koleżanki, jeszcze nie ma) + po 3 z L1–L7.
+  Sloty quizu powstają tylko przy jego tworzeniu – po dodaniu kategorii „A” trzeba je przebudować (quiz bez podejść).
   Push do Moodle: skopiuj `course/mcontent/` do WSL `/home/marek/.hermes/build/mcontent-geo-work/` i uruchom `gpush.sh` (dry) / `gpush.sh --apply`;
   pull: `gpull.sh` (→ `mcontent-geo/`). Baner kursu (overviewfiles) zostaje bez zmian.
   Po `--apply` przenieś `ops.tsv` do `ops-applied-RRRR-MM-DD.tsv` (zrobione: 2026-10-25, 2026-11-02); op `answerscore <answerid> <0|1>` ustawia punkt odpowiedzi w quizie lekcji.
