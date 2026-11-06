@@ -1,7 +1,8 @@
 """Homework assignment descriptions (assign.intro) for AGeoHazard – writes mcontent/s<n>-assign-<cmid>.intro.html.
 
-Every description has the same four blocks: lead, "What to submit" (task callout), "Report template"
-(the common chapter list with the milestone-specific items inside), "Before you upload" (check callout).
+Every description has the same blocks: lead, "What to submit" (task callout), the template – a one-page note
+for M2 and M5, the common report chapters for M3, M4, M6 and M7, both with the milestone-specific items inside –,
+"How it is marked" (the common 4-criterion rubric) and "Before you upload" (check callout).
 Run:  python -I -X utf8 build_assign_intros.py   then  inline-iot-css.py geo.scss mcontent  and gpush.
 Assignment modules themselves are created/updated by assignments.php (dates, plugins).
 """
@@ -23,17 +24,17 @@ CHAPTERS = [
 ]
 
 ASSIGN = {
- 2: dict(cmid=392, lesson=('Google Earth Engine', 391),
-    lead='Homework after lab 2: repeat the lesson workflow (filter → median → index → classes → area table) for an index of your choice and your own area of interest. Due <strong>at the start of lab 3</strong> (the exact date and time are shown above this description and in the course calendar). You submit a link to a working Earth Engine script and a short report (.pdf or .docx, 2–3 pages) written to the template below.',
+ 2: dict(cmid=392, lesson=('Google Earth Engine', 391), kind='note',
+    lead='Homework after lab 2: repeat the lesson workflow (filter → median → index → classes → area table) for an index of your choice and your own area of interest. Due <strong>at the start of lab 3</strong> (the exact date and time are shown above this description and in the course calendar). You submit a link to a working Earth Engine script and a <strong>one-page note</strong> (.pdf or .docx) written to the template below.',
     submit=[
       'Create your own JavaScript code for Earth Engine that calculates the area occupied by the categories of a selected index (e.g. EVI, NDWI, SAVI, NDMI – not NDVI).',
       'Specify an area of interest (AOI) that is not very large: a city, a district or a national park (about 50–500 km²).',
       'Choose your own thresholds and justify them in one or two sentences (histogram, Inspector values, literature).',
-      'Save the script, click <em>Get Link</em> and paste the link in the report and in the submission comment.',
-      'Upload the report as .pdf or .docx.'],
+      'Save the script, click <em>Get Link</em> and paste the link in the note and in the submission comment.',
+      'Upload the note as .pdf or .docx.'],
     specific={'Data': ['the collection (<code>COPERNICUS/S2_SR_HARMONIZED</code>), the date range and the cloud filter used', 'the AOI: how you defined it (polygon, point + buffer, GAUL district)'],
-              'Method': ['the index formula and its bands', 'the cloud mask you applied (SCL, Cloud Score+)', 'the thresholds and the class codes', 'the <code>scale</code> used in <code>reduceRegion</code>'],
-              'Results': ['the index map and the class map with a legend', 'the area table per class in hectares'],
+              'Method': ['the index formula and its bands', 'the cloud mask you applied (SCL, Cloud Score+)', 'the thresholds and the class codes', 'the <code>scale</code> used in <code>reduceRegion</code>', 'the area per class in hectares'],
+              'Results': ['the class map with a legend (the index map next to it, if both fit on the page)'],
               'Validation and uncertainty': ['three pixels checked with the Inspector (field, forest, water) and whether they fall in the expected class', 'what happens to the areas when a threshold moves by ±0.05']},
     check='The script link opens without error in a private browser window; the area table sums up to the AOI area; the thresholds in the text are the ones in the code.',
     extra=pathlib.Path(__file__).with_name('fragments').joinpath('m2_indices.html').read_text(encoding='utf-8')),   # index list with Sentinel Hub custom-script links (kept from the old description)
@@ -65,8 +66,8 @@ ASSIGN = {
               'Results': ['the flood extent map (legend: flooded / permanent water), event name and dates in the title', 'the flooded area in hectares'],
               'Validation and uncertainty': ['the sensitivity table: threshold (−2 / −3 / −4 dB) × filter radius versus flooded area; the factor between the largest and the smallest area and your explanation of it', 'the comparison with GFM or EMS: where do the maps agree and disagree, and why (wind, flooded vegetation, urban areas, shadow)']},
     check='The flood layer lies along the river and not on mountain slopes; permanent lakes are not counted; the factor between the −2 dB and −4 dB areas is reported and explained; the script link opens in a private browser window.'),
- 5: dict(cmid=432, lesson=('landslides', 402),
-    lead='Milestone M5 – the landslide heatmap note from lab 5, due <strong>at the start of lab 6</strong> (date and time above). A short report (.pdf or .docx, 2–4 pages) written to the template below, with one figure and the link to your saved script.',
+ 5: dict(cmid=432, lesson=('landslides', 402), kind='note',
+    lead='Milestone M5 – the landslide heatmap note from lab 5, due <strong>at the start of lab 6</strong> (date and time above). A <strong>one-page note</strong> (.pdf or .docx) written to the template below, with one figure and the link to your saved script.',
     submit=[
       'Choose an event with a known date and a reference inventory: one of the cases of Handwerger et al. (2022) (Hokkaido 2018, Hiroshima 2018, Haiti 2021) or an EMS landslide activation.',
       'Run the heatmap script with your AOI, event date, pre-event window (months), post-event window (weeks) and one Sentinel-1 orbit.',
@@ -75,8 +76,8 @@ ASSIGN = {
       'Overlay the reference (EMS grading map or a post-event Sentinel-2 true-colour image) and judge the agreement.',
       'Export the heatmap as GeoTIFF and write the note.'],
     specific={'Data': ['Sentinel-1 orbit (ascending/descending), pre-event window and post-event window with the number of scenes in each', 'the reference inventory or EMS product (name, date)'],
-              'Method': ['the log-ratio formula and its sign convention (positive = darker after the event)', 'masks: slope limit, water; the percentile threshold; kernel radius and cell size'],
-              'Results': ['one figure: the heatmap with the reference overlaid, AOI outline, scale bar', 'the I_ratio values you read on a landslide and on an untouched slope'],
+              'Method': ['the log-ratio formula and its sign convention (positive = darker after the event)', 'masks: slope limit, water; the percentile threshold; kernel radius and cell size', 'the I_ratio values you read on a landslide and on an untouched slope'],
+              'Results': ['the heatmap with the reference overlaid, AOI outline, scale bar'],
               'Validation and uncertainty': ['which valleys agree with the reference and which do not', 'how the heatmap changed when you moved the percentile and the kernel radius']},
     check='The heatmap highlights the valleys that the reference shows as hit; I_ratio on untouched slopes stays near zero; flat valley floors are masked out; the GeoTIFF opens in QGIS with the right coordinates; the script link opens in a private browser window.'),
  6: dict(cmid=433, lesson=('fire detection and severity estimation', 403),
@@ -107,6 +108,38 @@ ASSIGN = {
     check='A colleague can open your notebook or project, run all cells from top to bottom after <code>ee.Initialize(project=…)</code> (or <code>ee_Initialize()</code>) and obtain the same map and numbers; every figure has a caption; the limitations section exists.'),
 }
 
+# One-page note (M2, M5): four blocks; the milestone items of the report chapters are reused inside them.
+NOTE_BLOCKS = [
+    ('Header', 'event or area, dates, your name, the link to the saved script (test it in a private browser window)', []),
+    ('Parameter and area table', 'one table with the data and the parameters you used and the resulting numbers', ['Data', 'Method']),
+    ('One figure', 'the map with legend, scale bar and source line, and a caption', ['Results']),
+    ('Five sentences', 'why these thresholds, what the check showed, and the limitations of the map', ['Validation and uncertainty']),
+]
+
+# The same rubric for every homework (100 points).
+RUBRIC = [
+    ('Reproducible script', 30, 'the link (or notebook / project) opens in a private browser window and gives the same map and numbers; the parameters in the text are the ones in the code'),
+    ('Maps and figures', 30, 'legend, scale bar, title with the event or area and the dates, source line, numbered caption; readable classes'),
+    ('Numbers', 20, 'areas in hectares, tables, accuracies or counts – complete and consistent (class areas sum up to the AOI)'),
+    ('Validation and limitations', 20, 'the check or comparison the milestone asks for, the thresholds justified, the limitations stated honestly'),
+]
+
+def note_html(spec):
+    items = []
+    for title, desc, chapters in NOTE_BLOCKS:
+        sub = [s for c in chapters for s in spec['specific'].get(c, [])]
+        subhtml = ('<ul class="iot-material-list">' + ''.join(f'<li>{s}</li>' for s in sub) + '</ul>') if sub else ''
+        items.append(f'<li><strong>{title}</strong> – {desc}.{subhtml}</li>')
+    return ('<div class="iot-material-callout">\n<p class="iot-material-callout-title">Note template – one page</p>\n'
+            '<p>One page (.pdf or .docx), these four blocks in this order. Milestones M3, M4 and M6 are full reports; this one is a short note.</p>\n'
+            '<ol class="iot-material-list">\n' + '\n'.join(items) + '\n</ol>\n</div>')
+
+def rubric_html():
+    rows = ''.join(f'<tr><td>{c}</td><td>{pts}</td><td>{d}</td></tr>' for c, pts, d in RUBRIC)
+    return ('<div class="iot-material-callout">\n<p class="iot-material-callout-title">How it is marked (100 points)</p>\n'
+            '<table class="iot-material-table"><thead><tr><th>Criterion</th><th>Points</th><th>What earns the points</th></tr></thead>'
+            f'<tbody>{rows}</tbody></table>\n<p>The same four criteria apply to every homework, the notes and the reports alike.</p>\n</div>')
+
 def template_html(spec):
     items = []
     for i, (title, desc) in enumerate(CHAPTERS, 1):
@@ -114,7 +147,7 @@ def template_html(spec):
         subhtml = ('<ul class="iot-material-list">' + ''.join(f'<li>{s}</li>' for s in sub) + '</ul>') if sub else ''
         items.append(f'<li><strong>{title}</strong> – {desc}.{subhtml}</li>')
     return ('<div class="iot-material-callout">\n<p class="iot-material-callout-title">Report template – the chapters of your report</p>\n'
-            '<p>Use these headings in this order (3–6 pages; maps as numbered figures with captions). The same template is used for every homework of the course, so the points you learn here count every time.</p>\n'
+            '<p>Use these headings in this order (3–6 pages; maps as numbered figures with captions). The same chapters are used for the reports M3, M4, M6 and M7 (M2 and M5 are one-page notes).</p>\n'
             '<ol class="iot-material-list">\n' + '\n'.join(items) + '\n</ol>\n</div>')
 
 for n, a in ASSIGN.items():
@@ -124,7 +157,8 @@ for n, a in ASSIGN.items():
             '<div class="iot-material-callout iot-material-callout--task">', '<p class="iot-material-callout-title">What to submit</p>',
             '<ol class="iot-material-list">', *[f'<li>{s}</li>' for s in a['submit']], '</ol>',
             f'<p>The step-by-step instructions are in the lesson <a href="{mod("lesson", lcm)}">{esc(lname)}</a>.</p>', '</div>',
-            template_html(a),
+            note_html(a) if a.get('kind') == 'note' else template_html(a),
+            rubric_html(),
             a.get('extra', ''),
             '<div class="iot-material-callout iot-material-callout--check">', '<p class="iot-material-callout-title">Before you upload</p>',
             f'<p>{a["check"]}</p>', '</div>', '</div>']

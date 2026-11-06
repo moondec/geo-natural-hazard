@@ -43,6 +43,9 @@ Rozmawiaj z użytkownikiem po polsku; treść kursu jest po angielsku.
   od koleżanki; kategoria „Labs, part B” 30 % = M2–M7 po równo; lekcje waga 0 i ukryte), próg 60 tylko z całości, wyświetlanie „punkty (ocena)”;
   quiz Final test ukryty, docelowo 30 losowych pytań: 9 z kategorii „A …” (wykłady koleżanki, jeszcze nie ma) + po 3 z L1–L7.
   Sloty quizu powstają tylko przy jego tworzeniu – po dodaniu kategorii „A” trzeba je przebudować (quiz bez podejść).
+  Decyzje z 2026-11-06: test w sali na ostatnich zajęciach, bez materiałów, 1 podejście (poprawka w sesji = nadpisanie użytkownika
+  z dodatkowym podejściem); „Exclude empty grades” zostaje, po terminie M7 wpisać 0 brakom (zapowiedziane na stronie startowej);
+  rubryka 4 kryteria (skrypt 30, ryciny 30, liczby 20, walidacja i ograniczenia 20) i notatka jednostronicowa M2/M5 w `course/build_assign_intros.py`.
   Push do Moodle: skopiuj `course/mcontent/` do WSL `/home/marek/.hermes/build/mcontent-geo-work/` i uruchom `gpush.sh` (dry) / `gpush.sh --apply`;
   pull: `gpull.sh` (→ `mcontent-geo/`). Baner kursu (overviewfiles) zostaje bez zmian.
   Po `--apply` przenieś `ops.tsv` do `ops-applied-RRRR-MM-DD.tsv` (zrobione: 2026-10-25, 2026-11-02); op `answerscore <answerid> <0|1>` ustawia punkt odpowiedzi w quizie lekcji.

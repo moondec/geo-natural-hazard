@@ -6,7 +6,8 @@
 //   course total: weighted mean – Final test 40 %, labs part A (manual) 30 %, homework M2..M7 30 % (5 % each); lesson items weight 0, hidden
 //   every assignment and the test: grade to pass 60; display "points (grade)" for items, the grade alone for the course total
 //   final test: hidden quiz in section 7, 30 random questions (9 from part A lectures, 3 per module L1-L7), 1 mark each, max grade 100,
-//   40 min, 2 attempts (highest counts), deferred feedback, overall feedback = the grade for the band
+//   40 min, 1 attempt in the classroom at the last meeting (retake in the exam session via a user override),
+//   deferred feedback, overall feedback = the grade for the band
 define('CLI_SCRIPT', true);
 require '/var/www/html/config.php';
 require_once($CFG->libdir . '/gradelib.php');
@@ -49,7 +50,7 @@ if (!$quiz) {
     $mi->introeditor = ['text' => '<p>' . s($QUIZNAME) . '</p>', 'format' => FORMAT_HTML, 'itemid' => 0];
     $mi->showdescription = 1;
     $mi->timeopen = 0; $mi->timeclose = 0; $mi->timelimit = 40 * MINSECS; $mi->overduehandling = 'autosubmit'; $mi->graceperiod = 0;
-    $mi->preferredbehaviour = 'deferredfeedback'; $mi->canredoquestions = 0; $mi->attempts = 2; $mi->attemptonlast = 0;
+    $mi->preferredbehaviour = 'deferredfeedback'; $mi->canredoquestions = 0; $mi->attempts = 1; $mi->attemptonlast = 0;
     $mi->grademethod = QUIZ_GRADEHIGHEST; $mi->decimalpoints = 0; $mi->questiondecimalpoints = -1;
     $mi->questionsperpage = 0; $mi->navmethod = QUIZ_NAVMETHOD_FREE; $mi->shuffleanswers = 1;
     $mi->quizpassword = ''; $mi->subnet = ''; $mi->browsersecurity = '-'; $mi->delay1 = 0; $mi->delay2 = 0;
@@ -67,7 +68,7 @@ if (!$quiz) {
               ['76%', '<p><strong>4.0</strong> – good.</p>'],
               ['68%', '<p><strong>3.5</strong> – satisfactory plus.</p>'],
               ['60%', '<p><strong>3.0</strong> – satisfactory: passed.</p>'],
-              [null,  '<p><strong>2.0</strong> – not passed (below 60 %). Review the lesson pages and the lecture summaries, then use your second attempt.</p>']];
+              [null,  '<p><strong>2.0</strong> – not passed (below 60 %). Review the lectures, the lesson pages and the lecture summaries and come to the retake in the exam session.</p>']];
     $mi->feedbacktext = []; $mi->feedbackboundaries = [];
     foreach ($bands as $i => [$b, $t]) { $mi->feedbacktext[$i] = ['text' => $t, 'format' => FORMAT_HTML]; if ($b !== null) $mi->feedbackboundaries[$i] = $b; }
     $mi->visibleoncoursepage = 1; $mi->cmidnumber = ''; $mi->groupmode = 0; $mi->groupingid = 0;
@@ -94,6 +95,14 @@ if (!$quiz) {
         $DB->set_field('quiz', 'name', $QUIZNAME, ['id' => $quiz->id]); $quiz->name = $QUIZNAME;
         echo "  renamed to '$QUIZNAME'\n";
     }
+    // one attempt in the classroom (decision of 2026-11-06); the retake is an extra attempt given by a user override
+    if ((int)$quiz->attempts !== 1) {
+        $DB->set_field('quiz', 'attempts', 1, ['id' => $quiz->id]); $quiz->attempts = 1;
+        echo "  attempts set to 1\n";
+    }
+    $DB->execute("UPDATE {quiz_feedback} SET feedbacktext = REPLACE(feedbacktext, ?, ?) WHERE quizid = ?",
+        ['Review the lesson pages and the lecture summaries, then use your second attempt.',
+         'Review the lectures, the lesson pages and the lecture summaries and come to the retake in the exam session.', $quiz->id]);
     // random slots are built only when the quiz is created; rebuilding them needs a quiz without attempts
     foreach ($PICK as $prefix => $n) {
         if (!$DB->record_exists_select('question_categories', 'contextid = ? AND ' . $DB->sql_like('name', '?'), [$ctx->id, $prefix . '%'])) {

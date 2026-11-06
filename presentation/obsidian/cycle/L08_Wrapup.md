@@ -168,11 +168,11 @@ Know them, cite them, compare against them – and know that the method you ran 
 <grid drag="13 26" drop="87 75" bg="#ffB73F"/>
 
 ::: block <!-- element style="font-size:40px" align="left" drag="95 78" drop="0 15"-->
-- Final test – **40 %**: 30 questions from all lectures of the subject (9 from the first weeks), 40 min, two attempts
+- Final test – **40 %**: 30 questions from all lectures (9 from the first weeks), 40 min, one attempt, in the room, no materials; retake in the exam session
 - Labs of the first weeks – **30 %**: the grade from their lecturer
-- Homework M2–M7 – **30 %** (5 % each): reports in Moodle with the script link; M7 = notebook or QGIS project
-- You pass from 60 % of the subject grade overall; the lesson quizzes are self-checks
-- Details: *How you are graded* on the Moodle start page
+- Homework M2–M7 – **30 %** (5 % each): M2, M5 one-page notes; M3, M4, M6 reports; M7 notebook or QGIS project
+- Each piece: script 30, figures 30, numbers 20, validation 20 points; pass from 60 % overall
+- Missing work counts as 0 after the M7 deadline – details: *How you are graded* on the start page
 :::
 
 ---
