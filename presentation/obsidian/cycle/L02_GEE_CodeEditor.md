@@ -391,7 +391,7 @@ print('Area per class [ha]:', areaTable);
 ```
 :::
 
-::: block <!-- element style="font-size:36px" align="left" drag="42 80" drop="58 15" bg="#e8f4f8" pad="15px"-->
+::: block <!-- element style="font-size:30px" align="left" drag="46 80" drop="54 15" bg="#e8f4f8" pad="15px"-->
 - `ee.Image.pixelArea()` gives the true area of every pixel in m² (it changes with latitude)
 - `group` splits the sum by the value of band 1 → one sum per class
 - **`scale`** must match the data (10 m). `scale: 1` gives practically the same area at 100× the computation (≈ 8·10⁷ samples for a 5 km buffer): slow, may time out or stop with *"Too many pixels"*
